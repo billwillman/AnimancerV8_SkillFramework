@@ -6,7 +6,7 @@ using UnityEngine.Timeline;
 [Serializable]
 public class UnityTimelinePlayableClip : PlayableAsset, ITimelineClipAsset
 {
-   // public UnityTimelinePlayableBehaviour template = new UnityTimelinePlayableBehaviour ();
+   public UnityTimelinePlayableBehaviour template = new UnityTimelinePlayableBehaviour ();
 
     // public ExposedReference<UnityTimeline.UnityTimelineTree> timelineTree;
     public UnityTimeline.UnityTimelineTree timelineTree;
@@ -19,8 +19,8 @@ public class UnityTimelinePlayableClip : PlayableAsset, ITimelineClipAsset
 
     public override Playable CreatePlayable (PlayableGraph graph, GameObject owner)
     {
-       // var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create (graph, template);
-       var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create(graph, 1);
+       var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create (graph, template);
+      // var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create(graph, 1);
         UnityTimelinePlayableBehaviour clone = playable.GetBehaviour ();
         clone.DestroyRuntimeTree();
         if (timelineTree != null) {
