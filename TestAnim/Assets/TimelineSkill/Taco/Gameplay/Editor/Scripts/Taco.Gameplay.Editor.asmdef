@@ -1,0 +1,21 @@
+{
+    "name": "Taco.Gameplay.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3af8e02729705434aa5c2d77c4a5103a",
+        "GUID:4bc7b3aab6fa118449e1df49b33fa56c",
+        "GUID:e14c8efd9e8354845a23dac7439c7403",
+        "GUID:478a2357cc57436488a56e564b08d223"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

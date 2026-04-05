@@ -1,0 +1,45 @@
+#tree-view {
+    flex-grow: 1;
+}
+
+#tree-title {
+    position: absolute;
+    -unity-font-style: bold;
+    font-size: 18px;
+    padding-left: 5px;
+    padding-top: 3px;
+}
+
+#tree-inspector {
+}
+
+#unity-dragline-anchor {
+    width: 2px;
+    background-color: rgb(25, 25, 25);
+}
+
+#node-description {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    position: absolute;
+    -unity-font-style: bold;
+    font-size: 14px;
+    white-space: normal;
+    max-width: 300px;
+    right: 0;
+}
+
+#nodeSearchContainer {
+    position: absolute;
+    bottom: 0;
+    padding-left: 5px;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 3px;
+}

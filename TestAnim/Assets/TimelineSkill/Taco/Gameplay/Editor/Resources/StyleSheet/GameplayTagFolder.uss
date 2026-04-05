@@ -1,0 +1,28 @@
+.folderView {
+    border-top-width: 1px;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 1px;
+    border-left-color: rgb(32, 32, 32);
+    border-right-color: rgb(32, 32, 32);
+    border-top-color: rgb(32, 32, 32);
+    border-bottom-color: rgb(32, 32, 32);
+}
+
+#folder-icon {
+    display: none;
+}
+
+#folder-title:hover {
+    background-color: rgb(200, 200, 200);
+    color: rgb(27, 27, 27);
+}
+
+#folder-title:active {
+    background-color: rgba(0, 0, 0, 0);
+    color: rgb(200, 200, 200);
+}
+
+#folder-detail-label {
+    display: flex;
+}

@@ -1,0 +1,190 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4fdff048f7dca43bf486a9c8802d50, type: 3}
+  m_Name: TreeLocations
+  m_EditorClassIdentifier: 
+  TreeInfos:
+  - guid: 55b319f8a75f66b40b8245dfc6cc7da7
+    path: Assets/Data/TimelineTree/EnableRootmotion.asset
+    name: EnableRootmotion
+    type: BaseTree
+    locked: 0
+  - guid: 1d6099358b9cf83469feacdbb5d158f3
+    path: Assets/Data/TimelineTree/SyncStateTime.asset
+    name: SyncStateTime
+    type: BaseTree
+    locked: 0
+  - guid: a4c3f75055f8d2a46b86ad3c2b6e5aa8
+    path: Assets/Data/TimelineTree/RuntimeMute.asset
+    name: RuntimeMute
+    type: BaseTree
+    locked: 0
+  - guid: a425d54ccbfa87a49b45a9730e7a8231
+    path: Assets/Data/TimelineTree/PlayPauseCtrl.asset
+    name: PlayPauseCtrl
+    type: BaseTree
+    locked: 0
+  - guid: 9593b933d49a88741baf13ddaf1b0343
+    path: Assets/Data/Ability/Ability_Combo_1.asset
+    name: Ability_Combo_1
+    type: BaseTree
+    locked: 0
+  - guid: 700588702d0bfda4d8e33943bcb45eb7
+    path: Assets/Data/Ability/Ability_Combo_2.asset
+    name: Ability_Combo_2
+    type: BaseTree
+    locked: 0
+  - guid: ba753ad2e8928904397c16c3537e1878
+    path: Assets/Data/Ability/Ability_Combo_3.asset
+    name: Ability_Combo_3
+    type: BaseTree
+    locked: 0
+  - guid: 6d6fdea982a12eb449d2a0fc82f5def0
+    path: Assets/Data/Ability/Ability_Jump.asset
+    name: Ability_Jump
+    type: BaseTree
+    locked: 0
+  - guid: 4079d9e5a15eebd48b78f023635d9ff5
+    path: Assets/Data/Ability/Ability_Locomotion.asset
+    name: Ability_Locomotion
+    type: BaseTree
+    locked: 0
+  - guid: 7e83be7aada0911418e1433c682a68d1
+    path: Assets/Data/Ability/Ability_Dodge.asset
+    name: Ability_Dodge
+    type: BaseTree
+    locked: 0
+  - guid: 8e1f741a16e9ea243904fb95c0ac108f
+    path: Assets/Data/Ability/Ability_Dodge_Attack.asset
+    name: Ability_Dodge_Attack
+    type: BaseTree
+    locked: 0
+  - guid: 30e2e73bfed2e194a80b36029b844389
+    path: Assets/Data/TimelineTree/SetAccelerationControl.asset
+    name: SetAccelerationControl
+    type: BaseTree
+    locked: 0
+  - guid: 16d07937373bae9449727f833e101427
+    path: Assets/Data/Ability/Ability_SkillA_1.asset
+    name: Ability_SkillA_1
+    type: BaseTree
+    locked: 0
+  - guid: 8e72ffb1a14ce454189c567e8a58af4c
+    path: Assets/Data/Ability/Ability_SkillA_2.asset
+    name: Ability_SkillA_2
+    type: BaseTree
+    locked: 0
+  - guid: 80291a506399381438bc899fedee0ff2
+    path: Assets/Data/Ability/Ability_Flow.asset
+    name: Ability_Flow
+    type: BaseTree
+    locked: 0
+  - guid: 0daf3bf5191908649a3f4b0b04a73d6c
+    path: Assets/Data/TimelineTree/Force/Continuous_AddForce.asset
+    name: Continuous_AddForce
+    type: BaseTree
+    locked: 0
+  - guid: b9c5f973f2174604a8bab3674b865f1e
+    path: Assets/Data/TimelineTree/Force/Continuous_AddForceWithInput.asset
+    name: Continuous_AddForceWithInput
+    type: BaseTree
+    locked: 0
+  - guid: 30f3bc8f53db30b4bba1c67017754dd1
+    path: Assets/Data/TimelineTree/Force/LaunchCharacter.asset
+    name: LaunchCharacter
+    type: BaseTree
+    locked: 0
+  - guid: 1a0f1bb7db23dc442b0427203e925662
+    path: Assets/Data/TimelineTree/Loop/HoldLoop_OnEnable.asset
+    name: HoldLoop_OnEnable
+    type: BaseTree
+    locked: 0
+  - guid: d2225f1b6f01adb48a246dbcfaaa4e05
+    path: Assets/Data/Ability/Ability_SkillB.asset
+    name: Ability_SkillB
+    type: BaseTree
+    locked: 0
+  - guid: 19ad890538b275246a4f0ba0a320fa75
+    path: Assets/Data/Ability/Ability_Jump_Combo_2.asset
+    name: Ability_Jump_Combo_2
+    type: BaseTree
+    locked: 0
+  - guid: d0c69daf0b179544fbf52ec79330fe90
+    path: Assets/Data/TimelineTree/DisableGravity.asset
+    name: DisableGravity
+    type: BaseTree
+    locked: 0
+  - guid: 1a5a4af72812ce945ad84351a7e822db
+    path: Assets/Data/TimelineTree/Force/AddExternalForceWithInput.asset
+    name: AddExternalForceWithInput
+    type: BaseTree
+    locked: 0
+  - guid: 5022d05db6c2625418f221c541c179cc
+    path: Assets/Data/TimelineTree/Force/ClearVelocity.asset
+    name: ClearVelocity
+    type: BaseTree
+    locked: 0
+  - guid: b2da6596ae219d549ae85018be3c25d5
+    path: Assets/Data/TimelineTree/Loop/AirLoop_UnGrounded_OnUpdate.asset
+    name: AirLoop_UnGrounded_OnUpdate
+    type: BaseTree
+    locked: 0
+  - guid: 6d422a22f46099a469606025bc6bbf03
+    path: Assets/Data/TimelineTree/Loop/AirLoop_GroundDistance_OnUpdate.asset
+    name: AirLoop_GroundDistance_OnUpdate
+    type: BaseTree
+    locked: 0
+  - guid: 19d5b7ce960fa4c4bb8568dcc409da8e
+    path: Assets/Resources/character/Crawdo/@Skills/Ability_Idle.asset
+    name: Ability_Idle
+    type: BaseTree
+    locked: 0
+  - guid: 119c655b30098c6419919b69032e2dde
+    path: Assets/Test/New UnityTimelineTree.asset
+    name: New UnityTimelineTree
+    type: BaseTree
+    locked: 0
+  - guid: e60e87ed92f642243a3e0172335dff4c
+    path: Assets/Test/Skills/New AnimancerAbility.asset
+    name: New AnimancerAbility
+    type: BaseTree
+    locked: 0
+  - guid: c60da547901f8bf41adac56b8c7b80f6
+    path: Assets/Test/TestAbility.asset
+    name: New AnimancerAbility
+    type: BaseTree
+    locked: 0
+  - guid: b1c7021328d04cc41895d39059ebbf0f
+    path: Assets/Test/TestAbility1.asset
+    name: TestAbility1
+    type: BaseTree
+    locked: 0
+  - guid: 0ab98feaed7efce4da6194638d742950
+    path: Assets/Test/New UnityTimelineTree.asset
+    name: New UnityTimelineTree
+    type: BaseTree
+    locked: 0
+  - guid: 4f9ba3d931f5d5546a772fcc74534347
+    path: Assets/Test/Test.asset
+    name: Test
+    type: BaseTree
+    locked: 0
+  FolderInfos:
+  - path: Assets
+    expanded: 1
+  - path: Assets/Resources
+    expanded: 0
+  - path: Assets/Test
+    expanded: 0
+  ShowInfos:
+  - type: BaseTree
+    show: 1
