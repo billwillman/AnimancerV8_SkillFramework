@@ -138,5 +138,23 @@ namespace UnityTimeline
                 return animator.transform.rotation.eulerAngles;
             return Vector3.zero;
         }
+
+        public void SetWorldPosition(Vector3 position)
+        {
+            if (m_State == null || !m_State.IsValid)
+                return;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                animator.transform.position = position;
+        }
+
+        public void SetWorldRotation(Vector3 eulerAngles)
+        {
+            if (m_State == null || !m_State.IsValid)
+                return;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                animator.transform.rotation = Quaternion.Euler(eulerAngles);
+        }
     }
 }
