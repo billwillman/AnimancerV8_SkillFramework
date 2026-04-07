@@ -1,4 +1,5 @@
 using Animancer;
+using UnityEngine;
 using UnityEngine.Playables;
 
 namespace UnityTimeline
@@ -96,6 +97,46 @@ namespace UnityTimeline
             var animator = m_State.Layer.Graph?.Component?.Animator;
             if (animator != null)
                 animator.applyRootMotion = enable;
+        }
+
+        public Vector3 GetRootMotionDeltaPosition()
+        {
+            if (m_State == null || !m_State.IsValid)
+                return Vector3.zero;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                return animator.deltaPosition;
+            return Vector3.zero;
+        }
+
+        public Vector3 GetRootMotionDeltaRotation()
+        {
+            if (m_State == null || !m_State.IsValid)
+                return Vector3.zero;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                return animator.deltaRotation.eulerAngles;
+            return Vector3.zero;
+        }
+
+        public Vector3 GetWorldPosition()
+        {
+            if (m_State == null || !m_State.IsValid)
+                return Vector3.zero;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                return animator.transform.position;
+            return Vector3.zero;
+        }
+
+        public Vector3 GetWorldRotation()
+        {
+            if (m_State == null || !m_State.IsValid)
+                return Vector3.zero;
+            var animator = m_State.Layer.Root?.Component?.Animator;
+            if (animator != null)
+                return animator.transform.rotation.eulerAngles;
+            return Vector3.zero;
         }
     }
 }

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace UnityTimeline
 {
     /// <summary>
@@ -16,5 +18,9 @@ namespace UnityTimeline
         void SetTrackEnabled(int trackIndex, bool enabled);
         bool IsTrackEnabled(int trackIndex);
         void SetRootMotionEnabled(bool enable);
+        Vector3 GetRootMotionDeltaPosition();
+        Vector3 GetRootMotionDeltaRotation();
+        Vector3 GetWorldPosition();
+        Vector3 GetWorldRotation();
     }
 }
