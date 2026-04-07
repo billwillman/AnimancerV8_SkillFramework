@@ -25,6 +25,7 @@ namespace UnityTimeline
                 m_WorldRotation.Value = Vector3.zero;
                 return;
             }
+
             m_WorldPosition.Value = Controller.GetWorldPosition();
             m_WorldRotation.Value = Controller.GetWorldRotation();
         }

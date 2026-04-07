@@ -22,5 +22,7 @@ namespace UnityTimeline
         Vector3 GetRootMotionDeltaRotation();
         Vector3 GetWorldPosition();
         Vector3 GetWorldRotation();
+        void SetWorldPosition(Vector3 position);
+        void SetWorldRotation(Vector3 eulerAngles);
     }
 }

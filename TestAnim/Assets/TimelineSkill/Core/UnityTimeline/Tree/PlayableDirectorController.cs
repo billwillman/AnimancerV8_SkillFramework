@@ -134,5 +134,17 @@ namespace UnityTimeline
                 return m_Director.transform.rotation.eulerAngles;
             return Vector3.zero;
         }
+
+        public void SetWorldPosition(Vector3 position)
+        {
+            if (m_Director != null)
+                m_Director.transform.position = position;
+        }
+
+        public void SetWorldRotation(Vector3 eulerAngles)
+        {
+            if (m_Director != null)
+                m_Director.transform.rotation = Quaternion.Euler(eulerAngles);
+        }
     }
 }
