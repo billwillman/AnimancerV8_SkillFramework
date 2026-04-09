@@ -156,5 +156,30 @@ namespace UnityTimeline
             if (animator != null)
                 animator.transform.rotation = Quaternion.Euler(eulerAngles);
         }
+
+        /// <summary>
+        /// Seek 到指定时间点，并自动使用 TimelineRedirectRootMotion 补偿 RootMotion 跳变。
+        /// </summary>
+        public void Seek(double time)
+        {
+            if (m_State == null || !m_State.IsValid())
+                return;
+
+            // 1. 尝试获取 TimelineRedirectRootMotion 进行补偿
+            var animator = m_State.Layer.Graph?.Component?.Animator;
+            if (animator != null)
+            {
+                var redirect = animator.GetComponent<TimelineRedirectRootMotion>();
+                if (redirect != null && redirect.Target != null)
+                {
+                    var pos = redirect.Target.position;
+                    var rotEuler = redirect.Target.rotation.eulerAngles;
+                    redirect.SetCompensation(pos, rotEuler);
+                }
+            }
+
+            // 2. 执行 Seek
+            m_State.TimeD = time;
+        }
     }
 }

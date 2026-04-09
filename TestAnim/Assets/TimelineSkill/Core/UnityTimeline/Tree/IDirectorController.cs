@@ -24,5 +24,9 @@ namespace UnityTimeline
         Vector3 GetWorldRotation();
         void SetWorldPosition(Vector3 position);
         void SetWorldRotation(Vector3 eulerAngles);
+        /// <summary>
+        /// Seek 到指定时间点，并自动使用 TimelineRedirectRootMotion 补偿 RootMotion 跳变。
+        /// </summary>
+        void Seek(double time);
     }
 }

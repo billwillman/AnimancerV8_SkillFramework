@@ -13,7 +13,7 @@ namespace UnityTimeline
         protected override void DoAction()
         {
             if (Controller?.IsValid == true)
-                Controller.time = m_TargetTime.Value;
+                Controller.Seek(m_TargetTime.Value);
         }
     }
 }

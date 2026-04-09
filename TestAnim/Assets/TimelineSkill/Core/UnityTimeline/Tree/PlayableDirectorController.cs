@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -145,6 +146,26 @@ namespace UnityTimeline
         {
             if (m_Director != null)
                 m_Director.transform.rotation = Quaternion.Euler(eulerAngles);
+        }
+
+        /// <summary>
+        /// Seek 到指定时间点，并自动使用 TimelineRedirectRootMotion 补偿 RootMotion 跳变。
+        /// </summary>
+        public void Seek(double time)
+        {
+            if (m_Director == null) return;
+
+            // 1. 记录当前位置/旋转作为补偿基线
+            var redirect = m_Director.GetComponent<TimelineRedirectRootMotion>();
+            if (redirect != null && redirect.Target != null)
+            {
+                var pos = redirect.Target.position;
+                var rotEuler = redirect.Target.rotation.eulerAngles;
+                redirect.SetCompensation(pos, rotEuler);
+            }
+
+            // 2. 执行 Seek
+            m_Director.time = time;
         }
     }
 }
