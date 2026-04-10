@@ -5,7 +5,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 using XLua;
 #if UNITY_WEIXINMINIGAME
@@ -72,7 +71,7 @@ namespace SOC.GamePlay
 
         void InitLuaSearchFormatPath() {
             string luaSearchPath = string.Empty;
-#if !UNITY_WEIXINMINIGAME // Î¢ÐÅÐ¡ÓÎÏ·²»Òª´Ó¿ÉÐ´Ä¿Â¼¶ÁÈ¡
+#if !UNITY_WEIXINMINIGAME // Î¢ï¿½ï¿½Ð¡ï¿½ï¿½Ï·ï¿½ï¿½Òªï¿½Ó¿ï¿½Ð´Ä¿Â¼ï¿½ï¿½È¡
             if (IsDS) {
                 luaSearchPath = Application.dataPath + "/Lua/{0}.lua.bytes";
             } else {
@@ -98,7 +97,7 @@ namespace SOC.GamePlay
                 OnInit();
             } else {
 #if UNITY_EDITOR
-                // ±à¼­Æ÷Ä£Ê½Ò»¶¨»á³É¹¦
+                // ï¿½à¼­ï¿½ï¿½Ä£Ê½Ò»ï¿½ï¿½ï¿½ï¿½É¹ï¿½
                 OnInit();
 #endif
             }
@@ -120,7 +119,7 @@ namespace SOC.GamePlay
 #if !UNITY_WEIXINMINIGAME
             if (IsDS) {
 #if !UNITY_EDITOR
-                // DS²ÅÄÜ²Å´æ´¢
+                // DSï¿½ï¿½ï¿½Ü²Å´æ´¢
                 m_LogFileWriter = new LogFileWriter("dsRuntimeLog", m_DS_OutputOldLogHandle);
                 m_LogFileWriter.IsLogWriteAsync = m_LogWriteAsync;
 #endif
@@ -133,16 +132,16 @@ namespace SOC.GamePlay
 #endif
         }
 
-        // ³õÊ¼»¯Lua»·¾³
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Luaï¿½ï¿½ï¿½ï¿½
         void InitLuaEnv() {
-            // 1.³õÊ¼»¯Lua»·¾³
+            // 1.ï¿½ï¿½Ê¼ï¿½ï¿½Luaï¿½ï¿½ï¿½ï¿½
             m_LuaEnv = new LuaEnv();
-            m_LuaEnv.AddBuildin("rapidjson", XLua.LuaDLL.Lua.LoadRapidJson); // ×¢²árapidjson¿â
+            m_LuaEnv.AddBuildin("rapidjson", XLua.LuaDLL.Lua.LoadRapidJson); // ×¢ï¿½ï¿½rapidjsonï¿½ï¿½
             m_LuaEnv.AddBuildin("lpeg", XLua.LuaDLL.Lua.LoadLpeg);
             m_LuaEnv.AddBuildin("pb", XLua.LuaDLL.Lua.LoadLuaProfobuf);
             m_LuaEnv.AddBuildin("ffi", XLua.LuaDLL.Lua.LoadFFI);
             m_LuaEnv.AddLoader(m_LuaLoaderCallBack);
-            // 2.µ÷ÓÃLua Èë¿Úº¯Êý
+            // 2.ï¿½ï¿½ï¿½ï¿½Lua ï¿½ï¿½Úºï¿½ï¿½ï¿½
             Lua_DoMain();
         }
 
@@ -166,14 +165,14 @@ namespace SOC.GamePlay
         }
 
         [XLua.Hotfix]
-        // ³õÊ¼»¯NetCodeµÄLuaÈ«¾Ö±äÁ¿
+        // ï¿½ï¿½Ê¼ï¿½ï¿½NetCodeï¿½ï¿½LuaÈ«ï¿½Ö±ï¿½ï¿½ï¿½
         void InitNetCodeLuaGlobalVars(LuaTable _MOE) {
 #if UNITY_EDITOR
             _MOE.Set<string, bool>("IsEditor", true);
 #else
             _MOE.Set<string, bool>("IsEditor", false);
 #endif
-            _MOE.Set<string, bool>("IsDS", IsDS); // ÊÇ·ñÊÇDS 
+            _MOE.Set<string, bool>("IsDS", IsDS); // ï¿½Ç·ï¿½ï¿½ï¿½DS 
             _MOE.Set<string, int>("Platform", (int)Application.platform); // Æ½Ì¨
         }
 
@@ -184,7 +183,7 @@ namespace SOC.GamePlay
 
         void Lua_DoMain() {
             if (m_LuaEnv != null) {
-                // ÓÅÏÈ¼ÓÔØPreload.lua
+                // ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½Preload.lua
                 ResourceMgr.Instance.LoadTextAsync("Resources/@Lua/Preload.lua.bytes", (float process, bool isDone, TextAsset text) =>
                 {
                     if (isDone)
@@ -219,7 +218,7 @@ namespace SOC.GamePlay
                             }
                             m_LuaUpdateFunc = m_LuaEnv.Global.Get<LuaFunction>("Update");
 
-                            // ÓÎÏ·ÕýÊ½¿ªÊ¼
+                            // ï¿½ï¿½Ï·ï¿½ï¿½Ê½ï¿½ï¿½Ê¼
                             OnGameStartFinish();
                         }
                     }
@@ -267,7 +266,7 @@ namespace SOC.GamePlay
                 m_LuaEnv = null;
             }
 
-            // ÈÕÖ¾Ð´ÈëÎÄ¼þ
+            // ï¿½ï¿½Ö¾Ð´ï¿½ï¿½ï¿½Ä¼ï¿½
             if (m_LogFileWriter != null) {
                 m_LogFileWriter.Dispose();
                 m_LogFileWriter = null;
