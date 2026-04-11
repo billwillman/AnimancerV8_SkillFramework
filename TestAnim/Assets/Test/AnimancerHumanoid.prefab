@@ -848,6 +848,9 @@ GameObject:
   - component: {fileID: 3038115909774745899}
   - component: {fileID: 6544884840451181764}
   - component: {fileID: 6312214591249011489}
+  - component: {fileID: 1928452201555843657}
+  - component: {fileID: 7145932084270454761}
+  - component: {fileID: 3686670887175550877}
   m_Layer: 0
   m_Name: AnimancerHumanoid
   m_TagString: Untagged
@@ -876,7 +879,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &850916409932638558
 Animator:
-  serializedVersion: 7
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -887,10 +890,9 @@ Animator:
   m_Controller: {fileID: 0}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -937,6 +939,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8226d6495a0f9d7468c7d6af9828ad36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1928452201555843657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d423ee08f0ad945a95bff61102dfb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Animator: {fileID: 850916409932638558}
+  _Target: {fileID: 8324445866627421015}
+  m_CompensationPosition: {x: 0, y: 0, z: 0}
+  m_CompensationRotationEuler: {x: 0, y: 0, z: 0}
+--- !u!114 &7145932084270454761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ec6d520191e1f4c90638dfcea48ce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LuaPath: 
+  SelfTarget: {fileID: 0}
+  CustomLuaFunctionName: []
+  bInitCustomLuaFunctionInStart: 0
+--- !u!114 &3686670887175550877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f1ca4c0ef214e64792b81a5eeb57cbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 0}
+    m_Events: []
+  m_LuaEvents:
+    m_Signals: []
+    m_LuaEventNames: []
 --- !u!1 &3964589535328920568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1212,8 +1265,6 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2179,8 +2230,6 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

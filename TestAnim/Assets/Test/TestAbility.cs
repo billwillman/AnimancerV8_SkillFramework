@@ -25,4 +25,12 @@ public class TestAbility : MonoBehaviour
             }
         }
     }
+
+    public void OnTestSignal() {
+        Debug.Log("OnTestSignal OnTestSignal OnTestSignal OnTestSignal");
+    }
+
+    public void OnTestSignal1() {
+        Debug.Log("OnTestSignal1 OnTestSignal1 OnTestSignal1 OnTestSignal1 OnTestSignal1");
+    }
 }
