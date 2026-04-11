@@ -7,7 +7,7 @@ using UnityEngine.Timeline;
 
 public static class AnimancerUnityTimelineExtend
 {
-    private static void ApplyPlayableAssetState(PlayableAssetState state) {
+    private static void ApplyPlayableAssetState(PlayableAssetState state, bool bindSignal = false) {
         if (state == null || state.Graph == null || state.Graph.Component == null)
             return;
         /*
@@ -37,9 +37,40 @@ public static class AnimancerUnityTimelineExtend
             }
             tempPlayableBehaviour.Clear();
         }
+
+        // 按需注册 Signal Receiver
+        if (bindSignal)
+            RegisterSignalReceiverForAnimancer(state, gameObj);
     }
 
-    public static AnimancerState PlayTimeline(this AnimancerComponent component, ITransition asset, float fadeDuration, FadeMode mode = default) { 
+    /// <summary>
+    /// 在 PlayableAssetState 初始化完成后，将 TimelineEventLuaReceiver 注册到 PlayableGraph 的通知输出中。
+    /// 解决通过 Animacer 播放 Timeline 时 Signal Receiver 不响应的问题。
+    /// </summary>
+    private static void RegisterSignalReceiverForAnimancer(PlayableAssetState state, GameObject gameObject)
+    {
+        if (state == null || !state.IsValid() || state.Graph == null)
+            return;
+
+        var signalReceiver = gameObject.GetComponentInChildren<SOC.GamePlay.TimelineEventLuaReceiver>();
+        if (signalReceiver == null)
+            return;
+
+        var graph = state.Graph.PlayableGraph;
+        var outputCount = graph.GetOutputCount();
+        for (int i = 0; i < outputCount; i++)
+        {
+            var output = graph.GetOutput(i);
+            if (output.IsPlayableOutputOfType<ScriptPlayableOutput>())
+            {
+                var scriptOutput = (ScriptPlayableOutput)output;
+                scriptOutput.RemoveNotificationReceiver<ScriptPlayableOutput>(signalReceiver);
+                scriptOutput.AddNotificationReceiver(signalReceiver);
+            }
+        }
+    }
+
+    public static AnimancerState PlayTimeline(this AnimancerComponent component, ITransition asset, float fadeDuration, FadeMode mode = default, bool bindSignal = false) {
         if (asset == null)
             return null;
         AnimancerState temp;
@@ -47,11 +78,11 @@ public static class AnimancerUnityTimelineExtend
             return component.Play(temp, fadeDuration, mode);
         }
         PlayableAssetState state = component.Play(asset, fadeDuration, mode) as PlayableAssetState;
-        ApplyPlayableAssetState(state);
+        ApplyPlayableAssetState(state, bindSignal);
         return state;
     }
 
-    public static AnimancerState PlayTimeline(this AnimancerComponent component, ITransition asset) {
+    public static AnimancerState PlayTimeline(this AnimancerComponent component, ITransition asset, bool bindSignal = false) {
         if (asset == null)
             return null;
         AnimancerState temp;
@@ -59,7 +90,7 @@ public static class AnimancerUnityTimelineExtend
             return component.Play(temp, asset.FadeDuration, asset.FadeMode);
         }
         PlayableAssetState state = component.Play(asset) as PlayableAssetState;
-        ApplyPlayableAssetState(state);
+        ApplyPlayableAssetState(state, bindSignal);
         return state;
     }
 }

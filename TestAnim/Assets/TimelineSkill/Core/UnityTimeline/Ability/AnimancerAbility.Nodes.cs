@@ -138,6 +138,9 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     [SerializeField, PropertyPort(PortDirection.Input, "FadeDuration")]
     protected FloatPropertyPort m_FadeDuration = new FloatPropertyPort() { Value = 0.25f };
 
+    [SerializeField, PropertyPort(PortDirection.Input, "BindSignal")]
+    protected BoolPropertyPort m_BindSignal = new BoolPropertyPort() { Value = false };
+
     [SerializeField, PropertyPort(PortDirection.Output, "AnimancerState"), TreeDesigner.ReadOnly]
     protected AnimancerStatePropertyPort m_AnimancerState = new AnimancerStatePropertyPort();
 
@@ -176,7 +179,7 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     {
         if (Animancer != null)
         {
-            AnimancerState state = Animancer.PlayTimeline(m_TimelineAsset, m_FadeDuration.Value);
+            AnimancerState state = Animancer.PlayTimeline(m_TimelineAsset, m_FadeDuration.Value, default, m_BindSignal.Value);
             m_AnimancerState.Value = state;
 
             if (state != null && m_Child != null)
