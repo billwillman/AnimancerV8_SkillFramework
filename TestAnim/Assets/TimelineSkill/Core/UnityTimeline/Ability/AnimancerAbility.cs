@@ -3,7 +3,7 @@ using UnityEngine;
 using TreeDesigner;
 using Taco.Gameplay;
 using Animancer;
-using ECM2;
+using EasyCharacterMovement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

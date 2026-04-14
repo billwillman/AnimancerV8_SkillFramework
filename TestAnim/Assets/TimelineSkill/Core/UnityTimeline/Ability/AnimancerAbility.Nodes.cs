@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using TreeDesigner;
 using Animancer;
-using ECM2;
+using EasyCharacterMovement;
 
 #if UNITY_EDITOR
 using UnityEditor;

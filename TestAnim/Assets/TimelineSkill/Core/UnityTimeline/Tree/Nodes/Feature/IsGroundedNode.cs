@@ -1,6 +1,6 @@
 using UnityEngine;
 using TreeDesigner;
-using ECM2;
+using EasyCharacterMovement;
 
 namespace UnityTimeline
 {
