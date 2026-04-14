@@ -3,6 +3,7 @@ using UnityEngine;
 using TreeDesigner;
 using Taco.Gameplay;
 using Animancer;
+using ECM2;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -32,6 +33,24 @@ public partial class AnimancerAbility : OneRootTree
 
     public AnimancerAbilityAgent Runner { get; private set; }
     public AnimancerComponent AnimancerComponent { get; set; }
+
+    /// <summary>
+    /// 缓存的 ECM2 Character 组件，首次访问时从 User 上 GetComponent 并缓存
+    /// </summary>
+    private Character m_Character;
+    public Character Character
+    {
+        get
+        {
+            if (m_Character == null)
+            {
+                var userComponent = User as UnityEngine.Component;
+                if (userComponent != null)
+                    m_Character = userComponent.GetComponent<Character>();
+            }
+            return m_Character;
+        }
+    }
 
     protected BoolExposedProperty m_Active;
     public bool Active => m_Active.Value;
@@ -66,6 +85,7 @@ public partial class AnimancerAbility : OneRootTree
         base.DisposeTree();
         m_OnStart = null;
         m_OnStop = null;
+        m_Character = null;
     }
 
     public override void OnReset()

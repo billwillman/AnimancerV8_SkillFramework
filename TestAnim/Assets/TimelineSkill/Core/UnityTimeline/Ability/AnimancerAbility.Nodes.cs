@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using TreeDesigner;
 using Animancer;
+using ECM2;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,6 +16,11 @@ public abstract class AnimancerAbilityActionNode : ActionNode
     public AnimancerAbility AnimancerAbility => Owner as AnimancerAbility;
     public AnimancerComponent Animancer => (Owner as AnimancerAbility)?.AnimancerComponent;
 
+    /// <summary>
+    /// 返回 AnimancerAbility 上缓存的 ECM2 Character 组件
+    /// </summary>
+    protected Character GetCharacter() => (Owner as AnimancerAbility)?.Character;
+
     protected override void OnStart()
     {
         if (!AnimancerAbility)
@@ -27,6 +33,7 @@ public abstract class AnimancerAbilityActionNode : ActionNode
         }
     }
 }
+
 
 /// <summary>
 /// AnimancerAbility 的 Value 节点基类，提供 AnimancerComponent 访问 + DoOuput 模式
