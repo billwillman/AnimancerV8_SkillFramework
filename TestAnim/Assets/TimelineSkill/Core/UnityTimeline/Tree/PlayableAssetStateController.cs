@@ -175,8 +175,18 @@ namespace UnityTimeline
                     var pos = redirect.Target.position;
                     var rotEuler = redirect.Target.rotation.eulerAngles;
                     redirect.SetCompensation(pos, rotEuler);
+                } else
+                {
+                    var redirect1 = animator.GetComponent<TimelineRigBodyRedirectRootMotion>();
+                    if (redirect1 != null && redirect1.Target != null)
+                    {
+                        var pos = redirect1.Target.position;
+                        var rotEuler = redirect1.Target.rotation.eulerAngles;
+                        redirect1.SetCompensation(pos, rotEuler);
+                    }
                 }
             }
+        }
 
             // 2. 执行 Seek
             m_State.TimeD = time;
