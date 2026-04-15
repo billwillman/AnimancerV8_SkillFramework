@@ -186,7 +186,6 @@ namespace UnityTimeline
                     }
                 }
             }
-        }
 
             // 2. 执行 Seek
             m_State.TimeD = time;
