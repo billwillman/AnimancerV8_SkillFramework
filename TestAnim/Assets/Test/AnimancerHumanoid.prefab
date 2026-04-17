@@ -848,9 +848,13 @@ GameObject:
   - component: {fileID: 3038115909774745899}
   - component: {fileID: 6544884840451181764}
   - component: {fileID: 6312214591249011489}
-  - component: {fileID: 1928452201555843657}
   - component: {fileID: 7145932084270454761}
   - component: {fileID: 3686670887175550877}
+  - component: {fileID: 3818720151339239566}
+  - component: {fileID: 5288227714973423221}
+  - component: {fileID: 7560577995958784970}
+  - component: {fileID: 7209191922876202321}
+  - component: {fileID: 8401722227860309064}
   m_Layer: 0
   m_Name: AnimancerHumanoid
   m_TagString: Untagged
@@ -939,22 +943,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8226d6495a0f9d7468c7d6af9828ad36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1928452201555843657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3715757545408869645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01d423ee08f0ad945a95bff61102dfb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Animator: {fileID: 850916409932638558}
-  _Target: {fileID: 8324445866627421015}
-  m_CompensationPosition: {x: 0, y: 0, z: 0}
-  m_CompensationRotationEuler: {x: 0, y: 0, z: 0}
 --- !u!114 &7145932084270454761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,6 +978,172 @@ MonoBehaviour:
   m_LuaEvents:
     m_Signals: []
     m_LuaEventNames: []
+--- !u!54 &3818720151339239566
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!136 &5288227714973423221
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &7560577995958784970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a5e05c5b0509214d911dd005a610d9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _planeConstraint: 0
+  _rootTransform: {fileID: 0}
+  _rootTransformOffset: {x: 0, y: 0, z: 0}
+  _radius: 0.5
+  _height: 2
+  _slopeLimit: 45
+  _stepOffset: 0.45
+  _perchOffset: 0.5
+  _perchAdditionalHeight: 0.4
+  _slopeLimitOverride: 0
+  _useFlatTop: 0
+  _useFlatBaseForGroundChecks: 0
+  _collisionLayers:
+    serializedVersion: 2
+    m_Bits: 1
+  _triggerInteraction: 1
+  _advanced:
+    minMoveDistance: 0
+    maxMovementIterations: 5
+    maxDepenetrationIterations: 1
+    enablePhysicsInteraction: 0
+    allowPushCharacters: 0
+    impartPlatformMovement: 0
+    impartPlatformRotation: 0
+    impartPlatformVelocity: 0
+  _minSlopeLimit: 0.7069833
+--- !u!114 &7209191922876202321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd6cd1fc55cb247bf243284c3a3964, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _inputActions: {fileID: 0}
+  _rotationMode: 1
+  _rotationRate: 540
+  _defaultMovementMode: 1
+  _maxWalkSpeed: 6
+  _minAnalogWalkSpeed: 0
+  _maxAcceleration: 20
+  _brakingDecelerationWalking: 20
+  _groundFriction: 8
+  _maxFallSpeed: 40
+  _brakingDecelerationFalling: 0
+  _fallingLateralFriction: 0.3
+  _airControl: 0.3
+  _maxFlySpeed: 10
+  _brakingDecelerationFlying: 0
+  _flyingFriction: 0.5
+  _canEverSwim: 1
+  _maxSwimSpeed: 3
+  _brakingDecelerationSwimming: 0
+  _swimmingFriction: 0.5
+  _buoyancy: 1
+  _useSeparateBrakingFriction: 0
+  _brakingFriction: 0
+  _canEverSprint: 1
+  _sprintSpeedModifier: 1.5
+  _sprintAccelerationModifier: 1
+  _canEverCrouch: 1
+  _unCrouchedHeight: 2
+  _crouchedHeight: 1.25
+  _crouchingSpeedModifier: 0.5
+  _canEverJump: 1
+  _jumpWhileCrouching: 0
+  _jumpMaxCount: 1
+  _jumpImpulse: 6
+  _jumpMaxHoldTime: 0.35
+  _jumpPreGroundedTime: 0.15
+  _jumpPostGroundedTime: 0.15
+  _gravity: {x: 0, y: -9.81, z: 0}
+  _gravityScale: 1
+  _useRootMotion: 1
+  _impartPlatformMovement: 0
+  _impartPlatformRotation: 0
+  _impartPlatformVelocity: 0
+  _enablePhysicsInteraction: 0
+  _applyPushForceToCharacters: 0
+  _applyStandingDownwardForce: 0
+  _mass: 1
+  _pushForceScale: 1
+  _standingDownwardForceScale: 1
+  _camera: {fileID: 0}
+--- !u!114 &8401722227860309064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715757545408869645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dd1b46bb3ca7a4459b4ab9665618c04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Animator: {fileID: 850916409932638558}
+  _Target: {fileID: 3818720151339239566}
+  m_CompensationPosition: {x: 0, y: 0, z: 0}
+  m_CompensationRotationEuler: {x: 0, y: 0, z: 0}
 --- !u!1 &3964589535328920568
 GameObject:
   m_ObjectHideFlags: 0
