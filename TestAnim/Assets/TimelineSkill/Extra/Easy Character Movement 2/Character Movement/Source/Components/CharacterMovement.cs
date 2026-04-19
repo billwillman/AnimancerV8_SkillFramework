@@ -4617,6 +4617,7 @@ namespace EasyCharacterMovement
             Vector3 deltPosition = updatedPosition - oldPosition;
 
             ///Taco
+            if (modifyDeltaPositionCallback != null)
             {
                 modifyDeltaPositionCallback.Invoke(ref deltPosition);
             }
