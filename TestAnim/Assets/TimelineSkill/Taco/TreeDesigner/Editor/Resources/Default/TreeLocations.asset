@@ -179,8 +179,8 @@ MonoBehaviour:
     type: BaseTree
     locked: 0
   - guid: 0cb6d73baa7f73e4b895155e35e3aa66
-    path: Assets/Resources/Character/hero_human_boss/@SkillAbility/Idle.asset
-    name: Idle
+    path: Assets/Resources/Character/hero_human_boss/@SkillAbility/LoomLocation.asset
+    name: LoomLocation
     type: BaseTree
     locked: 0
   FolderInfos:

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 524468131c598cd4897d4cb756df0fba, type: 3}
-  m_Name: Idle
+  m_Name: LoomLocation
   m_EditorClassIdentifier: 
   m_Nodes:
   - rid: 5521189289354330112
@@ -43,7 +43,8 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Block
       Abilities With Tag
   ActiveTags:
-    TagGuids: []
+    TagGuids:
+    - c0838831-7c20-4635-b100-0e37146b0207
     ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Active
       Tags
   RequiredTags:
@@ -121,7 +122,7 @@ MonoBehaviour:
         m_Position: {x: 215, y: 204}
         m_InputEdgeGUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
         m_OutputEdgeGUID: 
-        m_TransitionAsset: {fileID: 0}
+        m_TransitionAsset: {fileID: 11400000, guid: ae765c55bb518c94e85126f094bc7918, type: 2}
         m_FadeDuration:
           m_Name: m_FadeDuration
           m_Direction: 0
