@@ -14,6 +14,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     [SerializeField]
     private List<AnimancerAbility> m_Abilities = new List<AnimancerAbility>();
 
+    [SerializeField]
+    private AnimancerAbility m_DefaultAbility;
+
     public AnimancerAbilityAgent AnimancerAbilityAgent { get; set; }
 
     public AnimancerComponent AnimancerComponent { get; private set; }
@@ -48,6 +51,10 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                 AnimancerAbilityAgent.AddAbility(m_Abilities[i]);
             }
         }
+        // 启动时自动播放 DefaultAbility
+        if (m_DefaultAbility != null)
+            AnimancerAbilityAgent.TryStartAbility(m_DefaultAbility.name);
+
         // Ability都准备好了
         m_IsReady = true;
         if (OnAbilityReady != null)
