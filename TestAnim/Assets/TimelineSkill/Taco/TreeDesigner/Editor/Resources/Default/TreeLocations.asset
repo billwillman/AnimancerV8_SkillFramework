@@ -178,12 +178,23 @@ MonoBehaviour:
     name: Test
     type: BaseTree
     locked: 0
+  - guid: 0cb6d73baa7f73e4b895155e35e3aa66
+    path: Assets/Resources/Character/hero_human_boss/@SkillAbility/Idle.asset
+    name: Idle
+    type: BaseTree
+    locked: 0
   FolderInfos:
   - path: Assets
     expanded: 1
   - path: Assets/Resources
     expanded: 0
   - path: Assets/Test
+    expanded: 0
+  - path: Assets/Resources/Character
+    expanded: 0
+  - path: Assets/Resources/Character/hero_human_boss
+    expanded: 0
+  - path: Assets/Resources/Character/hero_human_boss/@SkillAbility
     expanded: 0
   ShowInfos:
   - type: BaseTree

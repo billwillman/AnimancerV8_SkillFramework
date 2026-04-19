@@ -13,8 +13,28 @@ MonoBehaviour:
   m_Name: GameplayTagData
   m_EditorClassIdentifier: 
   m_GameplayTagInfos:
-  - Name: Idle
-    Guid: 923cd469-92ca-4300-a33a-8508b6296a18
+  - Name: Attack
+    Guid: bc3f013c-4453-410a-8e0b-5c61b9dc3a52
+    Expanded: 1
+    Multi: 0
+    Reference: []
+  - Name: LoomLocation
+    Guid: c0838831-7c20-4635-b100-0e37146b0207
+    Expanded: 0
+    Multi: 0
+    Reference: []
+  - Name: LoomLocation.Idle
+    Guid: b290e005-e571-4109-91d1-d5cb7eac019d
+    Expanded: 1
+    Multi: 0
+    Reference: []
+  - Name: LoomLocation.Run
+    Guid: 3dbae85b-a702-4eee-9ad5-4d4844869b24
+    Expanded: 1
+    Multi: 0
+    Reference: []
+  - Name: LoomLocation.Walk
+    Guid: ff985791-c189-4795-ad61-6b6f88dc7609
     Expanded: 1
     Multi: 0
     Reference: []
