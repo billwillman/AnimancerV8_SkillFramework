@@ -24,6 +24,13 @@ public class AnimancerAbilityLinkerEditor : Editor
 
         EditorGUILayout.Space(4);
 
+        // 运行时不显示 DefaultAbility 配置
+        if (Application.isPlaying)
+        {
+            serializedObject.ApplyModifiedProperties();
+            return;
+        }
+
         // 收集当前 m_Abilities 中所有非空项
         var validAbilities = new List<AnimancerAbility>();
         for (int i = 0; i < m_AbilitiesProp.arraySize; i++)
