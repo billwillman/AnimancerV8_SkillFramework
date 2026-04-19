@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Header
+    UnityVersion="2017.4.3f1" />
+  <Events>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":10332,"Volume":0.1}]}</stringParameter>
+      <time>0.3227696</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":23222,"Volume":0.9}]}</stringParameter>
+      <time>0.3473105</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":23909,"Volume":0.3}]}</stringParameter>
+      <time>0.6449882</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":11210,"Volume":0.3}]}</stringParameter>
+      <time>0.7561761</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":22742,"Volume":0.6}]}</stringParameter>
+      <time>1.664283</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":23126,"Volume":0.5}]}</stringParameter>
+      <time>2.091435</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":23507,"Volume":0.3}]}</stringParameter>
+      <time>2.202623</time>
+    </Event>
+  </Events>
+</Document>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Header
+    UnityVersion="2017.4.3f1" />
+  <Events>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":10323,"Volume":0.3}]}</stringParameter>
+      <time>0.0008883254</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":23217,"Volume":0.9}]}</stringParameter>
+      <time>0.2333335</time>
+    </Event>
+  </Events>
+</Document>

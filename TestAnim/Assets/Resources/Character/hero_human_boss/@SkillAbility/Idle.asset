@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 524468131c598cd4897d4cb756df0fba, type: 3}
+  m_Name: Idle
+  m_EditorClassIdentifier: 
+  m_Nodes:
+  - rid: 5521189289354330112
+  - rid: 5521189289354330113
+  - rid: 5521189289354330114
+  - rid: 5521189289354330117
+  m_Edges:
+  - m_GUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
+    m_StartNodeGUID: cabfb2ef-fb7c-424a-9c0e-de2a4245c8a7
+    m_EndNodeGUID: de8058b5-f0fc-4cad-a81d-2f5fb70798a4
+    m_StartPortName: Output
+    m_EndPortName: Input
+  m_PropertyEdges: []
+  m_ExposedProperties:
+  - rid: 5521189289354330115
+  - rid: 5521189289354330116
+  m_NodeGroups: []
+  m_StackNodes: []
+  m_RootGUID: e9f0f733-f532-4718-b077-cde02e667b95
+  AbilityTags:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Ability
+      Tags
+  CancelAbilitiesWithTag:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Cancel
+      Abilities With Tag
+  BlockAbilitiesWithTag:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Block
+      Abilities With Tag
+  ActiveTags:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Active
+      Tags
+  RequiredTags:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Required
+      Tags
+  m_OnStartGUID: cabfb2ef-fb7c-424a-9c0e-de2a4245c8a7
+  m_OnStopGUID: bca6228b-6cdf-437e-9a60-439bfa92dcf3
+  references:
+    version: 2
+    RefIds:
+    - rid: 5521189289354330112
+      type: {class: RootNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: e9f0f733-f532-4718-b077-cde02e667b95
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 0}
+        m_DeltaTime:
+          m_Name: m_DeltaTime
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+        m_OutputEdgeGUID: 
+        DeltaTime: 0
+    - rid: 5521189289354330113
+      type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: cabfb2ef-fb7c-424a-9c0e-de2a4245c8a7
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 200}
+        m_OutputEdgeGUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
+        NodeName: OnStart
+    - rid: 5521189289354330114
+      type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: bca6228b-6cdf-437e-9a60-439bfa92dcf3
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 400}
+        m_OutputEdgeGUID: 
+        NodeName: OnStop
+    - rid: 5521189289354330115
+      type: {class: BoolExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 2dff0524-7856-4d07-abc6-4a6704b7ade9
+        m_Name: Active
+        m_Index: 0
+        m_Expanded: 1
+        m_Internal: 1
+        m_ShowOutside: 1
+        m_CanEdit: 0
+        m_Value: 0
+    - rid: 5521189289354330116
+      type: {class: FloatExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: a29518a0-25fb-4ef7-b329-07755678534e
+        m_Name: Duration
+        m_Index: 1
+        m_Expanded: 1
+        m_Internal: 1
+        m_ShowOutside: 1
+        m_CanEdit: 0
+        m_Value: 0
+    - rid: 5521189289354330117
+      type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: de8058b5-f0fc-4cad-a81d-2f5fb70798a4
+        m_Expanded: 1
+        m_ShowPanel: 1
+        m_Position: {x: 215, y: 204}
+        m_InputEdgeGUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
+        m_OutputEdgeGUID: 
+        m_TransitionAsset: {fileID: 0}
+        m_FadeDuration:
+          m_Name: m_FadeDuration
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0.25
+        m_Speed:
+          m_Name: m_Speed
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: 1
+        m_AnimancerState:
+          m_Name: m_AnimancerState
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0

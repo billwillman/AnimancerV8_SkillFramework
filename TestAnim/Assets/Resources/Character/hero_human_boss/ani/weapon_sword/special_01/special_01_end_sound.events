@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Header
+    UnityVersion="2017.4.3f1" />
+  <Events>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":10091,"Volume":0.2}]}</stringParameter>
+      <time>0.5151811</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":10332,"Volume":0.12}]}</stringParameter>
+      <time>0.5336722</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":10333,"Volume":0.2}]}</stringParameter>
+      <time>0.5925354</time>
+    </Event>
+    <Event>
+      <floatParameter>0</floatParameter>
+      <functionName>OnAnimationSound</functionName>
+      <intParameter>100</intParameter>
+      <messageOptions>0</messageOptions>
+      <objectReferenceParameterPath />
+      <stringParameter>{"Clips":[{"ID":22743,"Volume":0.5}]}</stringParameter>
+      <time>1.098143</time>
+    </Event>
+  </Events>
+</Document>

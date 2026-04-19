@@ -850,11 +850,11 @@ GameObject:
   - component: {fileID: 6312214591249011489}
   - component: {fileID: 7145932084270454761}
   - component: {fileID: 3686670887175550877}
-  - component: {fileID: 1562909462780636064}
-  - component: {fileID: 3580007393314268436}
-  - component: {fileID: 4209280280851369243}
-  - component: {fileID: 6392644069412538798}
-  - component: {fileID: 4334063317052876309}
+  - component: {fileID: 3818720151339239566}
+  - component: {fileID: 5288227714973423221}
+  - component: {fileID: 7560577995958784970}
+  - component: {fileID: 7209191922876202321}
+  - component: {fileID: 8401722227860309064}
   m_Layer: 0
   m_Name: AnimancerHumanoid
   m_TagString: Untagged
@@ -973,41 +973,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Events:
     m_Signals:
-    - {fileID: 11400000, guid: ecb33fb5f5135a74fa2e190237622461, type: 2}
-    - {fileID: 11400000, guid: 1f9017934ef0e4142ba0caf6c343d143, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 6312214591249011489}
-          m_TargetAssemblyTypeName: TestAbility, Assembly-CSharp
-          m_MethodName: OnTestSignal
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 6312214591249011489}
-          m_TargetAssemblyTypeName: TestAbility, Assembly-CSharp
-          m_MethodName: OnTestSignal1
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+    - {fileID: 0}
+    m_Events: []
   m_LuaEvents:
     m_Signals: []
     m_LuaEventNames: []
---- !u!54 &1562909462780636064
+--- !u!54 &3818720151339239566
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1034,7 +1005,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &3580007393314268436
+--- !u!136 &5288227714973423221
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1057,7 +1028,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &4209280280851369243
+--- !u!114 &7560577995958784970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1095,7 +1066,7 @@ MonoBehaviour:
     impartPlatformRotation: 0
     impartPlatformVelocity: 0
   _minSlopeLimit: 0.7069833
---- !u!114 &6392644069412538798
+--- !u!114 &7209191922876202321
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1146,7 +1117,7 @@ MonoBehaviour:
   _jumpPostGroundedTime: 0.15
   _gravity: {x: 0, y: -9.81, z: 0}
   _gravityScale: 1
-  _useRootMotion: 0
+  _useRootMotion: 1
   _impartPlatformMovement: 0
   _impartPlatformRotation: 0
   _impartPlatformVelocity: 0
@@ -1157,7 +1128,7 @@ MonoBehaviour:
   _pushForceScale: 1
   _standingDownwardForceScale: 1
   _camera: {fileID: 0}
---- !u!114 &4334063317052876309
+--- !u!114 &8401722227860309064
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1170,7 +1141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Animator: {fileID: 850916409932638558}
-  _Target: {fileID: 1562909462780636064}
+  _Target: {fileID: 3818720151339239566}
   m_CompensationPosition: {x: 0, y: 0, z: 0}
   m_CompensationRotationEuler: {x: 0, y: 0, z: 0}
 --- !u!1 &3964589535328920568
