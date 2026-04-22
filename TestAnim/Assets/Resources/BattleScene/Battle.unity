@@ -180,14 +180,14 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_YAxis:
-    Value: 0
+    Value: 0.5
     m_SpeedMode: 0
     m_MaxSpeed: 1
     m_AccelTime: 0.2
     m_DecelTime: 0.1
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
-    m_InvertInput: 0
+    m_InvertInput: 1
     m_MinValue: 0
     m_MaxValue: 1
     m_Wrap: 0
@@ -206,12 +206,12 @@ MonoBehaviour:
   m_XAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 100
+    m_MaxSpeed: 200
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
-    m_InvertInput: 1
+    m_InvertInput: 0
     m_MinValue: -180
     m_MaxValue: 180
     m_Wrap: 1
@@ -254,7 +254,7 @@ Transform:
   m_GameObject: {fileID: 64136070}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.4, z: -2.5}
+  m_LocalPosition: {x: 0, y: 2.5, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerIndex: -1
   AutoEnableInputs: 1
-  XYAxis: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  XYAxis: {fileID: 206156367117568672, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   ZAxis: {fileID: 0}
 --- !u!1 &401216880
 GameObject:
@@ -350,8 +350,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 401216880}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.32024077, y: 0.000000014321461, z: 0.000000004841276, w: 0.9473362}
-  m_LocalPosition: {x: 0, y: -0.000000029802322, z: 0}
+  m_LocalRotation: {x: 0.020848965, y: 0, z: 0, w: 0.9997826}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -429,8 +429,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 568992164}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.28082788, y: -0.000000009839379, z: -0.0000000028790295, w: 0.95975816}
-  m_LocalPosition: {x: 0, y: -0.000000029802322, z: 0}
+  m_LocalRotation: {x: 0.062137436, y: 0, z: 0, w: 0.9980676}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -528,8 +528,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687292815}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.32024086, y: 0.00000001432146, z: 0.0000000048412763, w: 0.9473362}
-  m_LocalPosition: {x: 0, y: 0.4, z: -2.5}
+  m_LocalRotation: {x: 0.041466754, y: -0.000000029776693, z: 0.0000000012358058, w: 0.9991399}
+  m_LocalPosition: {x: 0, y: 2.5, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -663,6 +663,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f2976fe8-1a9d-4c3b-a5b3-77ea957f53d2
+    m_ActionName: Player/CharacterCamera[/Mouse/rightButton,/Mouse/delta]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -757,7 +761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 2
-  m_FollowOffset: {x: 0, y: 0.4, z: -2.5}
+  m_FollowOffset: {x: 0, y: 2.5, z: -4}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -884,7 +888,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 2
-  m_FollowOffset: {x: 0, y: 0.4, z: -2.5}
+  m_FollowOffset: {x: 0, y: 2.5, z: -4}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -984,7 +988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 2
-  m_FollowOffset: {x: 0, y: 0.4, z: -2.5}
+  m_FollowOffset: {x: 0, y: 2.5, z: -4}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1197,8 +1201,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1879525408}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.30063218, y: -0.000000021495195, z: -0.000000006775585, w: 0.9537402}
-  m_LocalPosition: {x: 0, y: -0.000000029802322, z: 0}
+  m_LocalRotation: {x: 0.041466735, y: 0, z: 0, w: 0.9991399}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
