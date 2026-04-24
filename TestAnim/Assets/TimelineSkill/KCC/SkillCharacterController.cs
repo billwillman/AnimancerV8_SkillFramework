@@ -223,20 +223,32 @@ namespace UnityTimeline
             bool isGrounded = Motor.GroundingStatus.IsStableOnGround;
             RootMotionMode mode = isGrounded ? _groundRootMotionMode : _airRootMotionMode;
 
+            // 计算输入方向（两种模式都需要）
+            Vector3 forward = _inputs.CameraRotation * Vector3.forward;
+            Vector3 right = _inputs.CameraRotation * Vector3.right;
+            Vector3 moveDir = forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight;
+            if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
+
+            Vector3 targetDir = _orientationMethod == OrientationMethod.TowardsReference
+                ? forward : moveDir;
+
             if (mode == RootMotionMode.FullRootMotion)
             {
+                // FullRootMotion: 动画旋转叠加在输入朝向之上
+                // 先应用动画的旋转增量（如转身动画等）
                 currentRotation = _rootMotionRotationDelta * currentRotation;
+
+                // 然后如果有输入，用输入方向插值修正朝向（大多数走/跑动画不含有效旋转）
+                if (targetDir.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(targetDir, Motor.CharacterUp);
+                    currentRotation = Quaternion.Slerp(currentRotation, targetRot,
+                        1f - Mathf.Exp(-_orientationSharpness * deltaTime));
+                }
             }
             else
             {
-                Vector3 forward = _inputs.CameraRotation * Vector3.forward;
-                Vector3 right = _inputs.CameraRotation * Vector3.right;
-                Vector3 moveDir = forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight;
-                if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
-
-                Vector3 targetDir = _orientationMethod == OrientationMethod.TowardsReference
-                    ? forward : moveDir;
-
+                // IgnoreRootMotion: 完全由输入控制旋转
                 if (targetDir.sqrMagnitude > 0.001f)
                 {
                     Quaternion targetRot = Quaternion.LookRotation(targetDir, Motor.CharacterUp);
