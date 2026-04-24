@@ -1235,6 +1235,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: _groundRootMotionMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _orientationReference
       value: 
       objectReference: {fileID: 687292818}
