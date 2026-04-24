@@ -89,6 +89,8 @@ namespace UnityTimeline
         [Tooltip("地面速度变化锐度")]        [SerializeField] private float _stableMovementSharpness = 15f;
         [Tooltip("旋转朝向插值锐度")]        [SerializeField] private float _orientationSharpness = 20f;
         [Tooltip("朝向策略")]                [SerializeField] private OrientationMethod _orientationMethod = OrientationMethod.TowardsMovement;
+        [Tooltip("角色朝向与目标方向夹角超过此角度时，必须先旋转到位再移动(度)。0=禁用该机制，始终可边转边移")] 
+        [SerializeField] private float _rotationLockAngle = 0f;
 
         #endregion
 
@@ -121,6 +123,14 @@ namespace UnityTimeline
         public RootMotionMode GroundRootMotionMode => _groundRootMotionMode;
         public RootMotionMode AirRootMotionMode => _airRootMotionMode;
         public JumpMode CurrentJumpMode => _jumpMode;
+        public float RotationLockAngle { get => _rotationLockAngle; set => _rotationLockAngle = value; }
+
+        /// <summary>
+        /// 外部目标朝向方向（世界空间）。
+        /// 设为非 zero 时优先使用此方向作为旋转目标；设为 Vector3.zero 则回退到输入计算。
+        /// 典型用法：技能系统控制角色面向特定目标/方向。
+        /// </summary>
+        public Vector3 ExternalTargetDirection { get; set; } = Vector3.zero;
 
         #endregion
 
@@ -138,6 +148,12 @@ namespace UnityTimeline
         private Vector3 _compensationRotationEuler;
         private int _compensationFrames;
         private const int kDefaultCompensationFrames = 2;
+
+        // Cached effective target direction (shared between UpdateRotation and UpdateVelocity)
+        private Vector3 _effectiveMoveDir;
+
+        // Rotation lock: when angle between current facing and target > threshold, movement is locked
+        private bool _movementLocked;
 
         #endregion
 
@@ -223,35 +239,52 @@ namespace UnityTimeline
             bool isGrounded = Motor.GroundingStatus.IsStableOnGround;
             RootMotionMode mode = isGrounded ? _groundRootMotionMode : _airRootMotionMode;
 
-            // 计算输入方向（两种模式都需要）
+            // === 计算有效目标方向（外部优先 > 输入计算）===
             Vector3 forward = _inputs.CameraRotation * Vector3.forward;
             Vector3 right = _inputs.CameraRotation * Vector3.right;
-            Vector3 moveDir = forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight;
-            if (moveDir.sqrMagnitude > 1f) moveDir.Normalize();
+            Vector3 inputMoveDir = forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight;
+            if (inputMoveDir.sqrMagnitude > 1f) inputMoveDir.Normalize();
 
-            Vector3 targetDir = _orientationMethod == OrientationMethod.TowardsReference
-                ? forward : moveDir;
+            // 外部目标朝向优先
+            if (ExternalTargetDirection.sqrMagnitude > 0.001f)
+            {
+                _effectiveMoveDir = ExternalTargetDirection.normalized;
+            }
+            else
+            {
+                _effectiveMoveDir = _orientationMethod == OrientationMethod.TowardsReference
+                    ? forward : inputMoveDir;
+            }
 
+            // === 旋转锁定检测：角度差超过阈值时锁定移动 ===
+            _movementLocked = false;
+            if (_rotationLockAngle > 0.001f && _effectiveMoveDir.sqrMagnitude > 0.001f)
+            {
+                Vector3 currentForward = currentRotation * Vector3.forward;
+                float angleToTarget = Vector3.Angle(currentForward, _effectiveMoveDir);
+                if (angleToTarget > _rotationLockAngle)
+                    _movementLocked = true;
+            }
+
+            // === 应用旋转 ===
             if (mode == RootMotionMode.FullRootMotion)
             {
-                // FullRootMotion: 动画旋转叠加在输入朝向之上
-                // 先应用动画的旋转增量（如转身动画等）
+                // FullRootMotion: 动画旋转叠加在目标朝向之上
                 currentRotation = _rootMotionRotationDelta * currentRotation;
 
-                // 然后如果有输入，用输入方向插值修正朝向（大多数走/跑动画不含有效旋转）
-                if (targetDir.sqrMagnitude > 0.001f)
+                if (_effectiveMoveDir.sqrMagnitude > 0.001f)
                 {
-                    Quaternion targetRot = Quaternion.LookRotation(targetDir, Motor.CharacterUp);
+                    Quaternion targetRot = Quaternion.LookRotation(_effectiveMoveDir, Motor.CharacterUp);
                     currentRotation = Quaternion.Slerp(currentRotation, targetRot,
                         1f - Mathf.Exp(-_orientationSharpness * deltaTime));
                 }
             }
             else
             {
-                // IgnoreRootMotion: 完全由输入控制旋转
-                if (targetDir.sqrMagnitude > 0.001f)
+                // IgnoreRootMotion: 完全由目标方向控制旋转
+                if (_effectiveMoveDir.sqrMagnitude > 0.001f)
                 {
-                    Quaternion targetRot = Quaternion.LookRotation(targetDir, Motor.CharacterUp);
+                    Quaternion targetRot = Quaternion.LookRotation(_effectiveMoveDir, Motor.CharacterUp);
                     currentRotation = Quaternion.Slerp(currentRotation, targetRot,
                         1f - Mathf.Exp(-_orientationSharpness * deltaTime));
                 }
@@ -291,13 +324,34 @@ namespace UnityTimeline
             }
             else
             {
-                Vector3 forward = _inputs.CameraRotation * Vector3.forward;
-                Vector3 right = _inputs.CameraRotation * Vector3.right;
-                Vector3 moveDir = (forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight).normalized;
+                // === 旋转锁定：角度差过大时只旋转不移动 ===
+                if (_movementLocked)
+                {
+                    // 锁定移动，仅保留地面法线平面内的速度分量（防止滑动）
+                    Vector3 groundNormal = Motor.GroundingStatus.GroundNormal;
+                    Vector3 velOnPlane = Vector3.ProjectOnPlane(velocity, groundNormal);
+                    // 仅衰减水平速度，保持与地面的贴合
+                    velocity = Vector3.Lerp(velOnPlane, Vector3.zero,
+                        1f - Mathf.Exp(-_stableMovementSharpness * dt));
+                    return;
+                }
 
-                Vector3 targetVel = moveDir * _maxStableMoveSpeed;
-                velocity = Vector3.Lerp(velocity, targetVel,
-                    1f - Mathf.Exp(-_stableMovementSharpness * dt));
+                // 正常移动：使用 UpdateRotation 中计算好的有效移动方向（与旋转朝向一致）
+                bool hasMoveInput = _inputs.MoveAxisForward != 0f || _inputs.MoveAxisRight != 0f
+                                     || ExternalTargetDirection.sqrMagnitude > 0.001f;
+
+                if (hasMoveInput && _effectiveMoveDir.sqrMagnitude > 0.001f)
+                {
+                    Vector3 targetVel = _effectiveMoveDir * _maxStableMoveSpeed;
+                    velocity = Vector3.Lerp(velocity, targetVel,
+                        1f - Mathf.Exp(-_stableMovementSharpness * dt));
+                }
+                else
+                {
+                    // 无输入时减速停止
+                    velocity = Vector3.Lerp(velocity, Vector3.zero,
+                        1f - Mathf.Exp(-_stableMovementSharpness * dt));
+                }
             }
         }
 
@@ -311,16 +365,14 @@ namespace UnityTimeline
             }
             else
             {
-                Vector3 forward = _inputs.CameraRotation * Vector3.forward;
-                Vector3 right = _inputs.CameraRotation * Vector3.right;
-                Vector3 moveDir = (forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight).normalized;
-
-                Vector3 targetVel = moveDir * _maxAirMoveSpeed;
+                // 使用有效移动方向（与旋转朝向一致）
+                bool hasMoveInput = _inputs.MoveAxisForward != 0f || _inputs.MoveAxisRight != 0f
+                                     || ExternalTargetDirection.sqrMagnitude > 0.001f;
                 Vector3 hVel = new Vector3(velocity.x, 0f, velocity.z);
 
-                if (targetVel.sqrMagnitude > 0.0001f)
+                if (hasMoveInput && _effectiveMoveDir.sqrMagnitude > 0.0001f)
                 {
-                    hVel += moveDir * _airAccelerationSpeed * dt;
+                    hVel += _effectiveMoveDir * _airAccelerationSpeed * dt;
                     if (hVel.magnitude > _maxAirMoveSpeed)
                         hVel = hVel.normalized * _maxAirMoveSpeed;
                 }
@@ -328,6 +380,8 @@ namespace UnityTimeline
                 {
                     hVel /= (1f + _drag * dt);
                 }
+
+                velocity.x = hVel.x;
 
                 velocity.x = hVel.x;
                 velocity.z = hVel.z;

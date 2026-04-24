@@ -28,6 +28,7 @@ namespace SkillCharacterControllerEditor
         private SerializedProperty _stableMovementSharpnessProp;
         private SerializedProperty _orientationSharpnessProp;
         private SerializedProperty _orientationMethodProp;
+        private SerializedProperty _rotationLockAngleProp;
 
         private SerializedProperty _maxAirMoveSpeedProp;
         private SerializedProperty _airAccelerationSpeedProp;
@@ -94,6 +95,7 @@ namespace SkillCharacterControllerEditor
             _stableMovementSharpnessProp = serializedObject.FindProperty("_stableMovementSharpness");
             _orientationSharpnessProp   = serializedObject.FindProperty("_orientationSharpness");
             _orientationMethodProp      = serializedObject.FindProperty("_orientationMethod");
+            _rotationLockAngleProp      = serializedObject.FindProperty("_rotationLockAngle");
 
             _maxAirMoveSpeedProp        = serializedObject.FindProperty("_maxAirMoveSpeed");
             _airAccelerationSpeedProp   = serializedObject.FindProperty("_airAccelerationSpeed");
@@ -330,6 +332,9 @@ namespace SkillCharacterControllerEditor
                     EditorGUILayout.PropertyField(_orientationMethodProp,
                         new GUIContent("Orientation Method",
                             "\u671D\u5411\u7B56\u7565\uFF1A\u671D\u5411\u53C2\u7167\u7269 \u6216 \u671D\u5411\u79FB\u52A8\u65B9\u5411"));
+                    EditorGUILayout.PropertyField(_rotationLockAngleProp,
+                        new GUIContent("Rotation Lock Angle",
+                            "\u89D2\u8272\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5419\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\u5FC5\u987B\u5148\u65CB\u8F6C\u5230\u4F4D\u518D\u79FB\u52A8\u30020 = \u7981\u7528"));
                 }
                 EditorGUI.indentLevel--;
             }
