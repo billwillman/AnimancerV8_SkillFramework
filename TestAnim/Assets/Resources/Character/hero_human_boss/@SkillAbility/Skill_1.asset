@@ -136,7 +136,7 @@ MonoBehaviour:
         m_GUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 660, y: 82}
+        m_Position: {x: 625, y: 69}
         m_InputEdgeGUID: 896e0a62-ae28-47e5-953b-e7ec4bd30fde
         m_TransitionAsset: {fileID: 11400000, guid: ff13a3b24c5f8ef4daaeecb1ca8d5fe4, type: 2}
         m_FadeDuration:
@@ -170,7 +170,7 @@ MonoBehaviour:
         m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1176, y: 248}
+        m_Position: {x: 1176, y: 247}
         m_InputEdgeGUID: 
         m_Success:
           m_Name: m_Success
@@ -197,7 +197,7 @@ MonoBehaviour:
         m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 918, y: 225}
+        m_Position: {x: 828, y: 240}
         m_InputEdgeGUID: d80f4b32-f705-4758-a75d-9d7f866415c2
         m_AnimancerState:
           m_Name: m_AnimancerState
