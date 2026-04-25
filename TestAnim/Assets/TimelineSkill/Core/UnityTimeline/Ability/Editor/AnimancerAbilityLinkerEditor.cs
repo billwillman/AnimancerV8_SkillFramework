@@ -8,11 +8,13 @@ public class AnimancerAbilityLinkerEditor : Editor
 {
     SerializedProperty m_AbilitiesProp;
     SerializedProperty m_DefaultAbilityProp;
+    SerializedProperty m_InputBindingsProp;
 
     void OnEnable()
     {
         m_AbilitiesProp = serializedObject.FindProperty("m_Abilities");
         m_DefaultAbilityProp = serializedObject.FindProperty("m_DefaultAbility");
+        m_InputBindingsProp = serializedObject.FindProperty("m_InputBindings");
     }
 
     public override void OnInspectorGUI()
@@ -24,13 +26,6 @@ public class AnimancerAbilityLinkerEditor : Editor
 
         EditorGUILayout.Space(4);
 
-        // 运行时不显示 DefaultAbility 配置
-        if (Application.isPlaying)
-        {
-            serializedObject.ApplyModifiedProperties();
-            return;
-        }
-
         // 收集当前 m_Abilities 中所有非空项
         var validAbilities = new List<AnimancerAbility>();
         for (int i = 0; i < m_AbilitiesProp.arraySize; i++)
@@ -40,6 +35,23 @@ public class AnimancerAbilityLinkerEditor : Editor
                 validAbilities.Add(elem);
         }
 
+        // 运行时不显示配置部分
+        if (!Application.isPlaying)
+        {
+            // ── Default Ability 下拉 ──
+            DrawDefaultAbilityPopup(validAbilities);
+
+            EditorGUILayout.Space(8);
+
+            // ── Input Bindings ──
+            DrawInputBindings(validAbilities);
+        }
+
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    private void DrawDefaultAbilityPopup(List<AnimancerAbility> validAbilities)
+    {
         // 若 DefaultAbility 已不在列表中，自动置空
         var current = m_DefaultAbilityProp.objectReferenceValue as AnimancerAbility;
         if (current != null && !validAbilities.Contains(current))
@@ -57,7 +69,66 @@ public class AnimancerAbilityLinkerEditor : Editor
             int selectedIndex = EditorGUILayout.Popup("Default Ability", currentIndex, displayNames);
             m_DefaultAbilityProp.objectReferenceValue = selectedIndex == 0 ? null : validAbilities[selectedIndex - 1];
         }
+    }
 
-        serializedObject.ApplyModifiedProperties();
+    private void DrawInputBindings(List<AnimancerAbility> validAbilities)
+    {
+        EditorGUILayout.LabelField("Input Bindings", EditorStyles.boldLabel);
+
+        var abilityDisplayNames = new string[] { "None" }.Concat(validAbilities.Select(a => a.name)).ToArray();
+
+        for (int i = 0; i < m_InputBindingsProp.arraySize; i++)
+        {
+            var element = m_InputBindingsProp.GetArrayElementAtIndex(i);
+            var inputActionProp = element.FindPropertyRelative("InputAction");
+            var abilityProp = element.FindPropertyRelative("Ability");
+            var triggerModeProp = element.FindPropertyRelative("TriggerMode");
+
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField($"Binding [{i}]", EditorStyles.miniBoldLabel);
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("×", GUILayout.Width(20)))
+                {
+                    m_InputBindingsProp.DeleteArrayElementAtIndex(i);
+                    break;
+                }
+                EditorGUILayout.EndHorizontal();
+
+                // InputAction 引用（使用标准 PropertyField，支持从 Input Action Asset 拖入）
+                EditorGUILayout.PropertyField(inputActionProp, new GUIContent("Input Action"));
+
+                // Ability 下拉菜单（只允许从 m_Abilities 中选择）
+                var currentAbility = abilityProp.objectReferenceValue as AnimancerAbility;
+                if (currentAbility != null && !validAbilities.Contains(currentAbility))
+                {
+                    abilityProp.objectReferenceValue = null;
+                    currentAbility = null;
+                }
+
+                int abilityIndex = currentAbility == null ? 0 : validAbilities.IndexOf(currentAbility) + 1;
+                using (new EditorGUI.DisabledScope(validAbilities.Count == 0))
+                {
+                    int newIndex = EditorGUILayout.Popup("Ability", abilityIndex, abilityDisplayNames);
+                    abilityProp.objectReferenceValue = newIndex == 0 ? null : validAbilities[newIndex - 1];
+                }
+
+                // 触发模式
+                EditorGUILayout.PropertyField(triggerModeProp, new GUIContent("Trigger Mode"));
+            }
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(2);
+        }
+
+        // 添加按钮
+        if (GUILayout.Button("+ Add Input Binding"))
+        {
+            m_InputBindingsProp.InsertArrayElementAtIndex(m_InputBindingsProp.arraySize);
+            var newElement = m_InputBindingsProp.GetArrayElementAtIndex(m_InputBindingsProp.arraySize - 1);
+            newElement.FindPropertyRelative("InputAction").objectReferenceValue = null;
+            newElement.FindPropertyRelative("Ability").objectReferenceValue = null;
+            newElement.FindPropertyRelative("TriggerMode").enumValueIndex = 0;
+        }
     }
 }

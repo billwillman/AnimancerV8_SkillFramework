@@ -1,21 +1,40 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Animancer;
 using TreeDesigner;
 
 /// <summary>
 /// AnimancerAbility 的 MonoBehaviour 桥接组件，挂载到角色上
 /// 持有 AnimancerComponent 引用并初始化 AnimancerAbilityAgent
+/// 支持通过 InputActionReference 绑定输入触发 Ability
 /// </summary>
 [RequireComponent(typeof(AnimancerComponent))]
 public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 {
+    /// <summary>
+    /// 输入触发绑定：一个 InputActionReference 对应一个要触发的 Ability
+    /// </summary>
+    [Serializable]
+    public class InputAbilityBinding
+    {
+        [Tooltip("输入 Action 引用，从 Input Action Asset 中拖入")]
+        public InputActionReference InputAction;
+
+        [Tooltip("该输入触发的 Ability")]
+        public AnimancerAbility Ability;
+    }
+
     [SerializeField]
     private List<AnimancerAbility> m_Abilities = new List<AnimancerAbility>();
 
     [SerializeField]
     private AnimancerAbility m_DefaultAbility;
+
+    [SerializeField]
+    [Tooltip("输入绑定列表：配置 InputAction 与 Ability 的映射关系")]
+    private List<InputAbilityBinding> m_InputBindings = new List<InputAbilityBinding>();
 
     public AnimancerAbilityAgent AnimancerAbilityAgent { get; set; }
 
@@ -29,6 +48,11 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     private bool m_IsReady = false;
 
     public bool IsReady => m_IsReady; // 是否准备好
+
+    /// <summary>
+    /// 获取输入绑定列表（只读）
+    /// </summary>
+    public IReadOnlyList<InputAbilityBinding> InputBindings => m_InputBindings;
 
     private void Awake()
     {
@@ -51,6 +75,10 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                 AnimancerAbilityAgent.AddAbility(m_Abilities[i]);
             }
         }
+
+        // 注册输入绑定
+        RegisterInputBindings();
+
         // 启动时自动播放 DefaultAbility
         if (m_DefaultAbility != null)
             AnimancerAbilityAgent.TryStartAbility(m_DefaultAbility.name);
@@ -68,6 +96,8 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 
     private void OnDestroy()
     {
+        UnregisterInputBindings();
+
         if (AnimancerAbilityAgent != null)
         {
             AnimancerAbilityAgent.OnAbilityStart -= HandleAbilityStart;
@@ -76,6 +106,118 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             AnimancerAbilityAgent = null;
         }
     }
+
+    private void OnEnable()
+    {
+        EnableInputActions();
+    }
+
+    private void OnDisable()
+    {
+        DisableInputActions();
+    }
+
+    #region Input Bindings
+
+    private void RegisterInputBindings()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding == null || binding.InputAction == null || binding.Ability == null)
+                continue;
+
+            var action = binding.InputAction.action;
+            if (action == null)
+                continue;
+
+            string abilityName = binding.Ability.name;
+            var callback = CreateInputCallback(abilityName);
+
+            switch (binding.TriggerMode)
+            {
+                case InputTriggerMode.OnStarted:
+                    action.started += callback;
+                    break;
+                case InputTriggerMode.OnPerformed:
+                    action.performed += callback;
+                    break;
+                case InputTriggerMode.OnCanceled:
+                    action.canceled += callback;
+                    break;
+            }
+        }
+    }
+
+    private void UnregisterInputBindings()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding == null || binding.InputAction == null)
+                continue;
+
+            var action = binding.InputAction.action;
+            if (action == null)
+                continue;
+
+            string abilityName = binding.Ability != null ? binding.Ability.name : null;
+            if (string.IsNullOrEmpty(abilityName))
+                continue;
+
+            var callback = CreateInputCallback(abilityName);
+
+            switch (binding.TriggerMode)
+            {
+                case InputTriggerMode.OnStarted:
+                    action.started -= callback;
+                    break;
+                case InputTriggerMode.OnPerformed:
+                    action.performed -= callback;
+                    break;
+                case InputTriggerMode.OnCanceled:
+                    action.canceled -= callback;
+                    break;
+            }
+        }
+
+        m_CallbackCache.Clear();
+    }
+
+    private Dictionary<string, Action<InputAction.CallbackContext>> m_CallbackCache
+        = new Dictionary<string, Action<InputAction.CallbackContext>>();
+
+    private Action<InputAction.CallbackContext> CreateInputCallback(string abilityName)
+    {
+        if (!m_CallbackCache.TryGetValue(abilityName, out var callback))
+        {
+            callback = (ctx) => TryStartAbility(abilityName);
+            m_CallbackCache[abilityName] = callback;
+        }
+        return callback;
+    }
+
+    private void EnableInputActions()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding?.InputAction?.action != null)
+                binding.InputAction.action.Enable();
+        }
+    }
+
+    private void DisableInputActions()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding?.InputAction?.action != null)
+                binding.InputAction.action.Disable();
+        }
+    }
+
+    #endregion
 
     private void HandleAbilityStart(AnimancerAbility ability)
     {
