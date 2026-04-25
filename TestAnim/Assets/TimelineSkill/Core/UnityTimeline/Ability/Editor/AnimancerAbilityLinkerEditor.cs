@@ -10,6 +10,17 @@ public class AnimancerAbilityLinkerEditor : Editor
     SerializedProperty m_DefaultAbilityProp;
     SerializedProperty m_InputBindingsProp;
 
+    private static readonly string kHoldInteractionGuide =
+        "如需「持续按住 N 秒后才触发」，请在 Input Action Asset 中为对应 Action 添加 Hold Interaction：\n\n" +
+        "1. 双击打开 .inputactions 文件\n" +
+        "2. 选中要配置的 Action（如 Fire）\n" +
+        "3. 在右侧 Properties 面板点击 Interactions 旁的 +\n" +
+        "4. 选择 Hold\n" +
+        "5. 设置 Hold Time（秒），如 0.5 表示按住 0.5 秒后触发\n" +
+        "6. 保存 Input Action Asset\n\n" +
+        "配合 Trigger Mode 设为 OnPerformed，按住达到 Hold Time 后会触发 performed 回调，从而启动绑定的 Ability。\n\n" +
+        "提示：如果 Hold Time 保持默认值 0，则使用 Input System 全局默认值（Project Settings > Input System > Default Hold Time）。";
+
     void OnEnable()
     {
         m_AbilitiesProp = serializedObject.FindProperty("m_Abilities");
@@ -89,7 +100,7 @@ public class AnimancerAbilityLinkerEditor : Editor
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField($"Binding [{i}]", EditorStyles.miniBoldLabel);
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("×", GUILayout.Width(20)))
+                if (GUILayout.Button("\u00d7", GUILayout.Width(20)))
                 {
                     m_InputBindingsProp.DeleteArrayElementAtIndex(i);
                     break;
@@ -116,6 +127,12 @@ public class AnimancerAbilityLinkerEditor : Editor
 
                 // 触发模式
                 EditorGUILayout.PropertyField(triggerModeProp, new GUIContent("Trigger Mode"));
+
+                // 当 TriggerMode 为 OnPerformed 时，显示 Hold 提示
+                if (triggerModeProp.enumValueIndex == (int)AnimancerAbilityLinker.InputTriggerMode.OnPerformed)
+                {
+                    DrawHoldDurationHint();
+                }
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(2);
@@ -130,5 +147,27 @@ public class AnimancerAbilityLinkerEditor : Editor
             newElement.FindPropertyRelative("Ability").objectReferenceValue = null;
             newElement.FindPropertyRelative("TriggerMode").enumValueIndex = 0;
         }
+    }
+
+    private void DrawHoldDurationHint()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField(
+                new GUIContent("持续多久触发", "需要在 Input Action Asset 中配置 Hold Interaction 来设置持续按住时长"),
+                EditorStyles.miniLabel);
+
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button(new GUIContent("?", "点击查看 Hold Interaction 配置流程"),
+                EditorStyles.miniButton, GUILayout.Width(20)))
+            {
+                EditorUtility.DisplayDialog(
+                    "如何设置「持续按住触发」",
+                    kHoldInteractionGuide,
+                    "知道了");
+            }
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }

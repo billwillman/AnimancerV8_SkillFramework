@@ -14,6 +14,19 @@ using TreeDesigner;
 public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 {
     /// <summary>
+    /// 输入触发模式
+    /// </summary>
+    public enum InputTriggerMode
+    {
+        /// <summary>按下时触发（started）</summary>
+        OnStarted,
+        /// <summary>执行中触发（performed，适合持续按住）</summary>
+        OnPerformed,
+        /// <summary>松开时触发（canceled）</summary>
+        OnCanceled,
+    }
+
+    /// <summary>
     /// 输入触发绑定：一个 InputActionReference 对应一个要触发的 Ability
     /// </summary>
     [Serializable]
@@ -24,6 +37,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 
         [Tooltip("该输入触发的 Ability")]
         public AnimancerAbility Ability;
+
+        [Tooltip("输入触发模式")]
+        public InputTriggerMode TriggerMode = InputTriggerMode.OnStarted;
     }
 
     [SerializeField]
