@@ -371,11 +371,10 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         if (Animancer != null && m_TransitionAsset != null)
         {
             AnimancerState state = Animancer.Play(m_TransitionAsset, m_FadeDuration.Value);
-            state.Speed = m_Speed.Value;
-            m_AnimancerState.Value = state;
-
             if (state != null)
             {
+                state.Speed = m_Speed.Value;
+                m_AnimancerState.Value = state;
                 // 播放成功
                 if (m_CompletionMode == NodeCompletionMode.OnStart)
                 {
