@@ -149,31 +149,14 @@ namespace TreeDesigner.Editor
                 //}
                 if (TreeView.selection.Contains(this))
                 {
-                    // AnimancerStateEventNode: 定位目标节点
-                    if (m_Node is AnimancerStateEventNode eventNode
-                        && !string.IsNullOrEmpty(eventNode.TargetNodeGUID))
-                    {
-                        evt.menu.AppendAction("Locate Target Node", (s) =>
-                        {
-                            var targetView = TreeView.FindNodeView(eventNode.TargetNodeGUID);
-                            if (targetView != null)
-                            {
-                                TreeView.ClearSelection();
-                                TreeView.AddToSelection(targetView);
-                                TreeView.FrameSelection();
-                            }
-                            else
-                            {
-                                Debug.LogWarning("Target node not found (may have been deleted).");
-                            }
-                        });
-                        evt.menu.AppendSeparator();
-                    }
-
                     evt.menu.AppendAction("Copy Node GUID", (s) =>
                     {
                         GUIUtility.systemCopyBuffer = m_Node.GUID;
                         Debug.Log($"Node GUID copied: {m_Node.GUID}");
+                    });
+                    evt.menu.AppendAction("Locate Node By GUID", (s) =>
+                    {
+                        LocateNodeByGUIDWindow.Show(TreeView);
                     });
                     evt.menu.AppendAction("Select Node Script", (s) =>
                     {
