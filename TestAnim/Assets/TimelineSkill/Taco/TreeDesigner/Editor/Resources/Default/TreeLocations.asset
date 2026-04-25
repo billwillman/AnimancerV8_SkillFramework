@@ -183,6 +183,11 @@ MonoBehaviour:
     name: LoomLocation
     type: BaseTree
     locked: 0
+  - guid: 80bc4812cf0c9664bb648b30a77829ab
+    path: Assets/Resources/Character/hero_human_boss/@SkillAbility/Skill_1.asset
+    name: Skill_1
+    type: BaseTree
+    locked: 0
   FolderInfos:
   - path: Assets
     expanded: 1

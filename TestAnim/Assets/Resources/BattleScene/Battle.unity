@@ -1227,6 +1227,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_Abilities.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_Abilities.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.size
       value: 0
       objectReference: {fileID: 0}
