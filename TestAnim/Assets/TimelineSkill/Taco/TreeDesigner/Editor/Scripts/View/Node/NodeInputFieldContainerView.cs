@@ -96,6 +96,31 @@ namespace TreeDesigner.Editor
                     }
                 }
             }
+            // 处理带 ShowInPanel 但非 PropertyPort 的字段（如 enum 参数等），在节点上直接可视化选择
+            foreach (var fieldInfo in m_Node.GetAllFields())
+            {
+                string fieldName = fieldInfo.Name;
+
+                // 跳过已经是 PropertyPort / VariablePropertyPort 的字段（上面已处理）
+                if (m_NodeView.InputPropertyPorts.ContainsKey(fieldName))
+                    continue;
+                var propertyPortAttrs = fieldInfo.GetCustomAttributes<PropertyPortAttribute>();
+                var variablePropertyPortAttrs = fieldInfo.GetCustomAttributes<VariablePropertyPortAttribute>();
+                if (propertyPortAttrs.Count() > 0 || variablePropertyPortAttrs.Count() > 0)
+                    continue;
+
+                var showInPanelAttrs = fieldInfo.GetCustomAttributes<ShowInPanelAttribute>();
+                if (showInPanelAttrs.Count() > 0 && m_Node.IsShow(fieldName))
+                {
+                    ShowInPanelAttribute showInPanelAttr = showInPanelAttrs.ElementAt(0);
+                    SerializedProperty serializedProperty = m_Node.GetNodeSerializedProperty(fieldName);
+                    if (serializedProperty != null)
+                    {
+                        AddShowInPanelField(serializedProperty, fieldName, showInPanelAttr.Label);
+                    }
+                }
+            }
+
             Sort();
         }
         public void Rebind()
@@ -162,6 +187,26 @@ namespace TreeDesigner.Editor
                         propertyField.Children().ElementAt(0).style.display = DisplayStyle.None;
                 }
             }
+        }
+
+        /// <summary>
+        /// 在节点主体区域渲染带 ShowInPanel 的非 PropertyPort 字段（如 enum 参数）
+        /// </summary>
+        public void AddShowInPanelField(SerializedProperty serializedProperty, string fieldName, string labelName)
+        {
+            VisualElement container = new VisualElement();
+            container.name = "showInPanelFieldContainer";
+            container.pickingMode = PickingMode.Ignore;
+            container.RegisterCallback<MouseDownEvent>((e) => e.StopPropagation());
+
+            PropertyField propertyField = new PropertyField(serializedProperty, labelName ?? serializedProperty.displayName);
+            propertyField.Bind(serializedProperty.serializedObject);
+            propertyField.style.borderTopWidth = propertyField.style.borderBottomWidth = propertyField.style.borderLeftWidth = propertyField.style.borderRightWidth = 1;
+            propertyField.style.borderTopColor = propertyField.style.borderBottomColor = propertyField.style.borderLeftColor = propertyField.style.borderRightColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+
+            container.Add(propertyField);
+            Add(container);
+            m_FieldContainerMap.Add(fieldName, container);
         }
     }
 }

@@ -1236,8 +1236,16 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_InputBindings.Array.data[0].Ability
+      value: 
+      objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_InputBindings.Array.data[0].InputAction
+      value: 
+      objectReference: {fileID: 1120369429361536294, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.data[0].TriggerMode
       value: 0

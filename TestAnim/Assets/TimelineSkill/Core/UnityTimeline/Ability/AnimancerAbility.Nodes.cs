@@ -125,7 +125,18 @@ public class AnimancerAbilityPropertyPort : PropertyPort<AnimancerAbility>
 }
 
 /// <summary>
-/// 通过 Animancer 播放 PlayableAssetTransitionAsset (Timeline)
+/// 节点完成的时机
+/// </summary>
+public enum NodeCompletionMode
+{
+    /// <summary>播放开始即返回 Success</summary>
+    OnStart,
+    /// <summary>等待动画播放结束(OnEnd)才返回 Success</summary>
+    OnEnd,
+}
+
+/// <summary>
+/// 通过 Animacer 播放 PlayableAssetTransitionAsset (Timeline)
 /// </summary>
 [NodeName("PlayAnimancerTimeline")]
 [NodePath("AnimancerAbility/Action/PlayAnimancerTimeline")]
@@ -148,6 +159,15 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     [SerializeField, PropertyPort(PortDirection.Input, "BindSignal")]
     protected BoolPropertyPort m_BindSignal = new BoolPropertyPort() { Value = false };
 
+    [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success并继续执行Child(动画播完时触发Child), OnEnd=等动画播完才Success并触发Child")]
+    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnEnd;
+
+    [NonSerialized]
+    protected bool m_Completed = false;
+
+    [NonSerialized]
+    protected bool m_IsFailure = false;
+
     [SerializeField, PropertyPort(PortDirection.Output, "AnimancerState"), TreeDesigner.ReadOnly]
     protected AnimancerStatePropertyPort m_AnimancerState = new AnimancerStatePropertyPort();
 
@@ -169,17 +189,22 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
         base.OnAfterDeserialize();
         m_OutputEdgeGUID = string.Empty;
         m_Child = null;
+        m_Completed = false;
+        m_IsFailure = false;
     }
 
     public override void ResetNode()
     {
         base.ResetNode();
+        m_Completed = false;
+        m_IsFailure = false;
         m_Child?.ResetNode();
     }
 
     protected override State OnUpdate()
     {
-        return State.Running;
+        if (!m_Completed) return State.Running;
+        return m_IsFailure ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
@@ -189,12 +214,47 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
             AnimancerState state = Animancer.PlayTimeline(m_TimelineAsset, m_FadeDuration.Value, default, m_BindSignal.Value);
             m_AnimancerState.Value = state;
 
-            if (state != null && m_Child != null)
+            if (state != null)
             {
-                state.Events(this).OnEnd -= OnDone;
-                state.Events(this).OnEnd += OnDone;
+                // 播放成功
+                if (m_CompletionMode == NodeCompletionMode.OnStart)
+                {
+                    // 立即完成模式：标记 Success 完成，注册 Child 回调
+                    m_Completed = true;
+                    m_IsFailure = false;
+                    if (m_Child != null)
+                    {
+                        state.Events(this).OnEnd -= OnDone;
+                        state.Events(this).OnEnd += OnDone;
+                    }
+                }
+                else
+                {
+                    // 等待完成模式：仅注册 OnEnd 回调
+                    if (m_Child != null)
+                    {
+                        state.Events(this).OnEnd -= OnDone;
+                        state.Events(this).OnEnd += OnDone;
+                    }
+                }
             }
-            else if (m_Child != null)
+            else
+            {
+                // 播放失败(state==null)，返回 Failure
+                m_Completed = true;
+                m_IsFailure = true;
+                if (m_Child != null)
+                {
+                    m_Child.UpdateNode();
+                }
+            }
+        }
+        else
+        {
+            // Animacer 为空，播放失败，返回 Failure
+            m_Completed = true;
+            m_IsFailure = true;
+            if (m_Child != null)
             {
                 m_Child.UpdateNode();
             }
@@ -206,6 +266,13 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
         if (m_AnimancerState.Value != null)
         {
             m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
+            
+            if (m_CompletionMode == NodeCompletionMode.OnEnd)
+            {
+                m_Completed = true;
+                m_IsFailure = false;
+            }
+            
             m_Child?.UpdateNode();
         }
     }
@@ -251,6 +318,15 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
     [SerializeField, PropertyPort(PortDirection.Input, "Speed")]
     protected FloatPropertyPort m_Speed = new FloatPropertyPort() { Value = 1f };
 
+    [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success并继续执行Child(动画播完时触发Child), OnEnd=等动画播完才Success并触发Child")]
+    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnEnd;
+
+    [NonSerialized]
+    protected bool m_Completed = false;
+
+    [NonSerialized]
+    protected bool m_IsFailure = false;
+
     [SerializeField, PropertyPort(PortDirection.Output, "AnimancerState"), TreeDesigner.ReadOnly]
     protected AnimancerStatePropertyPort m_AnimancerState = new AnimancerStatePropertyPort();
 
@@ -272,17 +348,22 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         base.OnAfterDeserialize();
         m_OutputEdgeGUID = string.Empty;
         m_Child = null;
+        m_Completed = false;
+        m_IsFailure = false;
     }
 
     public override void ResetNode()
     {
         base.ResetNode();
+        m_Completed = false;
+        m_IsFailure = false;
         m_Child?.ResetNode();
     }
 
     protected override State OnUpdate()
     {
-        return State.Running;
+        if (!m_Completed) return State.Running;
+        return m_IsFailure ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
@@ -293,19 +374,50 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
             state.Speed = m_Speed.Value;
             m_AnimancerState.Value = state;
 
-            if (m_Child != null)
+            if (state != null)
             {
-                state.Events(this).OnEnd -= OnDone;
-                state.Events(this).OnEnd += OnDone;
+                // 播放成功
+                if (m_CompletionMode == NodeCompletionMode.OnStart)
+                {
+                    // 立即完成模式：标记 Success 完成，注册 Child 回调
+                    m_Completed = true;
+                    m_IsFailure = false;
+                    if (m_Child != null)
+                    {
+                        state.Events(this).OnEnd -= OnDone;
+                        state.Events(this).OnEnd += OnDone;
+                    }
+                }
+                else
+                {
+                    // 等待完成模式：仅注册 OnEnd 回调
+                    if (m_Child != null)
+                    {
+                        state.Events(this).OnEnd -= OnDone;
+                        state.Events(this).OnEnd += OnDone;
+                    }
+                }
             }
             else
             {
-                m_Child?.UpdateNode();
+                // 播放失败(state==null)，返回 Failure
+                m_Completed = true;
+                m_IsFailure = true;
+                if (m_Child != null)
+                {
+                    m_Child.UpdateNode();
+                }
             }
         }
-        else if (m_Child != null)
+        else
         {
-            m_Child.UpdateNode();
+            // Animacer 或 TransitionAsset 为空，播放失败，返回 Failure
+            m_Completed = true;
+            m_IsFailure = true;
+            if (m_Child != null)
+            {
+                m_Child.UpdateNode();
+            }
         }
     }
 
@@ -314,6 +426,13 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         if (m_AnimancerState.Value != null)
         {
             m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
+            
+            if (m_CompletionMode == NodeCompletionMode.OnEnd)
+            {
+                m_Completed = true;
+                m_IsFailure = false;
+            }
+            
             m_Child?.UpdateNode();
         }
     }
@@ -340,13 +459,11 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
 /// </summary>
 [NodeName("StopAnimancer")]
 [NodePath("AnimancerAbility/Action/StopAnimancer")]
-public class StopAnimancerNode : AnimancerAbilityActionNode
+public class StopAnimacerNode : AnimancerAbilityActionNode
 {
-    protected override State OnUpdate()
-    {
-        return State.Running;
-    }
-
+    // StopAnimacer 是即时操作，不需要等待，移除 OnUpdate 覆盖
+    // 让基类默认行为生效：DoAction 执行完后立即返回 Success
+    
     protected override void DoAction()
     {
         if (Animancer != null)
