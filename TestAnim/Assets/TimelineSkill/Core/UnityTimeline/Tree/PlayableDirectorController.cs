@@ -149,22 +149,43 @@ namespace UnityTimeline
         }
 
         /// <summary>
-        /// Seek 到指定时间点，并自动使用 TimelineRedirectRootMotion 补偿 RootMotion 跳变。
+        /// Seek 到指定时间点，并补偿 RootMotion 跳变。
+        /// 三种补偿方式互斥，优先级：SkillCharacterController > TimelineRigBodyRedirectRootMotion > TimelineRedirectRootMotion。
         /// </summary>
         public void Seek(double time)
         {
             if (m_Director == null) return;
 
-            // 1. 记录当前位置/旋转作为补偿基线
-            var redirect = m_Director.GetComponent<TimelineRedirectRootMotion>();
-            if (redirect != null && redirect.Target != null)
+            // 补偿 RootMotion 跳变（三选一）
+            var skillController = m_Director.GetComponent<SkillCharacterController>();
+            if (skillController != null)
             {
-                var pos = redirect.Target.position;
-                var rotEuler = redirect.Target.rotation.eulerAngles;
-                redirect.SetCompensation(pos, rotEuler);
+                bool needCompensation = skillController.GroundRootMotionMode == RootMotionMode.FullRootMotion
+                                     || skillController.AirRootMotionMode == RootMotionMode.FullRootMotion;
+                if (needCompensation)
+                {
+                    var t = skillController.transform;
+                    skillController.SetCompensation(t.position, t.rotation.eulerAngles);
+                }
+            }
+            else
+            {
+                var rigBodyRedirect = m_Director.GetComponent<TimelineRigBodyRedirectRootMotion>();
+                if (rigBodyRedirect != null)
+                {
+                    rigBodyRedirect.SetCompensation(rigBodyRedirect.Position, rigBodyRedirect.Rotation.eulerAngles);
+                }
+                else
+                {
+                    var redirect = m_Director.GetComponent<TimelineRedirectRootMotion>();
+                    if (redirect != null && redirect.Target != null)
+                    {
+                        redirect.SetCompensation(redirect.Target.position, redirect.Target.rotation.eulerAngles);
+                    }
+                }
             }
 
-            // 2. 执行 Seek
+            // 执行 Seek
             m_Director.time = time;
         }
     }

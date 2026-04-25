@@ -120,8 +120,8 @@ namespace UnityTimeline
         public InputActionReference MoveAction => _moveAction;
         public InputActionReference JumpAction => _jumpAction;
         public Transform OrientationReference => _orientationReference;
-        public RootMotionMode GroundRootMotionMode => _groundRootMotionMode;
-        public RootMotionMode AirRootMotionMode => _airRootMotionMode;
+        public RootMotionMode GroundRootMotionMode { get => _groundRootMotionMode; set => _groundRootMotionMode = value; }
+        public RootMotionMode AirRootMotionMode { get => _airRootMotionMode; set => _airRootMotionMode = value; }
         public JumpMode CurrentJumpMode => _jumpMode;
         public float RotationLockAngle { get => _rotationLockAngle; set => _rotationLockAngle = value; }
 

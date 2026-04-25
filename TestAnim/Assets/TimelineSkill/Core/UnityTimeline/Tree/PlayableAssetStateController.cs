@@ -158,27 +158,48 @@ namespace UnityTimeline
         }
 
         /// <summary>
-        /// Seek 到指定时间点，并自动使用 TimelineRedirectRootMotion 补偿 RootMotion 跳变。
+        /// Seek 到指定时间点，并补偿 RootMotion 跳变。
+        /// 三种补偿方式互斥，优先级：SkillCharacterController > TimelineRigBodyRedirectRootMotion > TimelineRedirectRootMotion。
         /// </summary>
         public void Seek(double time)
         {
             if (m_State == null || !m_State.IsValid())
                 return;
 
-            // 1. 尝试获取 TimelineRedirectRootMotion 进行补偿
+            // 补偿 RootMotion 跳变（三选一）
             var animator = m_State.Layer.Graph?.Component?.Animator;
             if (animator != null)
             {
-                var redirect = animator.GetComponent<TimelineRedirectRootMotion>();
-                if (redirect != null && redirect.Target != null)
+                var skillController = animator.GetComponent<SkillCharacterController>();
+                if (skillController != null)
                 {
-                    var pos = redirect.Target.position;
-                    var rotEuler = redirect.Target.rotation.eulerAngles;
-                    redirect.SetCompensation(pos, rotEuler);
+                    bool needCompensation = skillController.GroundRootMotionMode == RootMotionMode.FullRootMotion
+                                         || skillController.AirRootMotionMode == RootMotionMode.FullRootMotion;
+                    if (needCompensation)
+                    {
+                        var t = skillController.transform;
+                        skillController.SetCompensation(t.position, t.rotation.eulerAngles);
+                    }
+                }
+                else
+                {
+                    var rigBodyRedirect = animator.GetComponent<TimelineRigBodyRedirectRootMotion>();
+                    if (rigBodyRedirect != null)
+                    {
+                        rigBodyRedirect.SetCompensation(rigBodyRedirect.Position, rigBodyRedirect.Rotation.eulerAngles);
+                    }
+                    else
+                    {
+                        var redirect = animator.GetComponent<TimelineRedirectRootMotion>();
+                        if (redirect != null && redirect.Target != null)
+                        {
+                            redirect.SetCompensation(redirect.Target.position, redirect.Target.rotation.eulerAngles);
+                        }
+                    }
                 }
             }
 
-            // 2. 执行 Seek
+            // 执行 Seek
             m_State.TimeD = time;
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Animancer;
 using TreeDesigner;
+using UnityTimeline;
 
 /// <summary>
 /// AnimancerAbility 的 MonoBehaviour 桥接组件，挂载到角色上
@@ -56,6 +57,11 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 
     public AnimancerComponent AnimancerComponent { get; private set; }
 
+    /// <summary>
+    /// 缓存的 SkillCharacterController，避免重复 GetComponent
+    /// </summary>
+    public SkillCharacterController SkillCharacterController { get; private set; }
+
     public event Action<AnimancerAbility> OnAbilityStart;
     public event Action<AnimancerAbility> OnAbilityStop;
 
@@ -73,6 +79,7 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     private void Awake()
     {
         AnimancerComponent = GetComponent<AnimancerComponent>();
+        SkillCharacterController = GetComponent<SkillCharacterController>();
         AnimancerAbilityAgent = new AnimancerAbilityAgent();
     }
 
