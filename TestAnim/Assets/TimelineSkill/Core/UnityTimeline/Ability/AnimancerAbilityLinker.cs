@@ -49,6 +49,11 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     [SerializeField]
     private AnimancerAbility m_DefaultAbility;
 
+    /// <summary>
+    /// 配置的默认 Ability
+    /// </summary>
+    public AnimancerAbility DefaultAbility => m_DefaultAbility;
+
     [SerializeField]
     [Tooltip("输入绑定列表：配置 InputAction 与 Ability 的映射关系")]
     private List<InputAbilityBinding> m_InputBindings = new List<InputAbilityBinding>();

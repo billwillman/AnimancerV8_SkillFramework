@@ -117,7 +117,7 @@ MonoBehaviour:
       data:
         m_GUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
         m_Expanded: 1
-        m_ShowPanel: 1
+        m_ShowPanel: 0
         m_Position: {x: 262.6667, y: 224.66669}
         m_InputEdgeGUID: c84d3cec-1644-4a13-a67e-a923410323f1
         m_OutputEdgeGUID: 
