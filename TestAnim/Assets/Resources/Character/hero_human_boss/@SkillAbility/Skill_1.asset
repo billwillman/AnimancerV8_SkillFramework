@@ -19,6 +19,7 @@ MonoBehaviour:
   - rid: 4085602169239896070
   - rid: 4085602170210615296
   - rid: 5521189425197875200
+  - rid: 5521189425197875204
   m_Edges:
   - m_GUID: 20e06532-0885-40b4-8d56-9afe47a45927
     m_StartNodeGUID: db14876d-2566-469c-99fd-f8d2cfcf5651
@@ -30,9 +31,9 @@ MonoBehaviour:
     m_EndNodeGUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
     m_StartPortName: Output
     m_EndPortName: Input
-  - m_GUID: 8c1542f4-81fe-47b4-b9dd-29ddc83bee7c
+  - m_GUID: d80f4b32-f705-4758-a75d-9d7f866415c2
     m_StartNodeGUID: 5047fb44-bdc8-46d3-819a-73d81d646239
-    m_EndNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
+    m_EndNodeGUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
     m_StartPortName: Output
     m_EndPortName: Input
   m_PropertyEdges: []
@@ -130,9 +131,8 @@ MonoBehaviour:
         m_GUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 525, y: 93}
+        m_Position: {x: 660, y: 82}
         m_InputEdgeGUID: 896e0a62-ae28-47e5-953b-e7ec4bd30fde
-        m_OutputEdgeGUID: 
         m_TransitionAsset: {fileID: 11400000, guid: ff13a3b24c5f8ef4daaeecb1ca8d5fe4, type: 2}
         m_FadeDuration:
           m_Name: m_FadeDuration
@@ -150,7 +150,7 @@ MonoBehaviour:
           m_Index: 1
           m_Expanded: 0
           m_Value: 1
-        m_CompletionMode: 1
+        m_CompletionMode: 0
         m_AnimancerState:
           m_Name: m_AnimancerState
           m_Direction: 1
@@ -164,8 +164,8 @@ MonoBehaviour:
         m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 541, y: 293}
-        m_InputEdgeGUID: 8c1542f4-81fe-47b4-b9dd-29ddc83bee7c
+        m_Position: {x: 917, y: 273}
+        m_InputEdgeGUID: 
         m_Success:
           m_Name: m_Success
           m_Direction: 1
@@ -184,4 +184,29 @@ MonoBehaviour:
         m_InputEdgeGUID: 20e06532-0885-40b4-8d56-9afe47a45927
         m_OutputEdgeGUIDs:
         - 896e0a62-ae28-47e5-953b-e7ec4bd30fde
-        - 8c1542f4-81fe-47b4-b9dd-29ddc83bee7c
+        - d80f4b32-f705-4758-a75d-9d7f866415c2
+    - rid: 5521189425197875204
+      type: {class: AnimancerStateEventNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 678, y: 240}
+        m_InputEdgeGUID: d80f4b32-f705-4758-a75d-9d7f866415c2
+        m_AnimancerState:
+          m_Name: m_AnimancerState
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+        m_EventType: 0
+        m_NormalizedTime:
+          m_Name: m_NormalizedTime
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: 0.5
+        m_TargetNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
