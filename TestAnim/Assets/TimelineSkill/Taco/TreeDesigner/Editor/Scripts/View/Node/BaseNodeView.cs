@@ -149,6 +149,11 @@ namespace TreeDesigner.Editor
                 //}
                 if (TreeView.selection.Contains(this))
                 {
+                    evt.menu.AppendAction("Copy Node GUID", (s) =>
+                    {
+                        GUIUtility.systemCopyBuffer = m_Node.GUID;
+                        Debug.Log($"Node GUID copied: {m_Node.GUID}");
+                    });
                     evt.menu.AppendAction("Select Node Script", (s) =>
                     {
                         SelectNodeScript();

@@ -48,6 +48,11 @@ public class AnimancerAbilityAgent
 
     public AnimancerAbilityAgent() { }
 
+    /// <summary>
+    /// 默认 Ability 名称，由 AnimancerAbilityLinker 在初始化时设置
+    /// </summary>
+    public string DefaultAbilityName { get; set; }
+
     public virtual void Init()
     {
         Abilities.Clear();

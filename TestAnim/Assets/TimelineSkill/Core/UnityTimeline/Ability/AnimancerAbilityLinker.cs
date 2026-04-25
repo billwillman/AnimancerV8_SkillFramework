@@ -107,6 +107,10 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         // 注册输入绑定
         RegisterInputBindings();
 
+        // 设置默认 Ability 名称
+        if (m_DefaultAbility != null)
+            AnimancerAbilityAgent.DefaultAbilityName = m_DefaultAbility.name;
+
         // 启动时自动播放 DefaultAbility
         if (m_DefaultAbility != null)
             AnimancerAbilityAgent.TryStartAbility(m_DefaultAbility.name);

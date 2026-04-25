@@ -17,13 +17,20 @@ MonoBehaviour:
   - rid: 4085602169239896065
   - rid: 4085602169239896066
   - rid: 4085602169239896070
+  - rid: 4085602169924091904
+  - rid: 4085602170210615296
   m_Edges:
   - m_GUID: c84d3cec-1644-4a13-a67e-a923410323f1
     m_StartNodeGUID: db14876d-2566-469c-99fd-f8d2cfcf5651
     m_EndNodeGUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
     m_StartPortName: Output
     m_EndPortName: Input
-  m_PropertyEdges: []
+  m_PropertyEdges:
+  - m_GUID: d792c848-4ba7-481f-ac26-cc457e1e7271
+    m_StartNodeGUID: a95d38be-a071-4f8e-aed5-0762aa2efc94
+    m_EndNodeGUID: 676a8013-1aa5-46a6-acd8-96fc4d29308f
+    m_StartPortName: m_AnimancerState
+    m_EndPortName: m_AnimancerState
   m_ExposedProperties:
   - rid: 4085602169239896067
   - rid: 4085602169239896068
@@ -142,6 +149,48 @@ MonoBehaviour:
           m_Name: m_AnimancerState
           m_Direction: 1
           m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs:
+          - d792c848-4ba7-481f-ac26-cc457e1e7271
+          m_Index: 0
+          m_Expanded: 0
+    - rid: 4085602169924091904
+      type: {class: AnimancerStateEventNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 676a8013-1aa5-46a6-acd8-96fc4d29308f
+        m_Expanded: 1
+        m_ShowPanel: 1
+        m_Position: {x: 434, y: -63.333336}
+        m_InputEdgeGUID: 
+        m_AnimancerState:
+          m_Name: m_AnimancerState
+          m_Direction: 0
+          m_InputEdgeGUID: d792c848-4ba7-481f-ac26-cc457e1e7271
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
+        m_EventType: 0
+        m_NormalizedTime:
+          m_Name: m_NormalizedTime
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: 1
+        m_TargetNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
+    - rid: 4085602170210615296
+      type: {class: PlayDefaultAbilityNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 682, y: -92.66667}
+        m_InputEdgeGUID: 
+        m_Success:
+          m_Name: m_Success
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
