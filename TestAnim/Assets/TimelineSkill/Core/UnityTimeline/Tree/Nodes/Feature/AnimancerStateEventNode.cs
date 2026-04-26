@@ -42,6 +42,11 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
     private int m_EventIndex = -1;
     private bool m_Registered;
 
+    /// <summary>事件是否已被触发</summary>
+    private bool m_EventTriggered;
+    /// <summary>Output子节点的执行结果</summary>
+    private State m_OutputResult = State.None;
+
     public override void Init(BaseTree tree)
     {
         base.Init(tree);
@@ -53,6 +58,8 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
         }
         m_Registered = false;
         m_EventIndex = -1;
+        m_EventTriggered = false;
+        m_OutputResult = State.None;
     }
 
     public override void OnAfterDeserialize()
@@ -76,6 +83,9 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
         CleanupEvents(state);
         base.ResetNode();
         m_OutputChild?.ResetNode();
+
+        m_EventTriggered = false;
+        m_OutputResult = State.None;
     }
 
     protected override void DoAction()
@@ -101,6 +111,23 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
         }
     }
 
+    protected override State OnUpdate()
+    {
+        // 事件尚未触发 → 持续等待
+        if (!m_EventTriggered)
+            return State.Running;
+
+        // 事件已触发，但没有 Output 子节点 → 直接成功
+        if (m_OutputChild == null)
+            return State.Success;
+
+        // 有 Output 子节点 → 透传状态（非终态时继续驱动）
+        if (m_OutputResult != State.Success && m_OutputResult != State.Failure)
+            m_OutputResult = m_OutputChild.UpdateNode();
+
+        return m_OutputResult;
+    }
+
     private void OnEventTriggered()
     {
         var state = m_AnimacerState.Value;
@@ -111,7 +138,13 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
 
         m_Registered = false;
         m_EventIndex = -1;
-        m_OutputChild?.UpdateNode();
+
+        m_EventTriggered = true;
+
+        if (m_OutputChild != null)
+            m_OutputResult = m_OutputChild.UpdateNode();
+        else
+            m_OutputResult = State.Success;
     }
 
     /// <summary>
