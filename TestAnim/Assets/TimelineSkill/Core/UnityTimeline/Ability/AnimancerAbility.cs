@@ -65,7 +65,7 @@ public partial class AnimancerAbility : OneRootTree
         {
             if (m_SkillController == null)
             {
-                var userComponent = User as UnityEngine.Component;
+                var userComponent = this.AnimancerComponent;
                 if (userComponent != null)
                     m_SkillController = userComponent.GetComponent<SkillCharacterController>();
             }
