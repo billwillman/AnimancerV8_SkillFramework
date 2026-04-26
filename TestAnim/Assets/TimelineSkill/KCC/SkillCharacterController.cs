@@ -1,6 +1,7 @@
 using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 namespace UnityTimeline
 {
@@ -33,6 +34,16 @@ namespace UnityTimeline
         public float MoveAxisRight;
         public bool JumpDown;
         public Quaternion CameraRotation;
+    }
+
+    /// <summary>输入锁定标志位，支持分级控制</summary>
+    [System.Flags]
+    public enum InputLockFlags
+    {
+        None     = 0,
+        Movement = 1 << 0,  // 锁定移动输入 (MoveAxisForward / MoveAxisRight)
+        Jump     = 1 << 1,  // 锁定跳跃输入 (JumpDown)
+        All      = Movement | Jump,
     }
 
     /// <summary>
@@ -134,6 +145,101 @@ namespace UnityTimeline
 
         #endregion
 
+        #region Input Lock API (方案A + 方案B + 方案C)
+
+        // ====================================================================
+        //  方案 A — 简单布尔开关（门面，内部调用方案B的 All）
+        // ====================================================================
+
+        /// <summary>
+        /// 获取/设置 输入总开关。false=全部锁定，true=解除内置锁。
+        /// </summary>
+        /// <remarks>
+        /// 注意：此属性仅操作"内置锁"(builtin key)。
+        /// 如果有其他 key 持有的锁，即使 InputEnabled=true 输入仍可能被锁定。
+        /// 需完全解锁请使用 ClearAllInputLocks() 或逐个 RemoveInputLock(key)。
+        /// </remarks>
+        public bool InputEnabled
+        {
+            get => GetEffectiveLocks() == InputLockFlags.None;
+            set
+            {
+                if (value)
+                    _inputLockSources.Remove(kBuiltinLockKey);
+                else
+                    _inputLockSources[kBuiltinLockKey] = InputLockFlags.All;
+            }
+        }
+
+        // ====================================================================
+        //  方案 B — 位掩码分级控制（直接设置/查询）
+        // ====================================================================
+
+        /// <summary>直接设置输入锁标志位（覆盖式，仅影响 builtin key）。</summary>
+        public void SetInputLock(InputLockFlags flags)
+        {
+            if (flags == InputLockFlags.None)
+                _inputLockSources.Remove(kBuiltinLockKey);
+            else
+                _inputLockSources[kBuiltinLockKey] = flags;
+        }
+
+        /// <summary>查询当前是否被锁定（不区分来源）。</summary>
+        public bool IsInputLocked() => GetEffectiveLocks() != InputLockFlags.None;
+
+        /// <summary>查询指定通道是否被锁定。</summary>
+        public bool IsInputLocked(InputLockFlags flags) => (GetEffectiveLocks() & flags) != 0;
+
+        // ====================================================================
+        //  方案 C — 多标记系统（key-value 字典，支持多持有者叠加）
+        // ====================================================================
+
+        /// <summary>
+        /// 为指定 key 添加输入锁。同一 key 重复调用会覆盖之前的 flags。
+        /// 多个 key 的锁通过 OR 聚合生效——所有 key 的锁都释放后输入才恢复。
+        /// </summary>
+        /// <param name="key">持有者标识（如 "SkillPlay", "Dialogue", "Cutscene"）</param>
+        /// <param name="flags">要锁定的输入通道</param>
+        public void AddInputLock(string key, InputLockFlags flags)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            if (flags == InputLockFlags.None)
+            {
+                _inputLockSources.Remove(key);
+                return;
+            }
+            _inputLockSources[key] = flags;
+        }
+
+        /// <summary>移除指定 key 的所有输入锁。</summary>
+        public void RemoveInputLock(string key)
+        {
+            if (!string.IsNullOrEmpty(key))
+                _inputLockSources.Remove(key);
+        }
+
+        /// <summary>检查指定 key 当前是否持有任何输入锁。</summary>
+        public bool HasInputLockKey(string key)
+            => !string.IsNullOrEmpty(key) && _inputLockSources.ContainsKey(key);
+
+        /// <summary>清除所有来源的输入锁（强制恢复输入）。</summary>
+        public void ClearAllInputLocks() => _inputLockSources.Clear();
+
+        // ====================================================================
+        //  内部方法
+        // ====================================================================
+
+        /// <summary>聚合所有 key 的 flags，返回当前实际生效的总锁。</summary>
+        private InputLockFlags GetEffectiveLocks()
+        {
+            InputLockFlags result = InputLockFlags.None;
+            foreach (var kvp in _inputLockSources)
+                result |= kvp.Value;
+            return result;
+        }
+
+        #endregion
+
         #region Private State
 
         private Vector3 _rootMotionPositionDelta;
@@ -154,6 +260,10 @@ namespace UnityTimeline
 
         // Rotation lock: when angle between current facing and target > threshold, movement is locked
         private bool _movementLocked;
+
+        // === Input Lock System 底层存储 ===
+        private const string kBuiltinLockKey = "__builtin__";
+        private readonly Dictionary<string, InputLockFlags> _inputLockSources = new();
 
         #endregion
 
@@ -213,16 +323,29 @@ namespace UnityTimeline
         {
             _inputs = default;
 
-            if (_moveAction != null && _moveAction.action != null)
+            InputLockFlags locks = GetEffectiveLocks();
+
+            // 移动输入（受 Movement 锁控制）
+            if ((locks & InputLockFlags.Movement) == 0)
             {
-                Vector2 moveInput = _moveAction.action.ReadValue<Vector2>();
-                _inputs.MoveAxisForward = moveInput.y;
-                _inputs.MoveAxisRight = moveInput.x;
+                if (_moveAction != null && _moveAction.action != null)
+                {
+                    Vector2 moveInput = _moveAction.action.ReadValue<Vector2>();
+                    _inputs.MoveAxisForward = moveInput.y;
+                    _inputs.MoveAxisRight = moveInput.x;
+                }
             }
 
-            if (_jumpAction != null && _jumpAction.action != null)
-                _inputs.JumpDown = _jumpAction.action.triggered;
+            // 跳跃输入（受 Jump 锁控制）
+            if ((locks & InputLockFlags.Jump) == 0)
+            {
+                if (_jumpAction != null && _jumpAction.action != null)
+                {
+                    _inputs.JumpDown = _jumpAction.action.triggered;
+                }
+            }
 
+            // CameraRotation 不受锁影响（朝向参照物始终有效）
             _inputs.CameraRotation = _orientationReference != null
                 ? Quaternion.Euler(0, _orientationReference.eulerAngles.y, 0)
                 : Quaternion.Euler(0, transform.eulerAngles.y, 0);
@@ -382,8 +505,6 @@ namespace UnityTimeline
                 }
 
                 velocity.x = hVel.x;
-
-                velocity.x = hVel.x;
                 velocity.z = hVel.z;
             }
         }
@@ -481,7 +602,7 @@ namespace UnityTimeline
             Quaternion hitRotation,
             ref HitStabilityReport hitStabilityReport) { }
 
-        public void OnDiscreteCollisionDetected(Collider hitCollider) { }
+        public void OnDiscreteCollisionDetected(Collider coll) { }
 
         #endregion
 
