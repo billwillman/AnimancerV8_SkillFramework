@@ -17,10 +17,22 @@ MonoBehaviour:
   - rid: 5521189289354330113
   - rid: 5521189289354330114
   - rid: 5521189289354330117
+  - rid: 5521189441456570375
+  - rid: 5521189441456570376
   m_Edges:
-  - m_GUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
+  - m_GUID: 18302be2-f727-4680-81ce-c4d767ed1726
     m_StartNodeGUID: cabfb2ef-fb7c-424a-9c0e-de2a4245c8a7
+    m_EndNodeGUID: c843c448-063c-486d-a02b-df1890e3f0a5
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: 22725f44-3734-4883-8355-5f347440da69
+    m_StartNodeGUID: c843c448-063c-486d-a02b-df1890e3f0a5
     m_EndNodeGUID: de8058b5-f0fc-4cad-a81d-2f5fb70798a4
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: 434c010c-c8aa-4733-8b84-42a2a97e9b69
+    m_StartNodeGUID: c843c448-063c-486d-a02b-df1890e3f0a5
+    m_EndNodeGUID: 1f226e8a-8fb1-414c-8da2-91534e8609c5
     m_StartPortName: Output
     m_EndPortName: Input
   m_PropertyEdges: []
@@ -80,7 +92,7 @@ MonoBehaviour:
         m_Expanded: 1
         m_ShowPanel: 0
         m_Position: {x: 0, y: 200}
-        m_OutputEdgeGUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
+        m_OutputEdgeGUID: 18302be2-f727-4680-81ce-c4d767ed1726
         NodeName: OnStart
     - rid: 5521189289354330114
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
@@ -119,9 +131,8 @@ MonoBehaviour:
         m_GUID: de8058b5-f0fc-4cad-a81d-2f5fb70798a4
         m_Expanded: 1
         m_ShowPanel: 1
-        m_Position: {x: 215, y: 204}
-        m_InputEdgeGUID: f17ed0f6-783e-4b9c-a22a-57aa88dda65c
-        m_OutputEdgeGUID: 
+        m_Position: {x: 626, y: 150}
+        m_InputEdgeGUID: 22725f44-3734-4883-8355-5f347440da69
         m_TransitionAsset: {fileID: 11400000, guid: ae765c55bb518c94e85126f094bc7918, type: 2}
         m_FadeDuration:
           m_Name: m_FadeDuration
@@ -139,6 +150,7 @@ MonoBehaviour:
           m_Index: 1
           m_Expanded: 0
           m_Value: 1
+        m_CompletionMode: 0
         m_AnimancerState:
           m_Name: m_AnimancerState
           m_Direction: 1
@@ -146,3 +158,30 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
+    - rid: 5521189441456570375
+      type: {class: AA_RemoveInputLockNode, ns: UnityTimeline, asm: Assembly-CSharp}
+      data:
+        m_GUID: 1f226e8a-8fb1-414c-8da2-91534e8609c5
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 616, y: 359}
+        m_InputEdgeGUID: 434c010c-c8aa-4733-8b84-42a2a97e9b69
+        m_LockKey:
+          m_Name: m_LockKey
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: SkillPlay
+    - rid: 5521189441456570376
+      type: {class: SequenceNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: c843c448-063c-486d-a02b-df1890e3f0a5
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 214, y: 172}
+        m_InputEdgeGUID: 18302be2-f727-4680-81ce-c4d767ed1726
+        m_OutputEdgeGUIDs:
+        - 22725f44-3734-4883-8355-5f347440da69
+        - 434c010c-c8aa-4733-8b84-42a2a97e9b69

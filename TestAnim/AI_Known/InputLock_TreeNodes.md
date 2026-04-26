@@ -73,7 +73,7 @@ protected SkillCharacterController GetSkillController() => (Owner as AnimancerAb
 | Inspector 字段 | 类型 | 默认值 | 说明 |
 |----------------|------|--------|------|
 | LockKey | string | `"SkillPlay"` | 持有者标识（PropertyPort 输入端口） |
-| LockFlags | int | `3 (All)` | 锁定通道: None=0, Movement=1, Jump=2, All=3 |
+| LockFlags | **InputLockFlags** (Enum Flags) | `All` | 要锁定的输入通道（Inspector 中为带复选框的枚举多选下拉框） |
 
 ```csharp
 protected override void DoAction()
@@ -83,7 +83,7 @@ protected override void DoAction()
 
     string key = m_LockKey.Value;
     if (!string.IsNullOrEmpty(key))
-        controller.AddInputLock(key, (InputLockFlags)m_LockFlags.Value);
+        controller.AddInputLock(key, m_LockFlags.Value);
 }
 ```
 
@@ -144,7 +144,7 @@ protected override void DoAction()
 | NodeName | `SetInputLock` |
 | NodePath | `AnimancerAbility/Action/SetInputLock` |
 
-Inspector 字段与 UT 版完全一致（LockKey + LockFlags）。
+Inspector 字段与 UT 版完全一致（LockKey + LockFlags，LockFlags 为 Enum Flags 多选类型）。
 
 ```csharp
 protected override void DoAction()
@@ -154,7 +154,7 @@ protected override void DoAction()
 
     string key = m_LockKey.Value;
     if (!string.IsNullOrEmpty(key))
-        controller.AddInputLock(key, (InputLockFlags)m_LockFlags.Value);
+        controller.AddInputLock(key, m_LockFlags.Value);
 }
 ```
 
@@ -212,6 +212,7 @@ Assets/TimelineSkill/Core/UnityTimeline/
 │       ├── AA_RemoveInputLockNode.cs                [NEW]
 │       └── AA_ClearAllInputLocksNode.cs             [NEW]
 └── Tree/Nodes/Feature/
+    ├── InputLockFlagsPropertyPort.cs               [NEW]  LockFlags 枚举专用 PropertyPort
     ├── SetInputLockNode.cs                          [NEW]
     ├── RemoveInputLockNode.cs                       [NEW]
     └── ClearAllInputLocksNode.cs                    [NEW]
@@ -225,7 +226,7 @@ Assets/TimelineSkill/Core/UnityTimeline/
 
 ```
 技能开始
-  └─→ [SetInputLock Key="Attack" Flags=3(All)]
+  └─→ [SetInputLock Key="Attack" Flags=All]
       └─→ [PlayAnimacerTimeline] (播放攻击动画)
           └─→ [RemoveInputLock Key="Attack"]
               └─→ 技能结束
@@ -235,7 +236,7 @@ Assets/TimelineSkill/Core/UnityTimeline/
 
 ```
 翻滚开始
-  └─→ [SetInputLock Key="Roll" Flags=1(Movement)]
+  └─→ [SetInputLock Key="Roll" Flags=Movement]
       └─→ [PlayAnimacerTimeline] (播放翻滚动画)
           └─→ [RemoveInputLock Key="Roll"]
               └─→ 翻滚结束
@@ -257,7 +258,7 @@ Assets/TimelineSkill/Core/UnityTimeline/
 |--------|------|------|
 | 封装的 API 方案 | **方案 C**（多标记 key-value） | 粒度最灵活，支持多持有者叠加；方案 A/B 可通过相同模式自行实现 |
 | 节点执行模式 | **即执即毕**（仅 DoAction） | 与 AddForceNode、StopAnimacerNode 等控制性节点语义一致 |
-| LockFlags 字段类型 | **int PropertyPort** | 行为树编辑器对枚举类型支持有限，使用 int + Tooltip 注释替代 |
+| LockFlags 字段类型 | **InputLockFlagsPropertyPort (Enum Flags)** | 继承 `PropertyPort<InputLockFlags>`，Unity Inspector 自动渲染为 EnumFlagsField 多选下拉框，支持 Movement/Jump 复选组合 |
 | 默认 Key 值 | **"SkillPlay"** | 符合最常见场景（技能播放锁定） |
 | AA_ 前缀命名 | **是** | 避免两套树的节点在编辑器搜索时混淆 |
 | Controller 访问方式 | UT 用 `AbilityLinker`，AA 用 `GetSkillController()` | 各自遵循本系统的已有惯例，UT 通过 AbilityLinker 直连，AA 通过 Owner 链懒缓存 |
