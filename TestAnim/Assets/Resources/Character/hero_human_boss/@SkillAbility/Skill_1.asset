@@ -21,7 +21,6 @@ MonoBehaviour:
   - rid: 5521189425197875204
   - rid: 5521189441456570371
   - rid: 5521189441456570372
-  - rid: 5521189441456570379
   m_Edges:
   - m_GUID: 603c88ea-56e7-45b2-bc2b-92faa98ea7f1
     m_StartNodeGUID: db14876d-2566-469c-99fd-f8d2cfcf5651
@@ -43,14 +42,9 @@ MonoBehaviour:
     m_EndNodeGUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
     m_StartPortName: Output
     m_EndPortName: Input
-  - m_GUID: 7850aa46-5a7c-4da7-ae8e-b2f9c0469a31
-    m_StartNodeGUID: 8beceee8-78a5-48af-a9c3-b4eec2ebd8dd
-    m_EndNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
-    m_StartPortName: Output
-    m_EndPortName: Input
-  - m_GUID: a838d457-b9dd-41f0-9e5d-a12d618c360c
+  - m_GUID: 33016f76-c1f7-4cf4-9f93-3eacb57943a1
     m_StartNodeGUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
-    m_EndNodeGUID: 8beceee8-78a5-48af-a9c3-b4eec2ebd8dd
+    m_EndNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
     m_StartPortName: Output
     m_EndPortName: Input
   m_PropertyEdges:
@@ -187,8 +181,8 @@ MonoBehaviour:
         m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1316, y: 201}
-        m_InputEdgeGUID: 7850aa46-5a7c-4da7-ae8e-b2f9c0469a31
+        m_Position: {x: 1308, y: 181}
+        m_InputEdgeGUID: 33016f76-c1f7-4cf4-9f93-3eacb57943a1
         m_Success:
           m_Name: m_Success
           m_Direction: 1
@@ -203,7 +197,7 @@ MonoBehaviour:
         m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 751, y: 255}
+        m_Position: {x: 831, y: 267}
         m_InputEdgeGUID: 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -221,7 +215,7 @@ MonoBehaviour:
           m_Index: 1
           m_Expanded: 0
           m_Value: 0.5
-        m_OutputEdgeGUID: a838d457-b9dd-41f0-9e5d-a12d618c360c
+        m_OutputEdgeGUID: 33016f76-c1f7-4cf4-9f93-3eacb57943a1
     - rid: 5521189441456570371
       type: {class: AA_SetInputLockNode, ns: UnityTimeline, asm: Assembly-CSharp}
       data:
@@ -258,29 +252,3 @@ MonoBehaviour:
         - 792fbb4f-6ac9-428b-8651-7368d506ecf0
         - 2f83bc90-e5cc-46b9-9334-d451ce8a74eb
         - 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
-    - rid: 5521189441456570379
-      type: {class: WaitNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
-      data:
-        m_GUID: 8beceee8-78a5-48af-a9c3-b4eec2ebd8dd
-        m_Expanded: 1
-        m_ShowPanel: 0
-        m_Position: {x: 1126, y: 226}
-        m_InputEdgeGUID: a838d457-b9dd-41f0-9e5d-a12d618c360c
-        m_OutputEdgeGUID: 7850aa46-5a7c-4da7-ae8e-b2f9c0469a31
-        m_WaitType: 0
-        m_Time:
-          m_Name: m_Time
-          m_Direction: 0
-          m_InputEdgeGUID: 
-          m_OutputEdgeGUIDs: []
-          m_Index: 0
-          m_Expanded: 0
-          m_Value: 1
-        m_Frame:
-          m_Name: m_Frame
-          m_Direction: 0
-          m_InputEdgeGUID: 
-          m_OutputEdgeGUIDs: []
-          m_Index: 1
-          m_Expanded: 0
-          m_Value: 0
