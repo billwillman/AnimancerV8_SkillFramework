@@ -219,15 +219,21 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     private Dictionary<string, Action<InputAction.CallbackContext>> m_CallbackCache
         = new Dictionary<string, Action<InputAction.CallbackContext>>();
 
-    private Action<InputAction.CallbackContext> CreateInputCallback(string abilityName)
-    {
-        if (!m_CallbackCache.TryGetValue(abilityName, out var callback))
+        private Action<InputAction.CallbackContext> CreateInputCallback(string abilityName)
         {
-            callback = (ctx) => TryStartAbility(abilityName);
-            m_CallbackCache[abilityName] = callback;
+            if (!m_CallbackCache.TryGetValue(abilityName, out var callback))
+            {
+                callback = (ctx) =>
+                {
+                    if (SkillCharacterController != null
+                        && SkillCharacterController.IsInputLocked(InputLockFlags.AbilityInput))
+                        return;
+                    TryStartAbility(abilityName);
+                };
+                m_CallbackCache[abilityName] = callback;
+            }
+            return callback;
         }
-        return callback;
-    }
 
     private void EnableInputActions()
     {

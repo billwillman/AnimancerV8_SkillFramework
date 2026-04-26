@@ -40,10 +40,11 @@ namespace UnityTimeline
     [System.Flags]
     public enum InputLockFlags
     {
-        None     = 0,
-        Movement = 1 << 0,  // 锁定移动输入 (MoveAxisForward / MoveAxisRight)
-        Jump     = 1 << 1,  // 锁定跳跃输入 (JumpDown)
-        All      = Movement | Jump,
+        None         = 0,
+        Movement     = 1 << 0,  // 锁定移动输入 (MoveAxisForward / MoveAxisRight)
+        Jump         = 1 << 1,  // 锁定跳跃输入 (JumpDown)
+        AbilityInput = 1 << 2,  // 锁定 AnimancerAbilityLinker 的所有 InputBinding 响应
+        All          = Movement | Jump | AbilityInput,
     }
 
     /// <summary>
