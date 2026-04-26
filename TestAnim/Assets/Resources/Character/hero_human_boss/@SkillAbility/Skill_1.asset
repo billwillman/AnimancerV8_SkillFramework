@@ -234,7 +234,7 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 1
           m_Expanded: 0
-          m_Value: 3
+          m_Value: -1
     - rid: 5521189441456570372
       type: {class: SequenceNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
