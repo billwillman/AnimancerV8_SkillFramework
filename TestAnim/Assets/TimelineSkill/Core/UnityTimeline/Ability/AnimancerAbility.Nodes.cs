@@ -153,7 +153,7 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     protected BoolPropertyPort m_BindSignal = new BoolPropertyPort() { Value = false };
 
     [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success, OnEnd=等动画播放完才Success")]
-    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnEnd;
+    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnStart;
 
     [NonSerialized]
     protected bool m_Completed = false;
@@ -246,7 +246,7 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
     protected FloatPropertyPort m_Speed = new FloatPropertyPort() { Value = 1f };
 
     [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success, OnEnd=等动画播放完才Success")]
-    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnEnd;
+    protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnStart;
 
     [NonSerialized]
     protected bool m_Completed = false;
