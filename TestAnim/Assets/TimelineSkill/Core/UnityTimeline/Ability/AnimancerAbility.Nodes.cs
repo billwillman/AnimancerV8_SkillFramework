@@ -8,6 +8,9 @@ using EasyCharacterMovement;
 using UnityEditor;
 #endif
 
+// SkillCharacterController 定义在 UnityTimeline 命名空间
+using UnityTimeline;
+
 /// <summary>
 /// AnimancerAbility 的 Action 节点基类，提供 AnimancerComponent 访问
 /// </summary>
@@ -16,10 +19,11 @@ public abstract class AnimancerAbilityActionNode : ActionNode
     public AnimancerAbility AnimancerAbility => Owner as AnimancerAbility;
     public AnimancerComponent Animancer => (Owner as AnimancerAbility)?.AnimancerComponent;
 
-    /// <summary>
-    /// 返回 AnimancerAbility 上缓存的 ECM2 Character 组件
-    /// </summary>
+    /// <summary>返回 AnimancerAbility 上缓存的 ECM2 Character 组件</summary>
     protected Character GetCharacter() => (Owner as AnimancerAbility)?.Character;
+
+    /// <summary>返回 AnimancerAbility 上缓存的 SkillCharacterController</summary>
+    protected SkillCharacterController GetSkillController() => (Owner as AnimancerAbility)?.SkillCharacterController;
 
     protected override void OnStart()
     {

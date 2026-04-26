@@ -8,6 +8,9 @@ using EasyCharacterMovement;
 using UnityEditor;
 #endif
 
+// SkillCharacterController 定义在 UnityTimeline 命名空间，本文件在全局命名空间需显式引入
+using UnityTimeline;
+
 [AcceptableNodePaths("Character", "AnimancerAbility")]
 public partial class AnimancerAbility : OneRootTree
 {
@@ -52,6 +55,24 @@ public partial class AnimancerAbility : OneRootTree
         }
     }
 
+    /// <summary>
+    /// 缓存的 SkillCharacterController，首次访问时从 User 上 GetComponent 并缓存
+    /// </summary>
+    private SkillCharacterController m_SkillController;
+    public SkillCharacterController SkillCharacterController
+    {
+        get
+        {
+            if (m_SkillController == null)
+            {
+                var userComponent = User as UnityEngine.Component;
+                if (userComponent != null)
+                    m_SkillController = userComponent.GetComponent<SkillCharacterController>();
+            }
+            return m_SkillController;
+        }
+    }
+
     protected BoolExposedProperty m_Active;
     public bool Active => m_Active.Value;
 
@@ -86,6 +107,7 @@ public partial class AnimancerAbility : OneRootTree
         m_OnStart = null;
         m_OnStop = null;
         m_Character = null;
+        m_SkillController = null;
     }
 
     public override void OnReset()
