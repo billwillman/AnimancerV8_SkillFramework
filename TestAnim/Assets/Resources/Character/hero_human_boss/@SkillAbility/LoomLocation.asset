@@ -47,7 +47,8 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Ability
       Tags
   CancelAbilitiesWithTag:
-    TagGuids: []
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
     ReferencePath: GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Cancel
       Abilities With Tag
   BlockAbilitiesWithTag:

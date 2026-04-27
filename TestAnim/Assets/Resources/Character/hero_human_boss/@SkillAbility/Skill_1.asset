@@ -107,7 +107,8 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Ability
       Tags
   CancelAbilitiesWithTag:
-    TagGuids: []
+    TagGuids:
+    - c0838831-7c20-4635-b100-0e37146b0207
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Cancel
       Abilities With Tag
   BlockAbilitiesWithTag:
@@ -115,7 +116,8 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Block
       Abilities With Tag
   ActiveTags:
-    TagGuids: []
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Active
       Tags
   RequiredTags:
@@ -224,7 +226,7 @@ MonoBehaviour:
         m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 964, y: -225}
+        m_Position: {x: 975, y: -305}
         m_InputEdgeGUID: 3f64fa92-941c-41d3-bdcb-8a87f1eb29c2
         m_Success:
           m_Name: m_Success
@@ -301,7 +303,7 @@ MonoBehaviour:
       data:
         m_GUID: 1a01f0c7-7473-4bfa-8115-ef9f0167a2fb
         m_Expanded: 1
-        m_ShowPanel: 1
+        m_ShowPanel: 0
         m_Position: {x: 485, y: -225}
         m_InputEdgeGUID: ec96bd22-597e-4447-9deb-cd508b86ddb3
         m_OutputEdgeGUID: e9abc1a5-4df6-4f7b-ade0-767c01cb2212
@@ -434,7 +436,7 @@ MonoBehaviour:
         m_GUID: c9741c68-3b67-4907-a0fc-edac449efc07
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 964, y: -151}
+        m_Position: {x: 1013, y: -214}
         m_NodeType: 1
         m_Value:
           rid: 5521189470936498179

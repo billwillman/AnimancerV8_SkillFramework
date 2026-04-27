@@ -17,13 +17,18 @@ MonoBehaviour:
     Guid: bc3f013c-4453-410a-8e0b-5c61b9dc3a52
     Expanded: 1
     Multi: 0
-    Reference: []
+    Reference:
+    - GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Cancel Abilities
+      With Tag
+    - GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Active Tags
   - Name: LoomLocation
     Guid: c0838831-7c20-4635-b100-0e37146b0207
     Expanded: 1
     Multi: 0
     Reference:
     - GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Active Tags
+    - GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Cancel Abilities
+      With Tag
   - Name: LoomLocation.Idle
     Guid: b290e005-e571-4109-91d1-d5cb7eac019d
     Expanded: 1
