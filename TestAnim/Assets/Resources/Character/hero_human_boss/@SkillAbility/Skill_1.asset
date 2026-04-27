@@ -25,6 +25,9 @@ MonoBehaviour:
   - rid: 5521189441456570382
   - rid: 5521189441456570385
   - rid: 5521189441456570388
+  - rid: 5521189441456570389
+  - rid: 5521189470936498177
+  - rid: 5521189470936498178
   m_Edges:
   - m_GUID: 603c88ea-56e7-45b2-bc2b-92faa98ea7f1
     m_StartNodeGUID: db14876d-2566-469c-99fd-f8d2cfcf5651
@@ -46,11 +49,6 @@ MonoBehaviour:
     m_EndNodeGUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
     m_StartPortName: Output
     m_EndPortName: Input
-  - m_GUID: 16920ab3-cba9-4dec-b30f-38310acc2a95
-    m_StartNodeGUID: 1a01f0c7-7473-4bfa-8115-ef9f0167a2fb
-    m_EndNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
-    m_StartPortName: Output
-    m_EndPortName: Input
   - m_GUID: 6b8af230-f159-4ccd-95a0-38731cc7c6ee
     m_StartNodeGUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
     m_EndNodeGUID: cf3df207-5aae-4779-938b-746c95d04d99
@@ -64,6 +62,26 @@ MonoBehaviour:
   - m_GUID: ec96bd22-597e-4447-9deb-cd508b86ddb3
     m_StartNodeGUID: cb5df247-3816-416f-86cc-37b237d0cd2c
     m_EndNodeGUID: 1a01f0c7-7473-4bfa-8115-ef9f0167a2fb
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: d2e22a75-5d27-4268-ae63-84b459df6c27
+    m_StartNodeGUID: 1771a0a3-8fd8-43f3-8943-de9ab13a7458
+    m_EndNodeGUID: 6216be4b-b655-41bf-9968-80d3102dd682
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: e9abc1a5-4df6-4f7b-ade0-767c01cb2212
+    m_StartNodeGUID: 1a01f0c7-7473-4bfa-8115-ef9f0167a2fb
+    m_EndNodeGUID: baaa96c4-3225-4e4e-a7c0-7d93e7b42bd1
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: 3f64fa92-941c-41d3-bdcb-8a87f1eb29c2
+    m_StartNodeGUID: baaa96c4-3225-4e4e-a7c0-7d93e7b42bd1
+    m_EndNodeGUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
+    m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: 4667c89b-3ad0-44c4-85fa-0bff9d649ff2
+    m_StartNodeGUID: baaa96c4-3225-4e4e-a7c0-7d93e7b42bd1
+    m_EndNodeGUID: c9741c68-3b67-4907-a0fc-edac449efc07
     m_StartPortName: Output
     m_EndPortName: Input
   m_PropertyEdges:
@@ -206,8 +224,8 @@ MonoBehaviour:
         m_GUID: 22a58aef-9262-49dc-8c4b-23d84ba11405
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 674, y: -241}
-        m_InputEdgeGUID: 16920ab3-cba9-4dec-b30f-38310acc2a95
+        m_Position: {x: 964, y: -225}
+        m_InputEdgeGUID: 3f64fa92-941c-41d3-bdcb-8a87f1eb29c2
         m_Success:
           m_Name: m_Success
           m_Direction: 1
@@ -222,7 +240,7 @@ MonoBehaviour:
         m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 831, y: 267}
+        m_Position: {x: 562, y: 477}
         m_InputEdgeGUID: 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -246,7 +264,7 @@ MonoBehaviour:
       data:
         m_GUID: 49b08740-465d-4aa5-876c-89301954f6b7
         m_Expanded: 1
-        m_ShowPanel: 0
+        m_ShowPanel: 1
         m_Position: {x: 562, y: -25}
         m_InputEdgeGUID: 792fbb4f-6ac9-428b-8651-7368d506ecf0
         m_LockKey:
@@ -276,16 +294,17 @@ MonoBehaviour:
         m_OutputEdgeGUIDs:
         - 792fbb4f-6ac9-428b-8651-7368d506ecf0
         - 2f83bc90-e5cc-46b9-9334-d451ce8a74eb
+        - d2e22a75-5d27-4268-ae63-84b459df6c27
         - 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
     - rid: 5521189441456570380
       type: {class: WaitNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
         m_GUID: 1a01f0c7-7473-4bfa-8115-ef9f0167a2fb
         m_Expanded: 1
-        m_ShowPanel: 0
-        m_Position: {x: 486, y: -225}
+        m_ShowPanel: 1
+        m_Position: {x: 485, y: -225}
         m_InputEdgeGUID: ec96bd22-597e-4447-9deb-cd508b86ddb3
-        m_OutputEdgeGUID: 16920ab3-cba9-4dec-b30f-38310acc2a95
+        m_OutputEdgeGUID: e9abc1a5-4df6-4f7b-ade0-767c01cb2212
         m_WaitType: 0
         m_Time:
           m_Name: m_Time
@@ -320,7 +339,7 @@ MonoBehaviour:
         m_GUID: cf3df207-5aae-4779-938b-746c95d04d99
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1122, y: 278}
+        m_Position: {x: 1163, y: 82}
         m_NodeType: 1
         m_Value:
           rid: 5521189441456570384
@@ -376,3 +395,58 @@ MonoBehaviour:
           m_Index: 0
           m_Expanded: 0
           m_Value: 0
+    - rid: 5521189441456570389
+      type: {class: ExposedPropertyNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 6216be4b-b655-41bf-9968-80d3102dd682
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 562, y: 280}
+        m_NodeType: 1
+        m_Value:
+          rid: 5521189441456570391
+        m_InputEdgeGUID: d2e22a75-5d27-4268-ae63-84b459df6c27
+        m_ExposedPropertyGUID: 516e2cc7-94c3-455b-bbc1-2c5d4b25af03
+    - rid: 5521189441456570391
+      type: {class: BoolPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_Value
+        m_Direction: 0
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 5521189470936498177
+      type: {class: SequenceNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: baaa96c4-3225-4e4e-a7c0-7d93e7b42bd1
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 673, y: -184}
+        m_InputEdgeGUID: e9abc1a5-4df6-4f7b-ade0-767c01cb2212
+        m_OutputEdgeGUIDs:
+        - 3f64fa92-941c-41d3-bdcb-8a87f1eb29c2
+        - 4667c89b-3ad0-44c4-85fa-0bff9d649ff2
+    - rid: 5521189470936498178
+      type: {class: ExposedPropertyNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: c9741c68-3b67-4907-a0fc-edac449efc07
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 964, y: -151}
+        m_NodeType: 1
+        m_Value:
+          rid: 5521189470936498179
+        m_InputEdgeGUID: 4667c89b-3ad0-44c4-85fa-0bff9d649ff2
+        m_ExposedPropertyGUID: 516e2cc7-94c3-455b-bbc1-2c5d4b25af03
+    - rid: 5521189470936498179
+      type: {class: BoolPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_Value
+        m_Direction: 0
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
