@@ -134,13 +134,6 @@ public partial class AnimancerAbility : OneRootTree
 
     public virtual void StartAbility()
     {
-        // [MODIFY] 幂等保护：已在运行则先正确停止，确保 RunnableTree 状态(m_Running/m_State)归位
-        if (m_Active.Value)
-        {
-            OnStop();
-        }
-        // [/MODIFY]
-
         m_Active.Value = true;
         m_Duration.Value = 0;
         ResetTree();
