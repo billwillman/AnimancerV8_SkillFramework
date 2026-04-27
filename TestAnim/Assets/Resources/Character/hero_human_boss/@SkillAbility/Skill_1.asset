@@ -103,7 +103,8 @@ MonoBehaviour:
   m_StackNodes: []
   m_RootGUID: 0f8a453f-ab0a-43f1-b7bc-81bc80c53590
   AbilityTags:
-    TagGuids: []
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Ability
       Tags
   CancelAbilitiesWithTag:
@@ -116,8 +117,7 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Block
       Abilities With Tag
   ActiveTags:
-    TagGuids:
-    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
+    TagGuids: []
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Active
       Tags
   RequiredTags:
