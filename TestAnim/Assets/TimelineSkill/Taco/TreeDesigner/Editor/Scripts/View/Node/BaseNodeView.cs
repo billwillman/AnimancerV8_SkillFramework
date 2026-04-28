@@ -582,16 +582,24 @@ namespace TreeDesigner.Editor
                 {
                     PropertyPortAttribute propertyPortAttribute = propertyPortAttributes.ElementAt(0);
                     PropertyPort propertyPort = fieldInfo.GetValue(m_Node) as PropertyPort;
+                    PropertyPortView portView = null;
                     switch (propertyPortAttribute.Direction)
                     {
                         case PortDirection.Input:
-                            m_InputPortContainer.AddPropertyPort(propertyPort, propertyPortAttribute.Name, Port.Capacity.Single);
+                            portView = m_InputPortContainer.AddPropertyPort(propertyPort, propertyPortAttribute.Name, Port.Capacity.Single);
                             break;
                         case PortDirection.Output:
-                            m_OutputPortContainer.AddPropertyPort(propertyPort, propertyPortAttribute.Name, Port.Capacity.Multi);
+                            portView = m_OutputPortContainer.AddPropertyPort(propertyPort, propertyPortAttribute.Name, Port.Capacity.Multi);
                             break;
                         default:
                             break;
+                    }
+                    // 读取 Tooltip 属性并设置悬浮提示
+                    if (portView != null)
+                    {
+                        var tooltipAttr = fieldInfo.GetCustomAttribute<UnityEngine.TooltipAttribute>();
+                        if (tooltipAttr != null)
+                            portView.tooltip = tooltipAttr.tooltip;
                     }
                 }
             }
