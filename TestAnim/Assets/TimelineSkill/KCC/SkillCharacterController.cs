@@ -148,108 +148,148 @@ namespace UnityTimeline
 
         #endregion
 
-        #region Input Lock API (方案A + 方案B + 方案C)
+        #region Input Lock API — 每通道独立 Tag 系统
+
+        /// <summary>输入锁变化事件，参数为当前生效的总锁标志位</summary>
+        public event Action<InputLockFlags> OnInputLockChanged;
 
         // ====================================================================
-        //  方案 A — 简单布尔开关（门面，内部调用方案B的 All）
+        //  核心 API
         // ====================================================================
 
         /// <summary>
-        /// 获取/设置 输入总开关。false=全部锁定，true=解除内置锁。
+        /// 为指定通道添加锁标记。多通道可通过 flags 组合（如 Movement | Jump）。
+        /// 同一 tag 可在多个通道独立存在，各通道 tag 集合非空即视为锁定。
         /// </summary>
-        /// <remarks>
-        /// 注意：此属性仅操作"内置锁"(builtin key)。
-        /// 如果有其他 key 持有的锁，即使 InputEnabled=true 输入仍可能被锁定。
-        /// 需完全解锁请使用 ClearAllInputLocks() 或逐个 RemoveInputLock(key)。
-        /// </remarks>
+        /// <param name="tag">持有者标识（如 "SkillPlay", "Dialogue", "Cutscene"）</param>
+        /// <param name="channels">要锁定的通道</param>
+        public void AddInputLock(string tag, InputLockFlags channels)
+        {
+            if (string.IsNullOrEmpty(tag) || channels == InputLockFlags.None) return;
+            bool changed = false;
+            foreach (var channel in _singleChannels)
+            {
+                if ((channels & channel) != 0)
+                {
+                    if (!_channelLockTags.TryGetValue(channel, out var tags))
+                    {
+                        tags = new HashSet<string>();
+                        _channelLockTags[channel] = tags;
+                    }
+                    changed |= tags.Add(tag);
+                }
+            }
+            if (changed) OnInputLockChanged?.Invoke(GetEffectiveLocks());
+        }
+
+        /// <summary>
+        /// 移除指定 tag 在指定通道的锁（精细控制）。
+        /// </summary>
+        public void RemoveInputLock(string tag, InputLockFlags channels)
+        {
+            if (string.IsNullOrEmpty(tag)) return;
+            bool changed = false;
+            foreach (var channel in _singleChannels)
+            {
+                if ((channels & channel) != 0)
+                {
+                    if (_channelLockTags.TryGetValue(channel, out var tags))
+                        changed |= tags.Remove(tag);
+                }
+            }
+            if (changed) OnInputLockChanged?.Invoke(GetEffectiveLocks());
+        }
+
+        /// <summary>
+        /// 移除指定 tag 在所有通道的锁（快捷方式）。
+        /// </summary>
+        public void RemoveInputLock(string tag)
+        {
+            if (string.IsNullOrEmpty(tag)) return;
+            bool changed = false;
+            foreach (var kvp in _channelLockTags)
+                changed |= kvp.Value.Remove(tag);
+            if (changed) OnInputLockChanged?.Invoke(GetEffectiveLocks());
+        }
+
+        /// <summary>查询指定通道是否被锁定（任一通道有 tag 即返回 true）。</summary>
+        public bool IsInputLocked(InputLockFlags channels)
+        {
+            foreach (var channel in _singleChannels)
+            {
+                if ((channels & channel) != 0)
+                {
+                    if (_channelLockTags.TryGetValue(channel, out var tags) && tags.Count > 0)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>查询是否有任何通道被锁定。</summary>
+        public bool IsInputLocked() => GetEffectiveLocks() != InputLockFlags.None;
+
+        /// <summary>检查指定 tag 是否在任何通道持有锁。</summary>
+        public bool HasInputLockTag(string tag)
+        {
+            if (string.IsNullOrEmpty(tag)) return false;
+            foreach (var kvp in _channelLockTags)
+            {
+                if (kvp.Value.Contains(tag)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>清除所有通道的所有锁标记。</summary>
+        public void ClearAllInputLocks()
+        {
+            foreach (var kvp in _channelLockTags)
+                kvp.Value.Clear();
+            OnInputLockChanged?.Invoke(InputLockFlags.None);
+        }
+
+        // ====================================================================
+        //  兼容 API（门面）
+        // ====================================================================
+
+        /// <summary>
+        /// 输入总开关。false=全部锁定（builtin tag），true=解除 builtin tag。
+        /// </summary>
         public bool InputEnabled
         {
             get => GetEffectiveLocks() == InputLockFlags.None;
             set
             {
                 if (value)
-                    _inputLockSources.Remove(kBuiltinLockKey);
+                    RemoveInputLock(kBuiltinLockTag);
                 else
-                    _inputLockSources[kBuiltinLockKey] = InputLockFlags.All;
+                    AddInputLock(kBuiltinLockTag, InputLockFlags.All);
             }
         }
 
-        // ====================================================================
-        //  方案 B — 位掩码分级控制（直接设置/查询）
-        // ====================================================================
-
-        /// <summary>直接设置输入锁标志位（覆盖式，仅影响 builtin key）。</summary>
+        /// <summary>直接设置输入锁标志位（覆盖式，仅影响 builtin tag）。</summary>
         public void SetInputLock(InputLockFlags flags)
         {
-            if (flags == InputLockFlags.None)
-                _inputLockSources.Remove(kBuiltinLockKey);
-            else
-                _inputLockSources[kBuiltinLockKey] = flags;
-        }
-
-        /// <summary>查询当前是否被锁定（不区分来源）。</summary>
-        public bool IsInputLocked() => GetEffectiveLocks() != InputLockFlags.None;
-
-        /// <summary>查询指定通道是否被锁定。</summary>
-        public bool IsInputLocked(InputLockFlags flags) => (GetEffectiveLocks() & flags) != 0;
-
-        // ====================================================================
-        //  方案 C — 多标记系统（key-value 字典，支持多持有者叠加）
-        // ====================================================================
-
-        /// <summary>输入锁变化事件，参数为当前生效的总锁标志位</summary>
-        public event Action<InputLockFlags> OnInputLockChanged;
-
-        /// <summary>
-        /// 为指定 key 添加输入锁。同一 key 重复调用会覆盖之前的 flags。
-        /// 多个 key 的锁通过 OR 聚合生效——所有 key 的锁都释放后输入才恢复。
-        /// </summary>
-        /// <param name="key">持有者标识（如 "SkillPlay", "Dialogue", "Cutscene"）</param>
-        /// <param name="flags">要锁定的输入通道</param>
-        public void AddInputLock(string key, InputLockFlags flags)
-        {
-            if (string.IsNullOrEmpty(key)) return;
-            if (flags == InputLockFlags.None)
-            {
-                _inputLockSources.Remove(key);
-                OnInputLockChanged?.Invoke(GetEffectiveLocks());
-                return;
-            }
-            _inputLockSources[key] = flags;
-            OnInputLockChanged?.Invoke(GetEffectiveLocks());
-        }
-
-        /// <summary>移除指定 key 的所有输入锁。</summary>
-        public void RemoveInputLock(string key)
-        {
-            if (!string.IsNullOrEmpty(key))
-            {
-                _inputLockSources.Remove(key);
-                OnInputLockChanged?.Invoke(GetEffectiveLocks());
-            }
-        }
-
-        /// <summary>检查指定 key 当前是否持有任何输入锁。</summary>
-        public bool HasInputLockKey(string key)
-            => !string.IsNullOrEmpty(key) && _inputLockSources.ContainsKey(key);
-
-        /// <summary>清除所有来源的输入锁（强制恢复输入）。</summary>
-        public void ClearAllInputLocks()
-        {
-            _inputLockSources.Clear();
-            OnInputLockChanged?.Invoke(InputLockFlags.None);
+            // 先移除 builtin 在所有通道的标记
+            RemoveInputLock(kBuiltinLockTag);
+            // 再在指定通道加回
+            if (flags != InputLockFlags.None)
+                AddInputLock(kBuiltinLockTag, flags);
         }
 
         // ====================================================================
         //  内部方法
         // ====================================================================
 
-        /// <summary>聚合所有 key 的 flags，返回当前实际生效的总锁。</summary>
+        /// <summary>聚合所有通道，返回当前被锁定的通道集合。</summary>
         private InputLockFlags GetEffectiveLocks()
         {
             InputLockFlags result = InputLockFlags.None;
-            foreach (var kvp in _inputLockSources)
-                result |= kvp.Value;
+            foreach (var channel in _singleChannels)
+            {
+                if (_channelLockTags.TryGetValue(channel, out var tags) && tags.Count > 0)
+                    result |= channel;
+            }
             return result;
         }
 
@@ -276,9 +316,26 @@ namespace UnityTimeline
         // Rotation lock: when angle between current facing and target > threshold, movement is locked
         private bool _movementLocked;
 
-        // === Input Lock System 底层存储 ===
-        private const string kBuiltinLockKey = "__builtin__";
-        private readonly Dictionary<string, InputLockFlags> _inputLockSources = new();
+        // === Input Lock System — 每通道独立 Tag 存储 ===
+        private const string kBuiltinLockTag = "__builtin__";
+
+        /// <summary>所有单通道枚举值，用于遍历</summary>
+        private static readonly InputLockFlags[] _singleChannels = new[]
+        {
+            InputLockFlags.Movement,
+            InputLockFlags.Jump,
+            InputLockFlags.AbilityInput,
+            InputLockFlags.CinemachineCamera,
+        };
+
+        /// <summary>每个通道独立维护的 Tag 集合</summary>
+        private readonly Dictionary<InputLockFlags, HashSet<string>> _channelLockTags = new()
+        {
+            { InputLockFlags.Movement,          new HashSet<string>() },
+            { InputLockFlags.Jump,              new HashSet<string>() },
+            { InputLockFlags.AbilityInput,      new HashSet<string>() },
+            { InputLockFlags.CinemachineCamera, new HashSet<string>() },
+        };
 
         #endregion
 
