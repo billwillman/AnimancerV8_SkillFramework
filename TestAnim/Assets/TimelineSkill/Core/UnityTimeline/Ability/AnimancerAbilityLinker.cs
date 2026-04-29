@@ -103,7 +103,6 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         {
             if (m_Abilities[i] != null)
             {
-                m_Abilities[i] = m_Abilities[i].Clone();
                 m_Abilities[i].AnimancerComponent = AnimancerComponent;
                 AnimancerAbilityAgent.AddAbility(m_Abilities[i]);
             }
@@ -316,7 +315,6 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
-            ability = TreeUtility.Clone(ability);
             ability.AnimancerComponent = AnimancerComponent;
             AnimancerAbilityAgent.AddAbility(ability);
             if (!m_Abilities.Contains(ability))
