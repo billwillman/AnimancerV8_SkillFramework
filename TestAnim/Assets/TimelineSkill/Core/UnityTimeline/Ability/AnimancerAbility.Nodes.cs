@@ -561,3 +561,96 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         m_SetSuccess = true;
     }
 }
+
+#region KCC 状态判断 ActionNode
+
+/// <summary>
+/// 判断角色是否正在移动（水平速度 >= 阈值），始终返回 Success
+/// </summary>
+[NodeName("IsMoving")]
+[NodePath("AnimancerAbility/Condition/IsMoving")]
+public class IsMovingNode : AnimancerAbilityActionNode
+{
+    [SerializeField, ShowInPanel, Tooltip("移动判断的速度阈值")]
+    protected float m_SpeedThreshold = 0.1f;
+
+    public override State ReturnState => State.Success;
+
+    protected override void DoAction()
+    {
+        var controller = GetSkillController();
+        if (controller == null) return;
+
+        var velocity = controller.Motor.Velocity;
+        var horizontalSpeed = new Vector3(velocity.x, 0f, velocity.z).magnitude;
+        // 检测结果可在此处输出或记录，节点始终返回 Success
+        _ = horizontalSpeed >= m_SpeedThreshold;
+    }
+}
+
+/// <summary>
+/// 判断角色是否在空中（非稳定着地状态），始终返回 Success
+/// </summary>
+[NodeName("IsInAir")]
+[NodePath("AnimancerAbility/Condition/IsInAir")]
+public class IsInAirNode : AnimancerAbilityActionNode
+{
+    public override State ReturnState => State.Success;
+
+    protected override void DoAction()
+    {
+        var controller = GetSkillController();
+        if (controller == null) return;
+
+        // 检测结果可在此处输出或记录，节点始终返回 Success
+        _ = !controller.Motor.GroundingStatus.IsStableOnGround;
+    }
+}
+
+/// <summary>
+/// 判断角色是否在地面上（稳定着地状态），始终返回 Success
+/// </summary>
+[NodeName("IsGrounded")]
+[NodePath("AnimancerAbility/Condition/IsGrounded")]
+public class IsGroundedNode : AnimancerAbilityActionNode
+{
+    public override State ReturnState => State.Success;
+
+    protected override void DoAction()
+    {
+        var controller = GetSkillController();
+        if (controller == null) return;
+
+        // 检测结果可在此处输出或记录，节点始终返回 Success
+        _ = controller.Motor.GroundingStatus.IsStableOnGround;
+    }
+}
+
+/// <summary>
+/// 判断角色是否在地面移动（稳定着地 AND 水平速度 >= 阈值），始终返回 Success
+/// </summary>
+[NodeName("IsGroundMoving")]
+[NodePath("AnimancerAbility/Condition/IsGroundMoving")]
+public class IsGroundMovingNode : AnimancerAbilityActionNode
+{
+    [SerializeField, ShowInPanel, Tooltip("移动判断的速度阈值")]
+    protected float m_SpeedThreshold = 0.1f;
+
+    public override State ReturnState => State.Success;
+
+    protected override void DoAction()
+    {
+        var controller = GetSkillController();
+        if (controller == null) return;
+
+        // 必须先在地面
+        if (!controller.Motor.GroundingStatus.IsStableOnGround) return;
+
+        var velocity = controller.Motor.Velocity;
+        var horizontalSpeed = new Vector3(velocity.x, 0f, velocity.z).magnitude;
+        // 检测结果可在此处输出或记录，节点始终返回 Success
+        _ = horizontalSpeed >= m_SpeedThreshold;
+    }
+}
+
+#endregion
