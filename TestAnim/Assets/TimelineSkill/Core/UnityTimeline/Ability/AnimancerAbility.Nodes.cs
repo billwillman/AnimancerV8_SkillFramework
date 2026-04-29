@@ -39,6 +39,8 @@ public abstract class AnimancerAbilityActionNode : ActionNode
 }
 
 
+
+
 /// <summary>
 /// AnimancerAbility 的 Value 节点基类，提供 AnimancerComponent 访问 + DoOuput 模式
 /// </summary>
@@ -569,22 +571,24 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
 /// </summary>
 [NodeName("IsMoving")]
 [NodePath("AnimancerAbility/Condition/IsMoving")]
-public class IsMovingNode : AnimancerAbilityActionNode
+public class IsMovingNode : ValueNode
 {
     [SerializeField, ShowInPanel, Tooltip("移动判断的速度阈值")]
     protected float m_SpeedThreshold = 0.1f;
 
-    public override State ReturnState => State.Success;
+    [SerializeField, PropertyPort(PortDirection.Output, "IsMoving"), ReadOnly]
+    protected BoolPropertyPort m_IsMoving = new BoolPropertyPort();
 
-    protected override void DoAction()
+    protected override void OutputValue()
     {
-        var controller = GetSkillController();
+        base.OutputValue();
+        var animancerAbility = Owner as AnimancerAbility;
+        var controller = animancerAbility?.SkillCharacterController;
         if (controller == null) return;
 
         var velocity = controller.Motor.Velocity;
         var horizontalSpeed = new Vector3(velocity.x, 0f, velocity.z).magnitude;
-        // 检测结果可在此处输出或记录，节点始终返回 Success
-        _ = horizontalSpeed >= m_SpeedThreshold;
+        m_IsMoving.Value = horizontalSpeed >= m_SpeedThreshold;
     }
 }
 
@@ -593,17 +597,19 @@ public class IsMovingNode : AnimancerAbilityActionNode
 /// </summary>
 [NodeName("IsInAir")]
 [NodePath("AnimancerAbility/Condition/IsInAir")]
-public class IsInAirNode : AnimancerAbilityActionNode
+public class IsInAirNode : ValueNode
 {
-    public override State ReturnState => State.Success;
+    [SerializeField, PropertyPort(PortDirection.Output, "IsInAir"), ReadOnly]
+    protected BoolPropertyPort m_IsInAir = new BoolPropertyPort();
 
-    protected override void DoAction()
+    protected override void OutputValue()
     {
-        var controller = GetSkillController();
+        base.OutputValue();
+        var animancerAbility = Owner as AnimancerAbility;
+        var controller = animancerAbility?.SkillCharacterController;
         if (controller == null) return;
 
-        // 检测结果可在此处输出或记录，节点始终返回 Success
-        _ = !controller.Motor.GroundingStatus.IsStableOnGround;
+        m_IsInAir.Value = !controller.Motor.GroundingStatus.IsStableOnGround;
     }
 }
 
@@ -612,17 +618,19 @@ public class IsInAirNode : AnimancerAbilityActionNode
 /// </summary>
 [NodeName("IsGrounded")]
 [NodePath("AnimancerAbility/Condition/IsGrounded")]
-public class IsGroundedNode : AnimancerAbilityActionNode
+public class IsGroundedNode : ValueNode
 {
-    public override State ReturnState => State.Success;
+    [SerializeField, PropertyPort(PortDirection.Output, "IsGrounded"), ReadOnly]
+    protected BoolPropertyPort m_IsGrounded = new BoolPropertyPort();
 
-    protected override void DoAction()
+    protected override void OutputValue()
     {
-        var controller = GetSkillController();
+        base.OutputValue();
+        var animancerAbility = Owner as AnimancerAbility;
+        var controller = animancerAbility?.SkillCharacterController;
         if (controller == null) return;
 
-        // 检测结果可在此处输出或记录，节点始终返回 Success
-        _ = controller.Motor.GroundingStatus.IsStableOnGround;
+        m_IsGrounded.Value = controller.Motor.GroundingStatus.IsStableOnGround;
     }
 }
 
@@ -631,25 +639,31 @@ public class IsGroundedNode : AnimancerAbilityActionNode
 /// </summary>
 [NodeName("IsGroundMoving")]
 [NodePath("AnimancerAbility/Condition/IsGroundMoving")]
-public class IsGroundMovingNode : AnimancerAbilityActionNode
+public class IsGroundMovingNode : ValueNode
 {
     [SerializeField, ShowInPanel, Tooltip("移动判断的速度阈值")]
     protected float m_SpeedThreshold = 0.1f;
 
-    public override State ReturnState => State.Success;
+    [SerializeField, PropertyPort(PortDirection.Output, "IsGroundMoving"), ReadOnly]
+    protected BoolPropertyPort m_IsGroundMoving = new BoolPropertyPort();
 
-    protected override void DoAction()
+    protected override void OutputValue()
     {
-        var controller = GetSkillController();
+        base.OutputValue();
+        var animancerAbility = Owner as AnimancerAbility;
+        var controller = animancerAbility?.SkillCharacterController;
         if (controller == null) return;
 
-        // 必须先在地面
-        if (!controller.Motor.GroundingStatus.IsStableOnGround) return;
+        // 必须先在地面，否则输出 false
+        if (!controller.Motor.GroundingStatus.IsStableOnGround)
+        {
+            m_IsGroundMoving.Value = false;
+            return;
+        }
 
         var velocity = controller.Motor.Velocity;
         var horizontalSpeed = new Vector3(velocity.x, 0f, velocity.z).magnitude;
-        // 检测结果可在此处输出或记录，节点始终返回 Success
-        _ = horizontalSpeed >= m_SpeedThreshold;
+        m_IsGroundMoving.Value = horizontalSpeed >= m_SpeedThreshold;
     }
 }
 
