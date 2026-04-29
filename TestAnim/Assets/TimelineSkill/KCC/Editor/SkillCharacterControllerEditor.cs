@@ -188,6 +188,19 @@ namespace SkillCharacterControllerEditor
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(_moveActionProp,
                     new GUIContent("Move Action", "\u79FB\u52A8\u8F93\u5165 Action (Vector2)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"));
+
+                // 运行时显示 MoveAction 当前 Vector2 值
+                if (Application.isPlaying && _ctrl != null
+                    && _ctrl.MoveAction != null && _ctrl.MoveAction.action != null)
+                {
+                    using (new EditorGUI.DisabledGroupScope(true))
+                    {
+                        Vector2 moveValue = _ctrl.MoveAction.action.ReadValue<Vector2>();
+                        EditorGUILayout.Vector2Field("  Move Value (Runtime)", moveValue);
+                    }
+                    Repaint();
+                }
+
                 EditorGUILayout.PropertyField(_jumpActionProp,
                     new GUIContent("Jump Action", "\u8DF3\u8DC3\u8F93\u5165 Action (Button)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"));
                 EditorGUILayout.PropertyField(_orientationReferenceProp,
