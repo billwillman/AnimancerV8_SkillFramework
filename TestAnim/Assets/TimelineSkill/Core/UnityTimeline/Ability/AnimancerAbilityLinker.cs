@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using Animancer;
 using TreeDesigner;
 using UnityTimeline;
+using Cinemachine;
 
 /// <summary>
 /// AnimancerAbility 的 MonoBehaviour 桥接组件，挂载到角色上
@@ -58,6 +59,10 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     [Tooltip("输入绑定列表：配置 InputAction 与 Ability 的映射关系")]
     private List<InputAbilityBinding> m_InputBindings = new List<InputAbilityBinding>();
 
+    [SerializeField]
+    [Tooltip("Cinemachine 相机输入提供者（场景中拖入），用于 CinemachineCamera 锁定时禁用相机输入")]
+    private CinemachineInputProvider m_CinemachineInputProvider;
+
     public AnimancerAbilityAgent AnimancerAbilityAgent { get; set; }
 
     public AnimancerComponent AnimancerComponent { get; private set; }
@@ -107,6 +112,10 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         // 注册输入绑定
         RegisterInputBindings();
 
+        // 订阅输入锁变化事件
+        if (SkillCharacterController != null)
+            SkillCharacterController.OnInputLockChanged += HandleInputLockChanged;
+
         // 设置默认 Ability 名称
         if (m_DefaultAbility != null)
             AnimancerAbilityAgent.DefaultAbilityName = m_DefaultAbility.name;
@@ -130,6 +139,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     {
         UnregisterInputBindings();
 
+        if (SkillCharacterController != null)
+            SkillCharacterController.OnInputLockChanged -= HandleInputLockChanged;
+
         if (AnimancerAbilityAgent != null)
         {
             AnimancerAbilityAgent.OnAbilityStart -= HandleAbilityStart;
@@ -148,6 +160,20 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     {
         DisableInputActions();
     }
+
+    #region Input Lock Response
+
+    private void HandleInputLockChanged(InputLockFlags effectiveLocks)
+    {
+        // CinemachineCamera 锁：禁用/启用相机输入
+        if (m_CinemachineInputProvider != null)
+        {
+            bool cameraLocked = (effectiveLocks & InputLockFlags.CinemachineCamera) != 0;
+            m_CinemachineInputProvider.enabled = !cameraLocked;
+        }
+    }
+
+    #endregion
 
     #region Input Bindings
 

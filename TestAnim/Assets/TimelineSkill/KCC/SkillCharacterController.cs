@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using KinematicCharacterController;
 using UnityEngine.InputSystem;
@@ -40,11 +41,12 @@ namespace UnityTimeline
     [System.Flags]
     public enum InputLockFlags
     {
-        None         = 0,
-        Movement     = 1 << 0,  // 锁定移动输入 (MoveAxisForward / MoveAxisRight)
-        Jump         = 1 << 1,  // 锁定跳跃输入 (JumpDown)
-        AbilityInput = 1 << 2,  // 锁定 AnimancerAbilityLinker 的所有 InputBinding 响应
-        All          = Movement | Jump | AbilityInput,
+        None             = 0,
+        Movement         = 1 << 0,  // 锁定移动输入 (MoveAxisForward / MoveAxisRight)
+        Jump             = 1 << 1,  // 锁定跳跃输入 (JumpDown)
+        AbilityInput     = 1 << 2,  // 锁定 AnimancerAbilityLinker 的所有 InputBinding 响应
+        CinemachineCamera = 1 << 3, // 禁用 Cinemachine 相机输入 (CinemachineInputProvider)
+        All              = Movement | Jump | AbilityInput | CinemachineCamera,
     }
 
     /// <summary>
@@ -195,6 +197,9 @@ namespace UnityTimeline
         //  方案 C — 多标记系统（key-value 字典，支持多持有者叠加）
         // ====================================================================
 
+        /// <summary>输入锁变化事件，参数为当前生效的总锁标志位</summary>
+        public event Action<InputLockFlags> OnInputLockChanged;
+
         /// <summary>
         /// 为指定 key 添加输入锁。同一 key 重复调用会覆盖之前的 flags。
         /// 多个 key 的锁通过 OR 聚合生效——所有 key 的锁都释放后输入才恢复。
@@ -207,16 +212,21 @@ namespace UnityTimeline
             if (flags == InputLockFlags.None)
             {
                 _inputLockSources.Remove(key);
+                OnInputLockChanged?.Invoke(GetEffectiveLocks());
                 return;
             }
             _inputLockSources[key] = flags;
+            OnInputLockChanged?.Invoke(GetEffectiveLocks());
         }
 
         /// <summary>移除指定 key 的所有输入锁。</summary>
         public void RemoveInputLock(string key)
         {
             if (!string.IsNullOrEmpty(key))
+            {
                 _inputLockSources.Remove(key);
+                OnInputLockChanged?.Invoke(GetEffectiveLocks());
+            }
         }
 
         /// <summary>检查指定 key 当前是否持有任何输入锁。</summary>
@@ -224,7 +234,11 @@ namespace UnityTimeline
             => !string.IsNullOrEmpty(key) && _inputLockSources.ContainsKey(key);
 
         /// <summary>清除所有来源的输入锁（强制恢复输入）。</summary>
-        public void ClearAllInputLocks() => _inputLockSources.Clear();
+        public void ClearAllInputLocks()
+        {
+            _inputLockSources.Clear();
+            OnInputLockChanged?.Invoke(InputLockFlags.None);
+        }
 
         // ====================================================================
         //  内部方法

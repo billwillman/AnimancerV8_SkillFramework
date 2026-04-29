@@ -165,7 +165,7 @@ MonoBehaviour:
         m_GUID: 1f226e8a-8fb1-414c-8da2-91534e8609c5
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 616, y: 359}
+        m_Position: {x: 616, y: 358}
         m_InputEdgeGUID: 434c010c-c8aa-4733-8b84-42a2a97e9b69
         m_LockKey:
           m_Name: m_LockKey
@@ -181,7 +181,7 @@ MonoBehaviour:
         m_GUID: c843c448-063c-486d-a02b-df1890e3f0a5
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 214, y: 172}
+        m_Position: {x: 215.33334, y: 170.66667}
         m_InputEdgeGUID: 18302be2-f727-4680-81ce-c4d767ed1726
         m_OutputEdgeGUIDs:
         - 22725f44-3734-4883-8355-5f347440da69

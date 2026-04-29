@@ -242,7 +242,7 @@ MonoBehaviour:
         m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 562, y: 477}
+        m_Position: {x: 560, y: 428.66666}
         m_InputEdgeGUID: 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -267,7 +267,7 @@ MonoBehaviour:
         m_GUID: 49b08740-465d-4aa5-876c-89301954f6b7
         m_Expanded: 1
         m_ShowPanel: 1
-        m_Position: {x: 562, y: -25}
+        m_Position: {x: 620, y: -36}
         m_InputEdgeGUID: 792fbb4f-6ac9-428b-8651-7368d506ecf0
         m_LockKey:
           m_Name: m_LockKey
@@ -341,7 +341,7 @@ MonoBehaviour:
         m_GUID: cf3df207-5aae-4779-938b-746c95d04d99
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1163, y: 82}
+        m_Position: {x: 1088.6666, y: 400}
         m_NodeType: 1
         m_Value:
           rid: 5521189441456570384
@@ -403,7 +403,7 @@ MonoBehaviour:
         m_GUID: 6216be4b-b655-41bf-9968-80d3102dd682
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 562, y: 280}
+        m_Position: {x: 580.6667, y: 278}
         m_NodeType: 1
         m_Value:
           rid: 5521189441456570391

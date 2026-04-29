@@ -9,6 +9,7 @@ public class AnimancerAbilityLinkerEditor : Editor
     SerializedProperty m_AbilitiesProp;
     SerializedProperty m_DefaultAbilityProp;
     SerializedProperty m_InputBindingsProp;
+    SerializedProperty m_CinemachineInputProviderProp;
 
     private static readonly string kHoldInteractionGuide =
         "如需「持续按住 N 秒后才触发」，请在 Input Action Asset 中为对应 Action 添加 Hold Interaction：\n\n" +
@@ -26,6 +27,7 @@ public class AnimancerAbilityLinkerEditor : Editor
         m_AbilitiesProp = serializedObject.FindProperty("m_Abilities");
         m_DefaultAbilityProp = serializedObject.FindProperty("m_DefaultAbility");
         m_InputBindingsProp = serializedObject.FindProperty("m_InputBindings");
+        m_CinemachineInputProviderProp = serializedObject.FindProperty("m_CinemachineInputProvider");
     }
 
     public override void OnInspectorGUI()
@@ -56,6 +58,12 @@ public class AnimancerAbilityLinkerEditor : Editor
 
             // ── Input Bindings ──
             DrawInputBindings(validAbilities);
+
+            EditorGUILayout.Space(8);
+
+            // ── Cinemachine ──
+            EditorGUILayout.PropertyField(m_CinemachineInputProviderProp,
+                new GUIContent("Cinemachine Input Provider", "拖入场景中的 CinemachineInputProvider，用于 CinemachineCamera 锁定时禁用相机输入"));
         }
 
         serializedObject.ApplyModifiedProperties();
