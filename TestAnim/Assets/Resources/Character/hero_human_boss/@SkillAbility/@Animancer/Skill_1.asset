@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Skill_1
   m_EditorClassIdentifier: 
   _Transition:
-    rid: 4085602169239896069
+    rid: 5521189493954052103
   references:
     version: 2
     RefIds:
-    - rid: 4085602169239896069
-      type: {class: ClipTransition, ns: Animancer, asm: Kybernetik.Animancer}
+    - rid: 5521189493954052103
+      type: {class: ControllerTransition, ns: Animancer, asm: Kybernetik.Animancer}
       data:
         _FadeDuration: 0.25
         _Speed: 1
@@ -26,5 +26,8 @@ MonoBehaviour:
           _NormalizedTimes: []
           _Callbacks: []
           _Names: []
-        _Clip: {fileID: 7400000, guid: 42818423d575a7a4ca792b1d1dd1f477, type: 2}
-        _NormalizedStartTime: NaN
+        _Controller: {fileID: 9100000, guid: ef21838bbe2840441ba30404e18f3f87, type: 2}
+        _ParameterBindings:
+          _Mode: 0
+          _Bindings: []
+        _ActionsOnStop: 
