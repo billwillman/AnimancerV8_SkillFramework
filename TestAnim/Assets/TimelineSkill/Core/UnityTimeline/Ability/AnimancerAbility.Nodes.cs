@@ -668,3 +668,120 @@ public class IsGroundMovingNode : ValueNode
 }
 
 #endregion
+
+#region Branch 分支节点
+
+/// <summary>
+/// 条件分支 Action 节点（通用基础类型）
+/// 根据 Bool 条件选择执行 True 或 False 分支的子节点
+/// 可在任何 RunnableTree 中使用
+/// </summary>
+[NodeName("Branch")]
+[NodePath("Base/Action/Branch")]
+[Output("True", PortCapacity.Single)]
+[Output("False", PortCapacity.Single)]
+public class BranchNode : ActionNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "Condition"), ShowInPanel]
+    protected BoolPropertyPort m_Condition = new BoolPropertyPort();
+
+    [SerializeField]
+    protected string m_TrueEdgeGUID;
+
+    [SerializeField]
+    protected string m_FalseEdgeGUID;
+
+    [NonSerialized]
+    protected RunnableNode m_TrueChild;
+
+    [NonSerialized]
+    protected RunnableNode m_FalseChild;
+
+    [NonSerialized]
+    protected RunnableNode m_ActiveChild;
+
+    public override void Init(BaseTree tree)
+    {
+        base.Init(tree);
+
+        if (!string.IsNullOrEmpty(m_TrueEdgeGUID) && m_Owner.GUIDEdgeMap.ContainsKey(m_TrueEdgeGUID))
+            m_TrueChild = m_Owner.GUIDEdgeMap[m_TrueEdgeGUID].EndNode as RunnableNode;
+
+        if (!string.IsNullOrEmpty(m_FalseEdgeGUID) && m_Owner.GUIDEdgeMap.ContainsKey(m_FalseEdgeGUID))
+            m_FalseChild = m_Owner.GUIDEdgeMap[m_FalseEdgeGUID].EndNode as RunnableNode;
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        m_TrueChild = null;
+        m_FalseChild = null;
+        m_ActiveChild = null;
+    }
+
+    public override void OnAfterDeserialize()
+    {
+        base.OnAfterDeserialize();
+        m_TrueEdgeGUID = string.Empty;
+        m_FalseEdgeGUID = string.Empty;
+        m_TrueChild = null;
+        m_FalseChild = null;
+        m_ActiveChild = null;
+    }
+
+    public override void ResetNode()
+    {
+        base.ResetNode();
+        m_ActiveChild?.ResetNode();
+        m_ActiveChild = null;
+    }
+
+    protected override State OnUpdate()
+    {
+        if (m_ActiveChild != null)
+            return m_ActiveChild.UpdateNode();
+        return State.Success;
+    }
+
+    protected override void DoAction()
+    {
+        // 根据条件选择活跃分支
+        m_ActiveChild = m_Condition.Value ? m_TrueChild : m_FalseChild;
+    }
+
+#if UNITY_EDITOR
+    public override void OnOutputLinked(BaseEdge edge)
+    {
+        base.OnOutputLinked(edge);
+
+        if (edge.StartPortName == "True")
+        {
+            m_TrueEdgeGUID = edge.GUID;
+            m_TrueChild = edge.EndNode as RunnableNode;
+        }
+        else if (edge.StartPortName == "False")
+        {
+            m_FalseEdgeGUID = edge.GUID;
+            m_FalseChild = edge.EndNode as RunnableNode;
+        }
+    }
+
+    public override void OnOutputUnlinked(BaseEdge edge)
+    {
+        base.OnOutputUnlinked(edge);
+
+        if (edge.StartPortName == "True")
+        {
+            m_TrueEdgeGUID = string.Empty;
+            m_TrueChild = null;
+        }
+        else if (edge.StartPortName == "False")
+        {
+            m_FalseEdgeGUID = string.Empty;
+            m_FalseChild = null;
+        }
+    }
+#endif
+}
+
+#endregion
