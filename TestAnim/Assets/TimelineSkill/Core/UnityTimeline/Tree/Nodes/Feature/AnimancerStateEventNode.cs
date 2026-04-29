@@ -31,9 +31,6 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
     [SerializeField, PropertyPort(PortDirection.Input, "NormalizedTime")]
     FloatPropertyPort m_NormalizedTime = new FloatPropertyPort() { Value = 0.5f };
 
-    [SerializeField, ShowInPanel("Always Success"), Tooltip("开启后始终返回 Success；关闭则根据 Output 连接的子节点执行结果返回")]
-    protected bool m_AlwaysSuccess = true;
-
     [SerializeField]
     string m_OutputEdgeGUID;
     public string OutputEdgeGUID => m_OutputEdgeGUID;
@@ -85,8 +82,7 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
         var state = m_AnimacerState.Value;
         CleanupEvents(state);
         base.ResetNode();
-        if (!m_AlwaysSuccess)
-            m_OutputChild?.ResetNode();
+        m_OutputChild?.ResetNode();
 
         m_EventTriggered = false;
         m_OutputResult = State.None;
@@ -121,15 +117,11 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
         if (!m_EventTriggered)
             return State.Running;
 
-        // Always Success 模式 → 直接返回成功
-        if (m_AlwaysSuccess)
-            return State.Success;
-
-        // 事件已触发，但没有 OUTPUT 子节点 → 直接成功
+        // 事件已触发，但没有 Output 子节点 → 直接成功
         if (m_OutputChild == null)
             return State.Success;
 
-        // 有 OUTPUT 子节点 → 透传状态（非终态时继续驱动）
+        // 有 Output 子节点 → 透传状态（非终态时继续驱动）
         if (m_OutputResult != State.Success && m_OutputResult != State.Failure)
             m_OutputResult = m_OutputChild.UpdateNode();
 
@@ -149,14 +141,10 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
 
         m_EventTriggered = true;
 
-        // Always Success 模式 → 直接标记成功
-        if (m_AlwaysSuccess || m_OutputChild == null)
-        {
+        if (m_OutputChild != null)
+            m_OutputResult = m_OutputChild.UpdateNode();
+        else
             m_OutputResult = State.Success;
-            return;
-        }
-
-        m_OutputResult = m_OutputChild.UpdateNode();
     }
 
     /// <summary>
