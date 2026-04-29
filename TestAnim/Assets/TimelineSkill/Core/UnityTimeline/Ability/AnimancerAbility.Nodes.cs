@@ -384,3 +384,180 @@ public class GetAnimancerStateNode : AnimancerAbilityValueNode
 public class AnimancerStatePropertyPort : PropertyPort<AnimancerState>
 {
 }
+
+/// <summary>
+/// 对 AnimancerState 关联的 Animator 设置 Float 参数
+/// </summary>
+[NodeName("SetAnimatorFloat")]
+[NodePath("AnimancerAbility/Action/SetAnimatorFloat")]
+public class SetAnimatorFloatNode : AnimancerAbilityActionNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "AnimacerState")]
+    protected AnimancerStatePropertyPort m_AnimacerState = new AnimancerStatePropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Key")]
+    protected StringPropertyPort m_Key = new StringPropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Value")]
+    protected FloatPropertyPort m_Value = new FloatPropertyPort();
+
+    [SerializeField, ShowInPanel,
+     Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
+    protected bool m_IgnoreFailure = true;
+
+    [NonSerialized]
+    protected bool m_SetSuccess;
+
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+
+    public override void ResetNode()
+    {
+        base.ResetNode();
+        m_SetSuccess = false;
+    }
+
+    protected override void DoAction()
+    {
+        m_SetSuccess = false;
+        var state = m_AnimacerState.Value;
+        if (state == null) return;
+        if (string.IsNullOrEmpty(m_Key.Value)) return;
+        var animator = state.Graph?.Component?.Animator;
+        if (animator == null) return;
+
+        animator.SetFloat(m_Key.Value, m_Value.Value);
+        m_SetSuccess = true;
+    }
+}
+
+/// <summary>
+/// 对 AnimancerState 关联的 Animator 设置 Int 参数
+/// </summary>
+[NodeName("SetAnimatorInt")]
+[NodePath("AnimancerAbility/Action/SetAnimatorInt")]
+public class SetAnimatorIntNode : AnimancerAbilityActionNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "AnimacerState")]
+    protected AnimancerStatePropertyPort m_AnimacerState = new AnimancerStatePropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Key")]
+    protected StringPropertyPort m_Key = new StringPropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Value")]
+    protected IntPropertyPort m_Value = new IntPropertyPort();
+
+    [SerializeField, ShowInPanel,
+     Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
+    protected bool m_IgnoreFailure = true;
+
+    [NonSerialized]
+    protected bool m_SetSuccess;
+
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+
+    public override void ResetNode()
+    {
+        base.ResetNode();
+        m_SetSuccess = false;
+    }
+
+    protected override void DoAction()
+    {
+        m_SetSuccess = false;
+        var state = m_AnimacerState.Value;
+        if (state == null) return;
+        if (string.IsNullOrEmpty(m_Key.Value)) return;
+        var animator = state.Graph?.Component?.Animator;
+        if (animator == null) return;
+
+        animator.SetInteger(m_Key.Value, m_Value.Value);
+        m_SetSuccess = true;
+    }
+}
+
+/// <summary>
+/// 对 AnimancerState 关联的 Animator 设置 Bool 参数
+/// </summary>
+[NodeName("SetAnimatorBool")]
+[NodePath("AnimancerAbility/Action/SetAnimatorBool")]
+public class SetAnimatorBoolNode : AnimancerAbilityActionNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "AnimacerState")]
+    protected AnimancerStatePropertyPort m_AnimacerState = new AnimancerStatePropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Key")]
+    protected StringPropertyPort m_Key = new StringPropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Value")]
+    protected BoolPropertyPort m_Value = new BoolPropertyPort();
+
+    [SerializeField, ShowInPanel,
+     Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
+    protected bool m_IgnoreFailure = true;
+
+    [NonSerialized]
+    protected bool m_SetSuccess;
+
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+
+    public override void ResetNode()
+    {
+        base.ResetNode();
+        m_SetSuccess = false;
+    }
+
+    protected override void DoAction()
+    {
+        m_SetSuccess = false;
+        var state = m_AnimacerState.Value;
+        if (state == null) return;
+        if (string.IsNullOrEmpty(m_Key.Value)) return;
+        var animator = state.Graph?.Component?.Animator;
+        if (animator == null) return;
+
+        animator.SetBool(m_Key.Value, m_Value.Value);
+        m_SetSuccess = true;
+    }
+}
+
+/// <summary>
+/// 对 AnimancerState 关联的 Animator 触发 Trigger
+/// </summary>
+[NodeName("SetAnimatorTrigger")]
+[NodePath("AnimancerAbility/Action/SetAnimatorTrigger")]
+public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "AnimacerState")]
+    protected AnimancerStatePropertyPort m_AnimacerState = new AnimancerStatePropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Input, "Key")]
+    protected StringPropertyPort m_Key = new StringPropertyPort();
+
+    [SerializeField, ShowInPanel,
+     Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
+    protected bool m_IgnoreFailure = true;
+
+    [NonSerialized]
+    protected bool m_SetSuccess;
+
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+
+    public override void ResetNode()
+    {
+        base.ResetNode();
+        m_SetSuccess = false;
+    }
+
+    protected override void DoAction()
+    {
+        m_SetSuccess = false;
+        var state = m_AnimacerState.Value;
+        if (state == null) return;
+        if (string.IsNullOrEmpty(m_Key.Value)) return;
+        var animator = state.Graph?.Component?.Animator;
+        if (animator == null) return;
+
+        animator.SetTrigger(m_Key.Value);
+        m_SetSuccess = true;
+    }
+}
