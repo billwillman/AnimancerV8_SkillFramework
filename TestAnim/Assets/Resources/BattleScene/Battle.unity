@@ -1471,6 +1471,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_DefaultAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: 0cb6d73baa7f73e4b895155e35e3aa66, type: 2}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_Abilities.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -1483,9 +1487,13 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.data[0].Ability
       value: 
-      objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.data[0].InputAction
       value: 
@@ -1494,6 +1502,30 @@ PrefabInstance:
       propertyPath: m_InputBindings.Array.data[0].TriggerMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[0].CategoryName
+      value: "\u79FB\u52A8"
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[1].CategoryName
+      value: "\u6280\u80FD"
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[0].Abilities.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[1].Abilities.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[0].Abilities.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 0cb6d73baa7f73e4b895155e35e3aa66, type: 2}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[1].Abilities.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _jumpMode
       value: 0
