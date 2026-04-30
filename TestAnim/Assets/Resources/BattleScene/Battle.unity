@@ -1545,6 +1545,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
     - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_CinemachineInputProvider
+      value: 
+      objectReference: {fileID: 64136073}
+    - target: {fileID: 976988722357577615, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: m_InputBindings.Array.size
       value: 1
       objectReference: {fileID: 0}
