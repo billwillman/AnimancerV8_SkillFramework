@@ -107,7 +107,8 @@ MonoBehaviour:
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Cancel
       Abilities With Tag
   BlockAbilitiesWithTag:
-    TagGuids: []
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
     ReferencePath: GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Block
       Abilities With Tag
   ActiveTags:
@@ -137,9 +138,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.0037236
+          m_Value: 0.001797
         m_OutputEdgeGUID: 4f5227b4-51fa-4e0e-9a27-93021308b7ef
-        DeltaTime: 0.0037236
+        DeltaTime: 0.001797
     - rid: 4085602169239896065
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -179,7 +180,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 5.278958
+        m_Value: 5.2727284
     - rid: 4085602169239896070
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:

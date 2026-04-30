@@ -21,6 +21,8 @@ MonoBehaviour:
     - GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Cancel Abilities
       With Tag
     - GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Ability Tags
+    - GlobalObjectId_V1-3-80bc4812cf0c9664bb648b30a77829ab-11400000-0/Block Abilities
+      With Tag
   - Name: LoomLocation
     Guid: c0838831-7c20-4635-b100-0e37146b0207
     Expanded: 1
