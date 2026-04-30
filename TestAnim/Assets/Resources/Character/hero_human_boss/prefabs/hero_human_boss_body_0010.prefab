@@ -1046,9 +1046,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f13ddb6ab32142845abb1a47b6480367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Abilities:
-  - {fileID: 11400000, guid: 0cb6d73baa7f73e4b895155e35e3aa66, type: 2}
+  m_AbilityCategories:
+  - CategoryName: "\u79FB\u52A8"
+    Abilities:
+    - {fileID: 11400000, guid: 0cb6d73baa7f73e4b895155e35e3aa66, type: 2}
+  - CategoryName: "\u6280\u80FD"
+    Abilities:
+    - {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
   m_DefaultAbility: {fileID: 11400000, guid: 0cb6d73baa7f73e4b895155e35e3aa66, type: 2}
+  m_InputBindings:
+  - InputAction: {fileID: 1120369429361536294, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
+    Ability: {fileID: 11400000, guid: 80bc4812cf0c9664bb648b30a77829ab, type: 2}
+    TriggerMode: 0
+  m_CinemachineInputProvider: {fileID: 0}
 --- !u!136 &7040085658049059204
 CapsuleCollider:
   m_ObjectHideFlags: 8
@@ -1126,10 +1136,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b1d65ab60ee7c4da9853e23da58d79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveAction: {fileID: 0}
+  _moveAction: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
   _jumpAction: {fileID: 0}
   _orientationReference: {fileID: 0}
-  _groundRootMotionMode: 0
+  _groundRootMotionMode: 1
   _airRootMotionMode: 1
   _jumpMode: 0
   _jumpUpSpeed: 10
@@ -1141,6 +1151,7 @@ MonoBehaviour:
   _stableMovementSharpness: 15
   _orientationSharpness: 20
   _orientationMethod: 1
+  _rotationLockAngle: 30
   _maxAirMoveSpeed: 10
   _airAccelerationSpeed: 30
   _drag: 0.5
