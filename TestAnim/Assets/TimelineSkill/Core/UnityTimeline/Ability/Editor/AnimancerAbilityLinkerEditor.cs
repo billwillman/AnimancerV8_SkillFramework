@@ -129,7 +129,9 @@ public class AnimancerAbilityLinkerEditor : Editor
                         EditorGUILayout.BeginHorizontal();
                         {
                             var abilityElem = abilitiesProp.GetArrayElementAtIndex(j);
-                            EditorGUILayout.PropertyField(abilityElem, GUIContent.none);
+                            // 运行时只读显示 Ability 资源引用
+                            using (new EditorGUI.DisabledScope(isPlaying))
+                                EditorGUILayout.PropertyField(abilityElem, GUIContent.none);
 
                             // 删除单个 Ability（仅编辑模式可见）
                             if (!isPlaying && GUILayout.Button("−", GUILayout.Width(20), GUILayout.Height(18)))
