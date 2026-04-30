@@ -137,9 +137,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.33333334
+          m_Value: 0.0037236
         m_OutputEdgeGUID: 4f5227b4-51fa-4e0e-9a27-93021308b7ef
-        DeltaTime: 0.33333334
+        DeltaTime: 0.0037236
     - rid: 4085602169239896065
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -179,7 +179,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 5.6108036
+        m_Value: 5.278958
     - rid: 4085602169239896070
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:
@@ -235,8 +235,8 @@ MonoBehaviour:
       data:
         m_GUID: d87dc663-f656-4273-a6cb-5ed0aacbe2b8
         m_Expanded: 1
-        m_ShowPanel: 0
-        m_Position: {x: 562, y: 428}
+        m_ShowPanel: 1
+        m_Position: {x: 562, y: 427}
         m_InputEdgeGUID: 5c556bc8-6f26-4d44-bfa0-2d1ff587227e
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -261,7 +261,7 @@ MonoBehaviour:
         m_GUID: 49b08740-465d-4aa5-876c-89301954f6b7
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 620, y: -36}
+        m_Position: {x: 609, y: -47}
         m_InputEdgeGUID: 792fbb4f-6ac9-428b-8651-7368d506ecf0
         m_LockKey:
           m_Name: m_LockKey

@@ -70,6 +70,7 @@ public class AnimancerAbilityLinkerEditor : Editor
     private void DrawAbilityCategories()
     {
         EditorGUILayout.LabelField("Ability Categories", EditorStyles.boldLabel);
+        bool isPlaying = Application.isPlaying;
 
         for (int i = 0; i < m_AbilityCategoriesProp.arraySize; i++)
         {
@@ -94,22 +95,24 @@ public class AnimancerAbilityLinkerEditor : Editor
 
                     GUILayout.FlexibleSpace();
 
-                    // 重命名按钮
-                    if (GUILayout.Button("✎", GUILayout.Width(24), GUILayout.Height(18)))
+                    // 重命名按钮（仅编辑模式可见）
+                    if (!isPlaying)
                     {
-                        ShowRenameCategoryDialog(i, categoryNameProp);
-                    }
-
-                    // 删除按钮
-                    if (GUILayout.Button("✕", GUILayout.Width(24), GUILayout.Height(18)))
-                    {
-                        if (EditorUtility.DisplayDialog("删除分组",
-                            $"确定要删除分组 \"{categoryName}\" 及其中所有 Ability 引用吗？", "删除", "取消"))
+                        if (GUILayout.Button("✎", GUILayout.Width(24), GUILayout.Height(18)))
                         {
-                            m_AbilityCategoriesProp.DeleteArrayElementAtIndex(i);
-                            // 重建 foldout 状态
-                            m_FoldoutStates.Clear();
-                            break;
+                            ShowRenameCategoryDialog(i, categoryNameProp);
+                        }
+
+                        // 删除按钮
+                        if (GUILayout.Button("✕", GUILayout.Width(24), GUILayout.Height(18)))
+                        {
+                            if (EditorUtility.DisplayDialog("删除分组",
+                                $"确定要删除分组 \"{categoryName}\" 及其中所有 Ability 引用吗？", "删除", "取消"))
+                            {
+                                m_AbilityCategoriesProp.DeleteArrayElementAtIndex(i);
+                                m_FoldoutStates.Clear();
+                                break;
+                            }
                         }
                     }
                 }
@@ -128,8 +131,8 @@ public class AnimancerAbilityLinkerEditor : Editor
                             var abilityElem = abilitiesProp.GetArrayElementAtIndex(j);
                             EditorGUILayout.PropertyField(abilityElem, GUIContent.none);
 
-                            // 删除单个 Ability
-                            if (GUILayout.Button("−", GUILayout.Width(20), GUILayout.Height(18)))
+                            // 删除单个 Ability（仅编辑模式可见）
+                            if (!isPlaying && GUILayout.Button("−", GUILayout.Width(20), GUILayout.Height(18)))
                             {
                                 // 如果引用非空，先清空再删除（Unity 序列化的特殊处理）
                                 if (abilityElem.objectReferenceValue != null)
@@ -141,8 +144,8 @@ public class AnimancerAbilityLinkerEditor : Editor
                         EditorGUILayout.EndHorizontal();
                     }
 
-                    // 添加 Ability 按钮
-                    if (GUILayout.Button("+ Add Ability", EditorStyles.miniButton))
+                    // 添加 Ability 按钮（仅编辑模式可见）
+                    if (!isPlaying && GUILayout.Button("+ Add Ability", EditorStyles.miniButton))
                     {
                         abilitiesProp.InsertArrayElementAtIndex(abilitiesProp.arraySize);
                         var newElem = abilitiesProp.GetArrayElementAtIndex(abilitiesProp.arraySize - 1);
@@ -157,9 +160,9 @@ public class AnimancerAbilityLinkerEditor : Editor
             EditorGUILayout.Space(2);
         }
 
-        // 添加分组按钮
+        // 添加分组按钮（仅编辑模式可见）
         EditorGUILayout.Space(4);
-        if (GUILayout.Button("+ Add Category"))
+        if (!isPlaying && GUILayout.Button("+ Add Category"))
         {
             ShowAddCategoryDialog();
         }
