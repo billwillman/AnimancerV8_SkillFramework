@@ -44,8 +44,18 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         public InputTriggerMode TriggerMode = InputTriggerMode.OnStarted;
     }
 
+    /// <summary>
+    /// Ability 分类分组：每个分组有一个唯一的分类名和该分类下的 Ability 列表
+    /// </summary>
+    [Serializable]
+    public class AbilityCategory
+    {
+        public string CategoryName;
+        public List<AnimancerAbility> Abilities = new List<AnimancerAbility>();
+    }
+
     [SerializeField]
-    private List<AnimancerAbility> m_Abilities = new List<AnimancerAbility>();
+    private List<AbilityCategory> m_AbilityCategories = new List<AbilityCategory>();
 
     [SerializeField]
     private AnimancerAbility m_DefaultAbility;
@@ -99,12 +109,16 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         AnimancerAbilityAgent.OnAbilityStart += HandleAbilityStart;
         AnimancerAbilityAgent.OnAbilityStop += HandleAbilityStop;
 
-        for (int i = 0; i < m_Abilities.Count; i++)
+        foreach (var category in m_AbilityCategories)
         {
-            if (m_Abilities[i] != null)
+            if (category == null) continue;
+            foreach (var ability in category.Abilities)
             {
-                m_Abilities[i].AnimancerComponent = AnimancerComponent;
-                AnimancerAbilityAgent.AddAbility(m_Abilities[i]);
+                if (ability != null)
+                {
+                    ability.AnimancerComponent = AnimancerComponent;
+                    AnimancerAbilityAgent.AddAbility(ability);
+                }
             }
         }
 
@@ -309,28 +323,61 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     }
 
     /// <summary>
-    /// 添加一个 Ability
+    /// 获取所有分组中的全部 Ability（只读）
     /// </summary>
-    public void AddAbility(AnimancerAbility ability)
+    public List<AnimancerAbility> GetAllAbilities()
+    {
+        var all = new List<AnimancerAbility>();
+        foreach (var category in m_AbilityCategories)
+        {
+            if (category == null) continue;
+            foreach (var ability in category.Abilities)
+            {
+                if (ability != null)
+                    all.Add(ability);
+            }
+        }
+        return all;
+    }
+
+    /// <summary>
+    /// 获取分组列表（只读）
+    /// </summary>
+    public IReadOnlyList<AbilityCategory> AbilityCategories => m_AbilityCategories;
+
+    /// <summary>
+    /// 添加一个 Ability 到指定分组（若分组不存在则创建）
+    /// </summary>
+    public void AddAbility(AnimancerAbility ability, string categoryName = "Default")
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
             ability.AnimancerComponent = AnimancerComponent;
             AnimancerAbilityAgent.AddAbility(ability);
-            if (!m_Abilities.Contains(ability))
-                m_Abilities.Add(ability);
+
+            var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
+            if (category == null)
+            {
+                category = new AbilityCategory { CategoryName = categoryName };
+                m_AbilityCategories.Add(category);
+            }
+            if (!category.Abilities.Contains(ability))
+                category.Abilities.Add(ability);
         }
     }
 
     /// <summary>
-    /// 移除一个 Ability
+    /// 移除一个 Ability（从所有分组中移除）
     /// </summary>
     public void RemoveAbility(AnimancerAbility ability)
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
             AnimancerAbilityAgent.RemoveAbility(ability);
-            m_Abilities.Remove(ability);
+            foreach (var category in m_AbilityCategories)
+            {
+                category.Abilities.Remove(ability);
+            }
         }
     }
 }

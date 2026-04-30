@@ -105,11 +105,13 @@ namespace SkillCharacterControllerEditor
             _meshRootProp               = serializedObject.FindProperty("_meshRoot");
             _ignoredCollidersProp       = serializedObject.FindProperty("_ignoredColliders");
 
-            InitStyles();
         }
 
         public override void OnInspectorGUI()
         {
+            if (_headerLabelStyle == null)
+                InitStyles();
+
             serializedObject.Update();
 
             DrawHeaderBar();
