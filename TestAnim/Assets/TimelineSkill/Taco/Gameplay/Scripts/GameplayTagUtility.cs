@@ -114,15 +114,16 @@ namespace Taco.Gameplay
             return middleTags;
         }
 
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void RuntimeInit()
         {
-            GameplayTagData = Resources.Load<GameplayTagData>("GameplayTagData");
-            GameplayTagData?.Init();
+            if (GameplayTagData == null)
+                GameplayTagData = Resources.Load<GameplayTagData>("GameplayTagData");
+            GameplayTagData?.EnsureInitialized();
         }
 
         /// <summary>
-        /// a的每一个tag都是b的父tag
+        /// a鐨勬瘡涓�涓猼ag閮芥槸b鐨勭埗tag
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -141,7 +142,7 @@ namespace Taco.Gameplay
         }
 
         /// <summary>
-        /// a的一个tag是b的子tag
+        /// a鐨勪竴涓猼ag鏄痓鐨勫瓙tag
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>

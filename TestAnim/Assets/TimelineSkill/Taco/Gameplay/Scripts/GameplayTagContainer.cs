@@ -14,8 +14,16 @@ namespace Taco.Gameplay
         {
             get
             {
-                if(m_Tags == null)
+                if (m_Tags == null)
+                {
                     Init();
+                }
+                else if (m_Tags.Count == 0 && TagGuids != null && TagGuids.Count > 0)
+                {
+                    // 鑷剤锛歮_Tags 琚剰澶栨竻绌轰絾 TagGuids 浠嶆湁鏁版嵁锛岄噸鏂板垵濮嬪寲
+                    m_Tags = null;
+                    Init();
+                }
                 return m_Tags;
             }
             set => m_Tags = value;
@@ -26,6 +34,17 @@ namespace Taco.Gameplay
 
         public void Init()
         {
+            if (m_GameplayTagData == null)
+                GameplayTagUtility.RuntimeInit();
+
+            if (m_GameplayTagData == null)
+                return;
+
+            m_GameplayTagData.EnsureInitialized();
+
+            if (!m_GameplayTagData.IsInitialized)
+                return;
+
             m_Tags = new List<string>();
             for (int i = TagGuids.Count - 1; i >= 0; i--)
             {
@@ -33,10 +52,6 @@ namespace Taco.Gameplay
                 string tag = m_GameplayTagData.GuidToName(tagGuid);
                 if (!string.IsNullOrEmpty(tag))
                     m_Tags.Add(tag);
-#if UNITY_EDITOR
-                //else
-                //    TagGuids.RemoveAt(i);
-#endif
             }
             OnValueChanged?.Invoke();
         }
@@ -78,7 +93,7 @@ namespace Taco.Gameplay
 
 
         /// <summary>
-        /// 所选tag是否包含输入tag，或者包含输入tag的父tag
+        /// 鎵�閫塼ag鏄惁鍖呭惈杈撳叆tag锛屾垨鑰呭寘鍚緭鍏ag鐨勭埗tag
         /// </summary>
         /// <param name="childTag"></param>
         /// <returns></returns>
@@ -93,7 +108,7 @@ namespace Taco.Gameplay
         }
 
         /// <summary>
-        /// 所选tag是否包含输入tag，或者包含输入tag的子tag
+        /// 鎵�閫塼ag鏄惁鍖呭惈杈撳叆tag锛屾垨鑰呭寘鍚緭鍏ag鐨勫瓙tag
         /// </summary>
         /// <param name="childTag"></param>
         /// <returns></returns>

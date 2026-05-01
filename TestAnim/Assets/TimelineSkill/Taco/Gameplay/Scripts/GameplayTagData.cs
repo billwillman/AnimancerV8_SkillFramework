@@ -14,6 +14,20 @@ namespace Taco.Gameplay
 
         Dictionary<string, GameplayTagInfo> m_NameTagInfoMap = new Dictionary<string, GameplayTagInfo>();
         Dictionary<string, GameplayTagInfo> m_GuidTagInfoMap = new Dictionary<string, GameplayTagInfo>();
+
+        public bool IsInitialized => m_GuidTagInfoMap != null && m_GuidTagInfoMap.Count > 0;
+
+        /// <summary>
+        /// 确保字典就绪：如果序列化数据存在但字典为空，自动调用 Init()
+        /// </summary>
+        public void EnsureInitialized()
+        {
+            if (!IsInitialized && m_GameplayTagInfos != null && m_GameplayTagInfos.Count > 0)
+            {
+                Init();
+            }
+        }
+
         public GameplayTagInfo this[string tag]
         {
             get
