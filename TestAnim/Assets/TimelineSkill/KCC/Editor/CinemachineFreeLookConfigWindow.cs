@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -427,7 +428,7 @@ namespace CinemachineEditorTool
             var prevColor = GUI.backgroundColor;
             GUI.backgroundColor = m_SelectedPresetIndex == index ? preset.AccentColor * 1.3f : preset.AccentColor * 0.85f;
 
-            bool clicked = GUILayout.Button(preset.Name, m_PresetBtnStyle, GUILayout.Height(44));
+            bool clicked = GUILayout.Button(new GUIContent(preset.Name, preset.Description), m_PresetBtnStyle, GUILayout.Height(44));
             GUI.backgroundColor = prevColor;
 
             if (clicked)
@@ -640,14 +641,14 @@ namespace CinemachineEditorTool
                 {
                     if (m_FreeLookSO != null)
                     {
-                        EditorGUILayout.PropertyField(m_FreeLookSO.FindProperty("m_CommonLens"),
-                            new GUIContent("Common Lens", "统一镜头设置应用到所有 Rig"));
+                        DrawPropertyWithHelp(m_FreeLookSO.FindProperty("m_CommonLens"),
+                            "Common Lens", "统一镜头设置应用到所有 Rig", "Common Lens");
 
-                        EditorGUILayout.PropertyField(m_FreeLookSO.FindProperty("m_BindingMode"),
-                            new GUIContent("Binding Mode", "坐标空间模式"));
+                        DrawPropertyWithHelp(m_FreeLookSO.FindProperty("m_BindingMode"),
+                            "Binding Mode", "坐标空间模式", "Binding Mode");
 
-                        EditorGUILayout.PropertyField(m_FreeLookSO.FindProperty("m_SplineCurvature"),
-                            new GUIContent("Spline Curvature", "Rig 间曲线张力 (0~1)"));
+                        DrawPropertyWithHelp(m_FreeLookSO.FindProperty("m_SplineCurvature"),
+                            "Spline Curvature", "Rig 间曲线张力 (0~1)", "Spline Curvature");
 
                         // Lens Settings
                         EditorGUILayout.Space(2);
@@ -660,11 +661,11 @@ namespace CinemachineEditorTool
                             if (lensProp.isExpanded)
                             {
                                 var fov = lensProp.FindPropertyRelative("m_FieldOfView");
-                                if (fov != null) EditorGUILayout.PropertyField(fov, new GUIContent("FOV"));
+                                if (fov != null) DrawPropertyWithHelp(fov, "FOV", "视场角", "FOV");
                                 var near = lensProp.FindPropertyRelative("m_NearClipPlane");
-                                if (near != null) EditorGUILayout.PropertyField(near, new GUIContent("Near Clip"));
+                                if (near != null) DrawPropertyWithHelp(near, "Near Clip", "近裁剪面", "Near Clip");
                                 var far = lensProp.FindPropertyRelative("m_FarClipPlane");
-                                if (far != null) EditorGUILayout.PropertyField(far, new GUIContent("Far Clip"));
+                                if (far != null) DrawPropertyWithHelp(far, "Far Clip", "远裁剪面", "Far Clip");
                             }
                             EditorGUI.indentLevel--;
                         }
@@ -676,9 +677,12 @@ namespace CinemachineEditorTool
                         {
                             if (!yawShown)
                             {
-                                EditorGUILayout.PropertyField(
-                                    FindRelative(orbitalProp, "m_YawDamping"),
-                                    new GUIContent("Yaw Damping (Rigs)", "OrbitalTransposer 的旋转阻尼"));
+                                var yawProp = FindRelative(orbitalProp, "m_YawDamping");
+                                if (yawProp != null)
+                                {
+                                    DrawPropertyWithHelp(yawProp, "Yaw Damping (Rigs)",
+                                        "OrbitalTransposer 的旋转阻尼", "Yaw Damping");
+                                }
                                 yawShown = true;
                             }
                         });
@@ -689,6 +693,116 @@ namespace CinemachineEditorTool
                 EditorGUI.indentLevel--;
             }
             EndSection();
+        }
+
+        #endregion
+
+        #region Help Button Utilities
+
+        private static GUIStyle s_HelpBtnStyle = null; // lazy init below
+
+        private static readonly Dictionary<string, string> s_HelpTexts = new Dictionary<string, string>
+        {
+            ["Common Lens"] =
+                "【Common Lens — 统一镜头】\n\n" +
+                "作用：当启用时，三个 Rig（Top / Middle / Bottom）共享同一套镜头参数（FOV、Near/Far Clip 等）。" +
+                "关闭后每个 Rig 可独立设置各自的镜头。\n\n" +
+                "建议：大多数情况建议开启，保持视觉一致性。仅当你需要不同仰角呈现不同 FOV 效果时才关闭。",
+
+            ["Binding Mode"] =
+                "【Binding Mode — 绑定模式】\n\n" +
+                "作用：决定 FreeLook 相机在哪个坐标空间中跟随目标旋转。\n\n" +
+                "常用选项：\n" +
+                "• WorldSpace — 相机在世界空间固定朝向，不随角色旋转\n" +
+                "• SimpleFollowWithWorldUp — 跟随角色 Y 轴旋转，保持世界 Up\n" +
+                "• LockToTargetWithWorldUp — 锁定目标朝向，适合第三人称\n" +
+                "• LockToTarget — 完全锁定目标坐标系\n\n" +
+                "建议：第三人称动作游戏推荐 LockToTargetWithWorldUp 或 SimpleFollowWithWorldUp。",
+
+            ["Spline Curvature"] =
+                "【Spline Curvature — 曲线张力】\n\n" +
+                "作用：控制三个 Rig（Top / Middle / Bottom）之间过渡轨道的曲线弯曲程度。\n" +
+                "取值范围 0 ~ 1：\n" +
+                "• 0 = 直线插值，Rig 间过渡生硬\n" +
+                "• 1 = 最大弯曲，过渡圆滑\n\n" +
+                "建议：默认 0.5 适合大部分场景。若相机在仰角切换时出现抖动可适当降低。",
+
+            ["FOV"] =
+                "【Field of View — 视场角】\n\n" +
+                "作用：控制镜头视野宽度（垂直方向角度）。\n" +
+                "取值范围：1° ~ 179°\n" +
+                "• 较小值（如 30-40）→ 长焦效果，背景压缩，角色突出\n" +
+                "• 较大值（如 70-90）→ 广角效果，视野开阔但有畸变\n\n" +
+                "建议：第三人称一般 50-65，FPS 一般 60-90。",
+
+            ["Near Clip"] =
+                "【Near Clip Plane — 近裁剪面】\n\n" +
+                "作用：距相机小于此距离的物体不渲染。\n" +
+                "取值范围：> 0（通常 0.01 ~ 1）\n\n" +
+                "注意：值太小会导致深度精度不足（Z-fighting），值太大会裁掉近处物体。\n" +
+                "建议：一般设 0.1 ~ 0.3，大型开放世界可设 0.5。",
+
+            ["Far Clip"] =
+                "【Far Clip Plane — 远裁剪面】\n\n" +
+                "作用：距相机大于此距离的物体不渲染。\n" +
+                "取值范围：> Near Clip（通常 100 ~ 5000）\n\n" +
+                "注意：与 Near Clip 的比值越大深度精度越差。\n" +
+                "建议：室内场景 100-500，室外开放世界 1000-5000。",
+
+            ["Yaw Damping"] =
+                "【Yaw Damping — 水平旋转阻尼】\n\n" +
+                "作用：当目标旋转时，相机跟随旋转的响应速度（OrbitalTransposer）。\n" +
+                "取值：0 = 无延迟立即跟随；数值越大延迟越高、过渡越柔和。\n\n" +
+                "典型取值：\n" +
+                "• 动作战斗：0 ~ 0.5（快速跟随）\n" +
+                "• RPG 探索：1 ~ 3（柔和过渡）\n" +
+                "• 赛车/载具：3 ~ 5（平滑感）\n\n" +
+                "建议：配合预设的 Damping X 一起调整，确保手感一致。"
+        };
+
+        private GUIStyle GetHelpButtonStyle()
+        {
+            if (s_HelpBtnStyle != null) return s_HelpBtnStyle;
+
+            s_HelpBtnStyle = new GUIStyle(EditorStyles.miniButton)
+            {
+                fixedWidth = 18,
+                fixedHeight = 18,
+                fontSize = 10,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter,
+                padding = new RectOffset(0, 0, 0, 0),
+                margin = new RectOffset(2, 0, 2, 0)
+            };
+            return s_HelpBtnStyle;
+        }
+
+        /// <summary>
+        /// 绘制 PropertyField + 右侧 ? 帮助按钮
+        /// </summary>
+        private void DrawPropertyWithHelp(SerializedProperty prop, string label, string tooltip, string helpKey)
+        {
+            if (prop == null) return;
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(prop, new GUIContent(label, tooltip));
+            if (GUILayout.Button("?", GetHelpButtonStyle()))
+            {
+                string helpText = s_HelpTexts.ContainsKey(helpKey) ? s_HelpTexts[helpKey] : "暂无详细说明。";
+                EditorUtility.DisplayDialog($"帮助 — {label}", helpText, "知道了");
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 仅绘制 ? 帮助按钮（用于不使用 PropertyField 的特殊行）
+        /// </summary>
+        private void DrawHelpButton(string label, string helpKey)
+        {
+            if (GUILayout.Button("?", GetHelpButtonStyle()))
+            {
+                string helpText = s_HelpTexts.ContainsKey(helpKey) ? s_HelpTexts[helpKey] : "暂无详细说明。";
+                EditorUtility.DisplayDialog($"帮助 — {label}", helpText, "知道了");
+            }
         }
 
         #endregion
