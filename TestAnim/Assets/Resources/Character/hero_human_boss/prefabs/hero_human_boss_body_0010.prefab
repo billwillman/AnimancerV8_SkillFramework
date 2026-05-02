@@ -1142,9 +1142,9 @@ MonoBehaviour:
   _groundRootMotionMode: 1
   _airRootMotionMode: 1
   _jumpMode: 0
-  _jumpUpSpeed: 10
+  _jumpUpSpeed: 20
   _jumpScalableForwardSpeed: 2
-  _jumpPreGroundingGraceTime: 0
+  _jumpPreGroundingGraceTime: 0.15
   _jumpPostGroundingGraceTime: 0.1
   _allowJumpingWhenSliding: 1
   _maxStableMoveSpeed: 6
