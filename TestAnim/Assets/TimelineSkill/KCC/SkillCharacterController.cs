@@ -301,6 +301,7 @@ namespace UnityTimeline
         private Quaternion _rootMotionRotationDelta;
         private PlayerCharacterInputs _inputs;
         private bool _jumpRequested;
+        private bool _jumpInputBuffered;
         private bool _jumpedThisFrame;
         private float _timeSinceLastAbleToJump;
 
@@ -408,12 +409,13 @@ namespace UnityTimeline
                 }
             }
 
-            // 跳跃输入（受 Jump 锁控制）
+            // 跳跃输入（受 Jump 锁控制）— 累积式缓存，防止 Update/FixedUpdate 不同步丢失信号
             if ((locks & InputLockFlags.Jump) == 0)
             {
                 if (_jumpAction != null && _jumpAction.action != null)
                 {
-                    _inputs.JumpDown = _jumpAction.action.triggered;
+                    if (_jumpAction.action.triggered)
+                        _jumpInputBuffered = true;
                 }
             }
 
@@ -586,7 +588,9 @@ namespace UnityTimeline
             _jumpedThisFrame = false;
             _timeSinceLastAbleToJump += dt;
 
-            if (!_inputs.JumpDown) return;
+            // 消费缓存的跳跃输入
+            bool wantsJump = _jumpInputBuffered || _jumpRequested;
+            if (!wantsJump) return;
 
             bool canJump = Motor.GroundingStatus.IsStableOnGround ||
                            (_timeSinceLastAbleToJump >= 0f && _timeSinceLastAbleToJump < _jumpPreGroundingGraceTime);
@@ -604,12 +608,15 @@ namespace UnityTimeline
                 velocity += Motor.CharacterUp * _jumpUpSpeed + moveDir * _jumpScalableForwardSpeed;
 
                 _jumpRequested = false;
+                _jumpInputBuffered = false;
                 _jumpedThisFrame = true;
                 _timeSinceLastAbleToJump = -1f;
             }
             else
             {
+                // 缓存跳跃请求，等待下一次 tick（受 Post Grace Time 保护）
                 _jumpRequested = true;
+                _jumpInputBuffered = false;
             }
         }
 

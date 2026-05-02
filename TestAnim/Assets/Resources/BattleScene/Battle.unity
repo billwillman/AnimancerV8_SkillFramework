@@ -1536,10 +1536,6 @@ PrefabInstance:
       propertyPath: m_CinemachineInputProvider
       value: 
       objectReference: {fileID: 64136073}
-    - target: {fileID: 2199852835033532018, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
-      propertyPath: StepHandling
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _orientationReference
       value: 
@@ -1550,7 +1546,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _jumpPostGroundingGraceTime
-      value: 0.1
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
