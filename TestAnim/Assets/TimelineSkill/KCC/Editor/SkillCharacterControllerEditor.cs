@@ -188,8 +188,16 @@ namespace SkillCharacterControllerEditor
             if (_inputFoldout)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(_moveActionProp,
-                    new GUIContent("Move Action", "\u79FB\u52A8\u8F93\u5165 Action (Vector2)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"));
+                DrawPropertyWithHelp(_moveActionProp,
+                    new GUIContent("Move Action", "\u79FB\u52A8\u8F93\u5165 Action (Vector2)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"),
+                    "Move Action - \u79FB\u52A8\u8F93\u5165",
+                    "\u3010\u4F5C\u7528\u3011\u7ED1\u5B9A InputSystem \u4E2D\u7684 Move Action\uFF0C\u7C7B\u578B\u4E3A Vector2\u3002\n" +
+                    "\u63A7\u5236\u89D2\u8272\u7684\u5730\u9762/\u7A7A\u4E2D\u79FB\u52A8\u65B9\u5411\u3002\n\n" +
+                    "\u3010\u4F7F\u7528\u65B9\u6CD5\u3011\n" +
+                    "\u4ECE Input Action Asset \u4E2D\u62D6\u5165\u5BF9\u5E94\u7684 Move Action Reference\u3002\n" +
+                    "\u901A\u5E38\u7ED1\u5B9A\u6447\u6746/WASD\uFF0C\u8F93\u51FA\u4E3A\u5F52\u4E00\u5316\u7684\u4E8C\u7EF4\u5411\u91CF\u3002\n\n" +
+                    "\u3010\u6CE8\u610F\u3011\n" +
+                    "\u5982\u679C\u672A\u7ED1\u5B9A\uFF0C\u89D2\u8272\u5C06\u65E0\u6CD5\u79FB\u52A8\u3002");
 
                 // 运行时显示 MoveAction 当前 Vector2 值
                 if (Application.isPlaying && _ctrl != null
@@ -203,11 +211,29 @@ namespace SkillCharacterControllerEditor
                     Repaint();
                 }
 
-                EditorGUILayout.PropertyField(_jumpActionProp,
-                    new GUIContent("Jump Action", "\u8DF3\u8DC3\u8F93\u5165 Action (Button)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"));
-                EditorGUILayout.PropertyField(_orientationReferenceProp,
+                DrawPropertyWithHelp(_jumpActionProp,
+                    new GUIContent("Jump Action", "\u8DF3\u8DC3\u8F93\u5165 Action (Button)\uFF0C\u4ECE Input Action Asset \u62D6\u5165"),
+                    "Jump Action - \u8DF3\u8DC3\u8F93\u5165",
+                    "\u3010\u4F5C\u7528\u3011\u7ED1\u5B9A InputSystem \u4E2D\u7684 Jump Action\uFF0C\u7C7B\u578B\u4E3A Button\u3002\n" +
+                    "\u89E6\u53D1\u89D2\u8272\u8DF3\u8DC3\u64CD\u4F5C\u3002\n\n" +
+                    "\u3010\u4F7F\u7528\u65B9\u6CD5\u3011\n" +
+                    "\u4ECE Input Action Asset \u4E2D\u62D6\u5165\u5BF9\u5E94\u7684 Jump Action Reference\u3002\n" +
+                    "\u901A\u5E38\u7ED1\u5B9A\u7A7A\u683C\u952E/\u624B\u67C4A\u952E\u3002\n\n" +
+                    "\u3010\u6CE8\u610F\u3011\n" +
+                    "\u5982\u679C\u672A\u7ED1\u5B9A\uFF0C\u89D2\u8272\u5C06\u65E0\u6CD5\u8DF3\u8DC3\u3002\n" +
+                    "\u8DF3\u8DC3\u884C\u4E3A\u8FD8\u53D6\u51B3\u4E8E Jump Mode \u7684\u8BBE\u7F6E\u3002");
+
+                DrawPropertyWithHelp(_orientationReferenceProp,
                     new GUIContent("Orientation Reference",
-                        "\u65B9\u5411\u53C2\u7167\u7269 Transform\uFF08\u901A\u5E38\u4E3A\u76F8\u673A\uFF09\uFF0C\u4E3A\u7A7A\u65F6\u4F7F\u7528\u89D2\u8272\u81EA\u8EAB\u671D\u5411"));
+                        "\u65B9\u5411\u53C2\u7167\u7269 Transform\uFF08\u901A\u5E38\u4E3A\u76F8\u673A\uFF09\uFF0C\u4E3A\u7A7A\u65F6\u4F7F\u7528\u89D2\u8272\u81EA\u8EAB\u671D\u5411"),
+                    "Orientation Reference - \u65B9\u5411\u53C2\u7167",
+                    "\u3010\u4F5C\u7528\u3011\u63D0\u4F9B\u79FB\u52A8\u65B9\u5411\u7684\u53C2\u7167\u5750\u6807\u7CFB\u3002\n" +
+                    "\u89D2\u8272\u7684\u201C\u524D\u8FDB\u201D\u65B9\u5411\u5C06\u57FA\u4E8E\u6B64 Transform \u7684\u671D\u5411\u3002\n\n" +
+                    "\u3010\u5178\u578B\u7528\u6CD5\u3011\n" +
+                    "\u2022 \u62D6\u5165\u76F8\u673A\uFF1A\u89D2\u8272\u79FB\u52A8\u65B9\u5411\u8DDF\u968F\u76F8\u673A\u671D\u5411\uFF08\u7B2C\u4E09\u4EBA\u79F0\u89C6\u89D2\uFF09\n" +
+                    "\u2022 \u7559\u7A7A\uFF1A\u89D2\u8272\u79FB\u52A8\u57FA\u4E8E\u81EA\u8EAB forward \u65B9\u5411\n\n" +
+                    "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                    "\u7B2C\u4E09\u4EBA\u79F0\u6E38\u620F\u901A\u5E38\u62D6\u5165\u4E3B\u76F8\u673A\uFF0C\u8FD9\u6837\u201C\u524D\u201D\u5C31\u662F\u5C4F\u5E55\u5185\u7684\u524D\u65B9\u3002");
 
                 if (_orientationReferenceProp.objectReferenceValue == null && !Application.isPlaying)
                     EditorGUILayout.HelpBox(
@@ -234,16 +260,36 @@ namespace SkillCharacterControllerEditor
 
                 using (new GUILayout.VerticalScope(EditorStyles.helpBox))
                 {
-                    EditorGUILayout.PropertyField(_groundRootMotionModeProp,
-                        new GUIContent("Ground Mode", "\u5730\u9762\u65F6\u7684 RootMotion \u5904\u7406\u65B9\u5F0F"));
+                    DrawPropertyWithHelp(_groundRootMotionModeProp,
+                        new GUIContent("Ground Mode", "\u5730\u9762\u65F6\u7684 RootMotion \u5904\u7406\u65B9\u5F0F"),
+                        "Ground Mode - \u5730\u9762 RootMotion \u6A21\u5F0F",
+                        "\u3010\u4F5C\u7528\u3011\u63A7\u5236\u89D2\u8272\u5728\u5730\u9762\u65F6\u5982\u4F55\u5904\u7406\u52A8\u753B\u7684 Root Motion \u6570\u636E\u3002\n\n" +
+                        "\u3010\u6A21\u5F0F\u8BF4\u660E\u3011\n" +
+                        "\u2022 FullRootMotion\uFF1A\u5B8C\u5168\u7531\u52A8\u753B\u9A71\u52A8\u4F4D\u79FB\u548C\u65CB\u8F6C\uFF0C\u8F93\u5165\u4E0D\u63A7\u5236\u901F\u5EA6\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u52A8\u4F5C\u6E38\u620F\u3001\u9700\u8981\u7CBE\u786E\u5339\u914D\u52A8\u753B\u8DDD\u79BB\u7684\u573A\u666F\u3002\n\n" +
+                        "\u2022 IgnoreRootMotion\uFF1A\u5FFD\u7565\u52A8\u753B\u4F4D\u79FB/\u65CB\u8F6C\uFF0C\u7528\u8F93\u5165\u63A7\u5236\u901F\u5EA6\u548C\u671D\u5411\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u6838\u5FC3\u73A9\u6CD5\u9700\u8981\u7CBE\u786E\u63A7\u5236\u79FB\u52A8\u901F\u5EA6\u7684\u573A\u666F\u3002\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u5982\u679C\u52A8\u753B\u8D44\u6E90\u5305\u542B\u8DB3\u90E8\u4F4D\u79FB\u6570\u636E\uFF0C\u7528 FullRootMotion \u6548\u679C\u6700\u597D\u3002\n" +
+                        "\u5982\u679C\u52A8\u753B\u662F\u539F\u5730\u64AD\u653E\uFF0C\u9009 IgnoreRootMotion \u5E76\u914D\u5408 Stable Movement \u53C2\u6570\u3002");
                     GUILayout.Label(DescRM((RootMotionMode)_groundRootMotionModeProp.enumValueIndex, true), _modeDescStyle);
                 }
                 EditorGUILayout.Space(2);
 
                 using (new GUILayout.VerticalScope(EditorStyles.helpBox))
                 {
-                    EditorGUILayout.PropertyField(_airRootMotionModeProp,
-                        new GUIContent("Air Mode", "\u7A7A\u4E2D\u65F6\u7684 RootMotion \u5904\u7406\u65B9\u5F0F"));
+                    DrawPropertyWithHelp(_airRootMotionModeProp,
+                        new GUIContent("Air Mode", "\u7A7A\u4E2D\u65F6\u7684 RootMotion \u5904\u7406\u65B9\u5F0F"),
+                        "Air Mode - \u7A7A\u4E2D RootMotion \u6A21\u5F0F",
+                        "\u3010\u4F5C\u7528\u3011\u63A7\u5236\u89D2\u8272\u5728\u7A7A\u4E2D\u65F6\u5982\u4F55\u5904\u7406\u52A8\u753B\u7684 Root Motion \u6570\u636E\u3002\n\n" +
+                        "\u3010\u6A21\u5F0F\u8BF4\u660E\u3011\n" +
+                        "\u2022 FullRootMotion\uFF1A\u7A7A\u4E2D\u65CB\u8F6C\u7531\u52A8\u753B\u9A71\u52A8\uFF0C\u4F4D\u79FB\u90E8\u5206\u4F7F\u7528\u52A8\u753B\u6216 fallback\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u7A7A\u4E2D\u6280\u80FD\u52A8\u753B\u9700\u8981\u7CBE\u786E\u4F4D\u79FB\u7684\u573A\u666F\u3002\n\n" +
+                        "\u2022 IgnoreRootMotion\uFF1A\u5FFD\u7565\u52A8\u753B\uFF0C\u7A7A\u4E2D\u4F7F\u7528\u8F93\u5165\u52A0\u901F + \u91CD\u529B + \u963B\u529B\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u5E38\u89C4\u7A7A\u4E2D\u79FB\u52A8\u63A7\u5236\u3002\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u5927\u591A\u6570\u60C5\u51B5\u7528 IgnoreRootMotion \u5373\u53EF\u3002\n" +
+                        "\u4EC5\u5728\u7A7A\u4E2D\u6280\u80FD\u52A8\u753B\u9700\u8981\u7CBE\u786E\u4F4D\u79FB\u65F6\u624D\u7528 FullRootMotion\u3002");
                     GUILayout.Label(DescRM((RootMotionMode)_airRootMotionModeProp.enumValueIndex, false), _modeDescStyle);
                 }
 
@@ -416,18 +462,67 @@ namespace SkillCharacterControllerEditor
                 EditorGUI.indentLevel++;
                 using (new GUILayout.VerticalScope(EditorStyles.helpBox))
                 {
-                    EditorGUILayout.PropertyField(_maxStableMoveSpeedProp,
-                        new GUIContent("Max Move Speed", "\u6700\u5927\u5730\u9762\u79FB\u52A8\u901F\u5EA6"));
-                    EditorGUILayout.PropertyField(_stableMovementSharpnessProp,
-                        new GUIContent("Movement Sharpness", "\u901F\u5EA6\u53D8\u5316\u9510\u5EA6\uFF08\u8D8A\u9AD8\u8D8A\u7075\u654F\uFF09"));
-                    EditorGUILayout.PropertyField(_orientationSharpnessProp,
-                        new GUIContent("Orientation Sharpness", "\u65CB\u8F6C\u671D\u5411\u63D2\u503C\u9510\u5EA6"));
-                    EditorGUILayout.PropertyField(_orientationMethodProp,
+                    DrawPropertyWithHelp(_maxStableMoveSpeedProp,
+                        new GUIContent("Max Move Speed", "\u6700\u5927\u5730\u9762\u79FB\u52A8\u901F\u5EA6"),
+                        "Max Move Speed - \u6700\u5927\u5730\u9762\u79FB\u52A8\u901F\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u89D2\u8272\u5728\u5730\u9762\u79FB\u52A8\u65F6\u7684\u6700\u5927\u901F\u5EA6\u4E0A\u9650\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u6162\u901F\uFF1A3~5\n" +
+                        "\u2022 \u6B63\u5E38\u884C\u8D70\uFF1A6~8\n" +
+                        "\u2022 \u5FEB\u901F\u79FB\u52A8\uFF1A10~15\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u4EC5\u5728 IgnoreRootMotion \u6A21\u5F0F\u4E0B\u751F\u6548\u3002\n" +
+                        "\u6839\u636E\u89D2\u8272\u5C3A\u5BF8\u548C\u6E38\u620F\u8282\u594F\u8C03\u6574\u3002");
+
+                    DrawPropertyWithHelp(_stableMovementSharpnessProp,
+                        new GUIContent("Movement Sharpness", "\u901F\u5EA6\u53D8\u5316\u9510\u5EA6\uFF08\u8D8A\u9AD8\u8D8A\u7075\u654F\uFF09"),
+                        "Movement Sharpness - \u79FB\u52A8\u9510\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u63A7\u5236\u89D2\u8272\u4ECE\u5F53\u524D\u901F\u5EA6\u8D8B\u5411\u76EE\u6807\u901F\u5EA6\u7684\u63D2\u503C\u901F\u7387\u3002\n" +
+                        "\u503C\u8D8A\u9AD8\uFF0C\u89D2\u8272\u54CD\u5E94\u8D8A\u7075\u654F\uFF08\u51E0\u4E4E\u77AC\u79FB\uFF09\uFF1B\u503C\u8D8A\u4F4E\uFF0C\u52A0\u901F/\u51CF\u901F\u8D8A\u5E73\u6ED1\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u7EF5\u8F6F/\u6ED1\u6E8E\uFF1A3~5\n" +
+                        "\u2022 \u6807\u51C6\u7075\u654F\uFF1A10~15\n" +
+                        "\u2022 \u6781\u5EA6\u7075\u654F\uFF1A20+\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u52A8\u4F5C\u6E38\u620F\u901A\u5E38 10~15\uFF0C\u4F11\u95F2\u6E38\u620F\u53EF\u964D\u4F4E\u5230 5 \u4EE5\u4E0B\u83B7\u5F97\u67D4\u548C\u624B\u611F\u3002");
+
+                    DrawPropertyWithHelp(_orientationSharpnessProp,
+                        new GUIContent("Orientation Sharpness", "\u65CB\u8F6C\u671D\u5411\u63D2\u503C\u9510\u5EA6"),
+                        "Orientation Sharpness - \u65CB\u8F6C\u9510\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u63A7\u5236\u89D2\u8272\u671D\u5411\u65CB\u8F6C\u7684\u63D2\u503C\u901F\u7387\u3002\n" +
+                        "\u503C\u8D8A\u9AD8\u8F6C\u5411\u8D8A\u5FEB\uFF0C\u503C\u8D8A\u4F4E\u8F6C\u5411\u8D8A\u5E73\u6ED1\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u7F13\u6162\u8F6C\u5411\uFF1A5~8\n" +
+                        "\u2022 \u6807\u51C6\u8F6C\u5411\uFF1A10~15\n" +
+                        "\u2022 \u7ACB\u5373\u8F6C\u5411\uFF1A20+\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u914D\u5408 Movement Sharpness \u4E00\u8D77\u8C03\u6574\uFF0C\u4FDD\u6301\u4E24\u8005\u6BD4\u4F8B\u76F8\u8FD1\u4F53\u9A8C\u66F4\u81EA\u7136\u3002");
+
+                    DrawPropertyWithHelp(_orientationMethodProp,
                         new GUIContent("Orientation Method",
-                            "\u671D\u5411\u7B56\u7565\uFF1A\u671D\u5411\u53C2\u7167\u7269 \u6216 \u671D\u5411\u79FB\u52A8\u65B9\u5411"));
-                    EditorGUILayout.PropertyField(_rotationLockAngleProp,
+                            "\u671D\u5411\u7B56\u7565\uFF1A\u671D\u5411\u53C2\u7167\u7269 \u6216 \u671D\u5411\u79FB\u52A8\u65B9\u5411"),
+                        "Orientation Method - \u671D\u5411\u7B56\u7565",
+                        "\u3010\u4F5C\u7528\u3011\u51B3\u5B9A\u89D2\u8272\u9762\u671D\u54EA\u4E2A\u65B9\u5411\u3002\n\n" +
+                        "\u3010\u6A21\u5F0F\u8BF4\u660E\u3011\n" +
+                        "\u2022 TowardsCamera\uFF1A\u89D2\u8272\u59CB\u7EC8\u671D\u5411 Orientation Reference \u7684\u65B9\u5411\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u5C04\u51FB\u6E38\u620F\u3001\u9501\u5B9A\u89C6\u89D2\u3002\n\n" +
+                        "\u2022 TowardsMovement\uFF1A\u89D2\u8272\u671D\u5411\u5F53\u524D\u79FB\u52A8\u65B9\u5411\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u3002\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u901A\u5E38\u7528 TowardsMovement\u3002");
+
+                    DrawPropertyWithHelp(_rotationLockAngleProp,
                         new GUIContent("Rotation Lock Angle",
-                            "\u89D2\u8272\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5419\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\u5FC5\u987B\u5148\u65CB\u8F6C\u5230\u4F4D\u518D\u79FB\u52A8\u30020 = \u7981\u7528"));
+                            "\u89D2\u8272\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5419\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\u5FC5\u987B\u5148\u65CB\u8F6C\u5230\u4F4D\u518D\u79FB\u52A8\u30020 = \u7981\u7528"),
+                        "Rotation Lock Angle - \u65CB\u8F6C\u9501\u5B9A\u89D2\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u5F53\u89D2\u8272\u5F53\u524D\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5411\u7684\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\n" +
+                        "\u89D2\u8272\u4F1A\u5148\u539F\u5730\u65CB\u8F6C\u5230\u76EE\u6807\u65B9\u5411\uFF0C\u518D\u5F00\u59CB\u79FB\u52A8\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 0\uFF1A\u7981\u7528\u6B64\u529F\u80FD\uFF0C\u89D2\u8272\u59CB\u7EC8\u8FB9\u8D70\u8FB9\u8F6C\n" +
+                        "\u2022 90~120\uFF1A\u4EC5\u5F53\u8F6C\u5411\u8D85\u8FC7 90\u00B0 \u65F6\u624D\u5148\u539F\u5730\u8F6C\n" +
+                        "\u2022 30~60\uFF1A\u8F83\u5C0F\u89D2\u5EA6\u5C31\u4F1A\u89E6\u53D1\u539F\u5730\u8F6C\u5411\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u8BBE\u4E3A 0 \u7981\u7528\u6B64\u529F\u80FD\u3002\u5982\u679C\u5E0C\u671B\u89D2\u8272\u5728\u5927\u89D2\u5EA6\u8F6C\u5411\u65F6\u66F4\u81EA\u7136\uFF0C\u8BBE\u4E3A 90~120\u3002");
                 }
                 EditorGUI.indentLevel--;
             }
@@ -454,12 +549,43 @@ namespace SkillCharacterControllerEditor
                 EditorGUI.indentLevel++;
                 using (new GUILayout.VerticalScope(EditorStyles.helpBox))
                 {
-                    EditorGUILayout.PropertyField(_maxAirMoveSpeedProp,
-                        new GUIContent("Max Air Speed", "\u6700\u5927\u7A7A\u4E2D\u901F\u5EA6"));
-                    EditorGUILayout.PropertyField(_airAccelerationSpeedProp,
-                        new GUIContent("Acceleration", "\u7A7A\u4E2D\u52A0\u901F\u5EA6"));
-                    EditorGUILayout.PropertyField(_dragProp,
-                        new GUIContent("Drag", "\u7A7A\u6C14\u963B\u529B"));
+                    DrawPropertyWithHelp(_maxAirMoveSpeedProp,
+                        new GUIContent("Max Air Speed", "\u6700\u5927\u7A7A\u4E2D\u901F\u5EA6"),
+                        "Max Air Speed - \u6700\u5927\u7A7A\u4E2D\u901F\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u89D2\u8272\u5728\u7A7A\u4E2D\u65F6\u7684\u6700\u5927\u6C34\u5E73\u79FB\u52A8\u901F\u5EA6\u4E0A\u9650\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u65E0\u7A7A\u4E2D\u63A7\u5236\uFF1A0\n" +
+                        "\u2022 \u8F7B\u5FAE\u7A7A\u4E2D\u63A7\u5236\uFF1A3~5\n" +
+                        "\u2022 \u5B8C\u5168\u7A7A\u4E2D\u63A7\u5236\uFF1A\u4E0E\u5730\u9762\u901F\u5EA6\u76F8\u540C\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u4EC5\u5728 IgnoreRootMotion(Air) \u6A21\u5F0F\u4E0B\u751F\u6548\u3002\n" +
+                        "\u901A\u5E38\u8BBE\u4E3A\u5730\u9762\u901F\u5EA6\u7684 50%~80%\uFF0C\u8BA9\u7A7A\u4E2D\u63A7\u5236\u6709\u9650\u4F46\u4E0D\u662F\u5B8C\u5168\u4E0D\u80FD\u63A7\u5236\u3002");
+
+                    DrawPropertyWithHelp(_airAccelerationSpeedProp,
+                        new GUIContent("Acceleration", "\u7A7A\u4E2D\u52A0\u901F\u5EA6"),
+                        "Air Acceleration - \u7A7A\u4E2D\u52A0\u901F\u5EA6",
+                        "\u3010\u4F5C\u7528\u3011\u89D2\u8272\u5728\u7A7A\u4E2D\u65F6\u6C34\u5E73\u65B9\u5411\u7684\u52A0\u901F\u80FD\u529B\u3002\n" +
+                        "\u503C\u8D8A\u5927\uFF0C\u7A7A\u4E2D\u8F6C\u5411/\u52A0\u901F\u8D8A\u5FEB\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u5FAE\u5F31\u7A7A\u4E2D\u63A7\u5236\uFF1A5~10\n" +
+                        "\u2022 \u6807\u51C6\u7A7A\u4E2D\u63A7\u5236\uFF1A15~25\n" +
+                        "\u2022 \u5F3A\u7A7A\u4E2D\u63A7\u5236\uFF1A30+\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u592A\u9AD8\u4F1A\u8BA9\u7A7A\u4E2D\u79FB\u52A8\u611F\u89C9\u201C\u98D8\u201D\uFF0C\u592A\u4F4E\u4F1A\u89C9\u5F97\u201C\u8DF3\u8D77\u6765\u5C31\u63A7\u5236\u4E0D\u4E86\u201D\u3002\n" +
+                        "\u5EFA\u8BAE\u4ECE 15 \u5F00\u59CB\u8C03\u8BD5\u3002");
+
+                    DrawPropertyWithHelp(_dragProp,
+                        new GUIContent("Drag", "\u7A7A\u6C14\u963B\u529B"),
+                        "Drag - \u7A7A\u6C14\u963B\u529B",
+                        "\u3010\u4F5C\u7528\u3011\u7A7A\u4E2D\u6C34\u5E73\u901F\u5EA6\u7684\u8870\u51CF\u7CFB\u6570\u3002\n" +
+                        "\u503C\u8D8A\u5927\uFF0C\u89D2\u8272\u7A7A\u4E2D\u6C34\u5E73\u901F\u5EA6\u4E22\u5931\u8D8A\u5FEB\u3002\n\n" +
+                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                        "\u2022 \u51E0\u4E4E\u65E0\u963B\u529B\uFF1A0~0.02\n" +
+                        "\u2022 \u8F7B\u5FAE\u963B\u529B\uFF1A0.05~0.1\n" +
+                        "\u2022 \u660E\u663E\u963B\u529B\uFF1A0.2~0.5\n\n" +
+                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                        "\u914D\u5408 Acceleration \u4E00\u8D77\u8C03\u3002\u5982\u679C\u52A0\u901F\u9AD8\u4F46\u963B\u529B\u4F4E\uFF0C\u89D2\u8272\u4F1A\u5728\u7A7A\u4E2D\u201C\u6ED1\u201D\u5F88\u8FDC\u3002\n" +
+                        "\u5982\u679C\u5E0C\u671B\u8D77\u8DF3\u540E\u4FDD\u6301\u60EF\u6027\uFF0C\u8BBE\u4E3A\u8F83\u4F4E\u503C\u3002");
                 }
                 EditorGUI.indentLevel--;
             }
@@ -478,9 +604,41 @@ namespace SkillCharacterControllerEditor
             if (_miscFoldout)
             {
                 EditorGUI.indentLevel++;
-                EditorGUILayout.PropertyField(_gravityProp, new GUIContent("Gravity", "\u91CD\u5411\u91CF"));
-                EditorGUILayout.PropertyField(_meshRootProp, new GUIContent("Mesh Root", "\u89D2\u8272\u6A21\u578B\u6839\u8282\u70B9\uFF08\u53EF\u9009\uFF09"));
-                EditorGUILayout.PropertyField(_ignoredCollidersProp, new GUIContent("Ignored Colliders", "\u5FFD\u7565\u7684\u78B0\u649E\u4F53\u5217\u8868"));
+                DrawPropertyWithHelp(_gravityProp,
+                    new GUIContent("Gravity", "\u91CD\u5411\u91CF"),
+                    "Gravity - \u91CD\u529B\u5411\u91CF",
+                    "\u3010\u4F5C\u7528\u3011\u5B9A\u4E49\u4F5C\u7528\u4E8E\u89D2\u8272\u7684\u91CD\u529B\u65B9\u5411\u548C\u5927\u5C0F\u3002\n" +
+                    "\u901A\u5E38\u4E3A (0, -Y, 0) \u5F62\u5F0F\uFF0CY \u503C\u8D8A\u5927\u4E0B\u843D\u8D8A\u5FEB\u3002\n\n" +
+                    "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                    "\u2022 \u7269\u7406\u771F\u5B9E\uFF1A(0, -9.81, 0)\n" +
+                    "\u2022 \u6E38\u620F\u5E38\u7528\uFF1A(0, -20, 0) \u5230 (0, -40, 0)\n" +
+                    "\u2022 \u6708\u7403\u91CD\u529B\uFF1A(0, -1.6, 0)\n\n" +
+                    "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                    "\u6E38\u620F\u4E2D\u901A\u5E38\u4F7F\u7528\u6BD4\u771F\u5B9E\u66F4\u5927\u7684\u91CD\u529B\uFF08-20~-40\uFF09\uFF0C\u8BA9\u8DF3\u8DC3\u624B\u611F\u66F4\u7D27\u51D1\u3002\n" +
+                    "\u8DF3\u8DC3\u9AD8\u5EA6 = JumpUpSpeed\u00B2 / (2 * |Gravity.y|)\uFF0C\u8C03\u8282\u8DF3\u8DC3\u624B\u611F\u65F6\u9700\u914D\u5408 JumpUpSpeed \u4E00\u8D77\u8C03\u3002");
+
+                DrawPropertyWithHelp(_meshRootProp,
+                    new GUIContent("Mesh Root", "\u89D2\u8272\u6A21\u578B\u6839\u8282\u70B9\uFF08\u53EF\u9009\uFF09"),
+                    "Mesh Root - \u6A21\u578B\u6839\u8282\u70B9",
+                    "\u3010\u4F5C\u7528\u3011\u6307\u5B9A\u89D2\u8272\u6A21\u578B\u7684\u6839 Transform\u3002\n" +
+                    "\u7528\u4E8E RootMotion \u8865\u507F\u8BA1\u7B97\u548C\u6A21\u578B\u4F4D\u7F6E\u6821\u6B63\u3002\n\n" +
+                    "\u3010\u4F7F\u7528\u65B9\u6CD5\u3011\n" +
+                    "\u62D6\u5165\u89D2\u8272\u6A21\u578B\u7684\u6839\u8282\u70B9\uFF08\u901A\u5E38\u662F\u5305\u542B Animator \u7684\u5B50\u7269\u4F53\uFF09\u3002\n\n" +
+                    "\u3010\u6CE8\u610F\u3011\n" +
+                    "\u53EF\u9009\u5B57\u6BB5\u3002\u5982\u679C\u4E0D\u7528 RootMotion \u8865\u507F\u529F\u80FD\u53EF\u4EE5\u7559\u7A7A\u3002");
+
+                DrawPropertyWithHelp(_ignoredCollidersProp,
+                    new GUIContent("Ignored Colliders", "\u5FFD\u7565\u7684\u78B0\u649E\u4F53\u5217\u8868"),
+                    "Ignored Colliders - \u5FFD\u7565\u78B0\u649E\u4F53",
+                    "\u3010\u4F5C\u7528\u3011\u5217\u51FA KCC \u5728\u79FB\u52A8\u65F6\u5E94\u5FFD\u7565\u7684 Collider\u3002\n" +
+                    "\u8FD9\u4E9B Collider \u4E0D\u4F1A\u963B\u6321\u89D2\u8272\u79FB\u52A8\u3002\n\n" +
+                    "\u3010\u5178\u578B\u7528\u9014\u3011\n" +
+                    "\u2022 \u89D2\u8272\u81EA\u8EAB\u7684\u6B66\u5668/\u88C5\u5907\u78B0\u649E\u4F53\n" +
+                    "\u2022 \u89E6\u53D1\u5668\u533A\u57DF\uFF08Trigger Collider\uFF09\n" +
+                    "\u2022 \u5176\u4ED6\u4E0D\u5E94\u5F71\u54CD\u79FB\u52A8\u7684\u78B0\u649E\u4F53\n\n" +
+                    "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                    "\u5982\u679C\u89D2\u8272\u88AB\u81EA\u5DF1\u7684\u5B50\u7269\u4F53\u78B0\u649E\u4F53\u5361\u4F4F\uFF0C\u628A\u5B83\u4EEC\u52A0\u5230\u8FD9\u91CC\u3002");
+
                 EditorGUI.indentLevel--;
             }
             EndSection();
