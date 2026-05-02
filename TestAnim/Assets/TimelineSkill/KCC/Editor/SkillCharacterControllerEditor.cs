@@ -288,21 +288,99 @@ namespace SkillCharacterControllerEditor
                         MessageType.Info);
                     EditorGUILayout.Space(2);
 
+                    // 一键设置推荐参数按钮
+                    GUI.backgroundColor = new Color(0.3f, 0.8f, 0.4f);
+                    if (GUILayout.Button("\u2605 \u4E00\u952E\u8BBE\u7F6E\u63A8\u8350\u8D77\u8DF3\u53C2\u6570", GUILayout.Height(24)))
+                    {
+                        if (EditorUtility.DisplayDialog("\u4E00\u952E\u8BBE\u7F6E\u63A8\u8350\u8DF3\u8DC3\u53C2\u6570",
+                            "\u5C06\u8BBE\u7F6E\u4EE5\u4E0B\u63A8\u8350\u503C\uFF1A\n\n" +
+                            "\u2022 Jump Up Speed = 10\n" +
+                            "\u2022 Scalable Forward Speed = 2\n" +
+                            "\u2022 Pre-Grounding Grace Time = 0.15s\n" +
+                            "\u2022 Post-Grounding Grace Time = 0.1s\n" +
+                            "\u2022 Allow Jump When Sliding = true\n\n" +
+                            "\u8FD9\u7EC4\u53C2\u6570\u53EF\u63D0\u4F9B\u7075\u654F\u4E14\u624B\u611F\u826F\u597D\u7684\u8DF3\u8DC3\u4F53\u9A8C\u3002",
+                            "\u786E\u8BA4\u8BBE\u7F6E", "\u53D6\u6D88"))
+                        {
+                            ApplyRecommendedJumpPreset();
+                        }
+                    }
+                    GUI.backgroundColor = Color.white;
+                    EditorGUILayout.Space(4);
+
                     using (new GUILayout.VerticalScope(EditorStyles.helpBox))
                     {
-                        EditorGUILayout.PropertyField(_jumpUpSpeedProp,
-                            new GUIContent("Jump Up Speed", "\u8D77\u8DF3\u521D\u59CB\u5411\u4E0A\u901F\u5EA6"));
-                        EditorGUILayout.PropertyField(_jumpScalableForwardSpeedProp,
-                            new GUIContent("Scalable Forward Speed", "\u8D77\u8DF3\u65F6\u7684\u524D\u8FDB\u901F\u5EA6"));
+                        DrawPropertyWithHelp(_jumpUpSpeedProp,
+                            new GUIContent("Jump Up Speed", "\u8D77\u8DF3\u521D\u59CB\u5411\u4E0A\u901F\u5EA6"),
+                            "Jump Up Speed - \u8D77\u8DF3\u5411\u4E0A\u901F\u5EA6",
+                            "\u3010\u4F5C\u7528\u3011\u51B3\u5B9A\u89D2\u8272\u8D77\u8DF3\u77AC\u95F4\u7684\u521D\u59CB\u5411\u4E0A\u901F\u5EA6\uFF0C\u76F4\u63A5\u5F71\u54CD\u8DF3\u8DC3\u9AD8\u5EA6\u3002\n\n" +
+                            "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                            "\u2022 \u8F7B\u8DF3\uFF1A5~8\n" +
+                            "\u2022 \u6807\u51C6\u8DF3\uFF1A10~12\n" +
+                            "\u2022 \u5927\u8DF3\uFF1A15~20\n\n" +
+                            "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                            "\u5B9E\u9645\u8DF3\u8DC3\u9AD8\u5EA6\u8FD8\u53D7\u91CD\u529B\u5F71\u54CD\uFF08Gravity \u53C2\u6570\uFF09\u3002\u5982\u679C\u89D2\u8272\u8DF3\u5F97\u592A\u4F4E/\u592A\u9AD8\uFF0C\u4F18\u5148\u8C03\u8FD9\u4E2A\u53C2\u6570\u3002\n" +
+                            "\u63A8\u8350\u503C\uFF1A10");
+
+                        DrawPropertyWithHelp(_jumpScalableForwardSpeedProp,
+                            new GUIContent("Scalable Forward Speed", "\u8D77\u8DF3\u65F6\u7684\u524D\u8FDB\u901F\u5EA6"),
+                            "Scalable Forward Speed - \u8D77\u8DF3\u524D\u8FDB\u901F\u5EA6",
+                            "\u3010\u4F5C\u7528\u3011\u8D77\u8DF3\u77AC\u95F4\u6309\u5F53\u524D\u79FB\u52A8\u65B9\u5411\u9644\u52A0\u7684\u524D\u8FDB\u901F\u5EA6\u3002\u503C\u8D8A\u5927\uFF0C\u8DF3\u8DC3\u65F6\u5411\u524D\u51B2\u8D8A\u8FDC\u3002\n\n" +
+                            "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                            "\u2022 \u539F\u5730\u8DF3\uFF1A0\n" +
+                            "\u2022 \u5FAE\u91CF\u524D\u51B2\uFF1A2~5\n" +
+                            "\u2022 \u660E\u663E\u524D\u8DF3\uFF1A8~12\n\n" +
+                            "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                            "\u5982\u679C\u4E0D\u5E0C\u671B\u8DF3\u8DC3\u65F6\u6709\u524D\u51B2\u611F\uFF0C\u8BBE\u4E3A 0~2\u3002\n" +
+                            "\u5BF9\u4E8E\u5E73\u53F0\u8DF3\u8DC3\u73A9\u6CD5\u53EF\u9002\u5F53\u63D0\u9AD8\u3002\n" +
+                            "\u63A8\u8350\u503C\uFF1A2");
+
                         EditorGUILayout.Space(4);
                         EditorGUILayout.LabelField("\u5BBD\u5BB9\u65F6\u95F4 (Grace Time)", EditorStyles.boldLabel);
-                        EditorGUILayout.PropertyField(_jumpPreGroundingGraceTimeProp,
-                            new GUIContent("Pre-Grounding", "\u8D77\u8DF3\u524D\u79BB\u5730\u5BBD\u5BB9\u65F6\u95F4"));
-                        EditorGUILayout.PropertyField(_jumpPostGroundingGraceTimeProp,
-                            new GUIContent("Post-Grounding", "\u8D77\u8DF3\u540E\u843D\u5730\u5BBD\u5BB9\u65F6\u95F4"));
+
+                        DrawPropertyWithHelp(_jumpPreGroundingGraceTimeProp,
+                            new GUIContent("Pre-Grounding", "\u8D77\u8DF3\u524D\u79BB\u5730\u5BBD\u5BB9\u65F6\u95F4"),
+                            "Pre-Grounding Grace Time - \u571F\u72FC\u65F6\u95F4 (Coyote Time)",
+                            "\u3010\u4F5C\u7528\u3011\u89D2\u8272\u79BB\u5F00\u5730\u9762\u540E\uFF0C\u5728\u6B64\u65F6\u95F4\u7A97\u53E3\u5185\u4ECD\u5141\u8BB8\u8DF3\u8DC3\u3002\n" +
+                            "\u7C7B\u4F3C\u52A8\u753B\u7247\u4E2D\u89D2\u8272\u8D70\u51FA\u60AC\u5D16\u540E\u77ED\u6682\u6EDE\u7A7A\u7684\u6548\u679C\u3002\n\n" +
+                            "\u3010\u4E3A\u4EC0\u4E48\u91CD\u8981\u3011\n" +
+                            "\u503C\u4E3A 0 \u65F6\uFF0C\u89D2\u8272\u79BB\u5730\u7684\u77AC\u95F4\u5C31\u65E0\u6CD5\u8DF3\u8DC3\uFF0C\u73A9\u5BB6\u4F1A\u89C9\u5F97\u6309\u952E\u201C\u4E0D\u7075\u201D\u3002\n\n" +
+                            "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                            "\u2022 \u65E0\u5BBD\u5BB9\uFF1A0\n" +
+                            "\u2022 \u6807\u51C6\u5BBD\u5BB9\uFF1A0.1~0.2\u79D2\n" +
+                            "\u2022 \u5BBD\u677E\u5BBD\u5BB9\uFF1A0.3\u79D2\n\n" +
+                            "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                            "\u5F3A\u70C8\u5EFA\u8BAE\u8BBE\u7F6E\u4E3A 0.1~0.2\uFF0C\u8FD9\u662F\u6539\u5584\u8DF3\u8DC3\u624B\u611F\u7684\u6700\u5173\u952E\u53C2\u6570\uFF01\n" +
+                            "\u63A8\u8350\u503C\uFF1A0.15");
+
+                        DrawPropertyWithHelp(_jumpPostGroundingGraceTimeProp,
+                            new GUIContent("Post-Grounding", "\u8D77\u8DF3\u540E\u843D\u5730\u5BBD\u5BB9\u65F6\u95F4"),
+                            "Post-Grounding Grace Time - \u8DF3\u8DC3\u7F13\u51B2 (Jump Buffer)",
+                            "\u3010\u4F5C\u7528\u3011\u89D2\u8272\u5C1A\u672A\u843D\u5730\u65F6\u63D0\u524D\u6309\u4E0B\u8DF3\u8DC3\u952E\uFF0C\u5728\u843D\u5730\u540E\u81EA\u52A8\u6267\u884C\u8DF3\u8DC3\u3002\n" +
+                            "\u5728\u6B64\u65F6\u95F4\u7A97\u53E3\u5185\u7684\u63D0\u524D\u6309\u952E\u4F1A\u88AB\u7F13\u5B58\u3002\n\n" +
+                            "\u3010\u4E3A\u4EC0\u4E48\u91CD\u8981\u3011\n" +
+                            "\u503C\u4E3A 0 \u65F6\uFF0C\u5FC5\u987B\u7CBE\u786E\u5728\u843D\u5730\u540E\u624D\u80FD\u6309\u8DF3\u8DC3\uFF0C\u7EFC\u5408\u4F53\u9A8C\u4E0D\u4F73\u3002\n\n" +
+                            "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
+                            "\u2022 \u65E0\u7F13\u51B2\uFF1A0\n" +
+                            "\u2022 \u6807\u51C6\u7F13\u51B2\uFF1A0.08~0.15\u79D2\n" +
+                            "\u2022 \u5BBD\u677E\u7F13\u51B2\uFF1A0.2\u79D2\n\n" +
+                            "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                            "\u8BBE\u7F6E 0.1 \u53EF\u8BA9\u73A9\u5BB6\u5728\u5FEB\u8981\u843D\u5730\u65F6\u63D0\u524D\u6309\u8DF3\u4E5F\u80FD\u89E6\u53D1\uFF0C\u4F53\u9A8C\u66F4\u6D41\u7545\u3002\n" +
+                            "\u63A8\u8350\u503C\uFF1A0.1");
+
                         EditorGUILayout.Space(4);
-                        EditorGUILayout.PropertyField(_allowJumpingWhenSlidingProp,
-                            new GUIContent("Allow Jump When Sliding", "\u659C\u5761\u6ED1\u52A8\u65F6\u662F\u5426\u5141\u8BB8\u8D77\u8DF3"));
+
+                        DrawPropertyWithHelp(_allowJumpingWhenSlidingProp,
+                            new GUIContent("Allow Jump When Sliding", "\u659C\u5761\u6ED1\u52A8\u65F6\u662F\u5426\u5141\u8BB8\u8D77\u8DF3"),
+                            "Allow Jump When Sliding - \u659C\u5761\u6ED1\u52A8\u8DF3\u8DC3",
+                            "\u3010\u4F5C\u7528\u3011\u5F53\u89D2\u8272\u5728\u9661\u5CE1\u659C\u5761\u4E0A\u6ED1\u52A8\u65F6\uFF0C\u662F\u5426\u5141\u8BB8\u6267\u884C\u8DF3\u8DC3\u3002\n\n" +
+                            "\u3010\u5F00\u542F(true)\u3011\n" +
+                            "\u89D2\u8272\u5373\u4F7F\u5728\u6ED1\u5761\u72B6\u6001\u4E5F\u80FD\u8DF3\uFF0C\u53EF\u7528\u4E8E\u901C\u5761\u6216\u8131\u79BB\u659C\u5761\u3002\n\n" +
+                            "\u3010\u5173\u95ED(false)\u3011\n" +
+                            "\u89D2\u8272\u5728\u659C\u5761\u6ED1\u52A8\u65F6\u4E0D\u80FD\u8DF3\u8DC3\uFF0C\u9002\u5408\u60F3\u8981\u9650\u5236\u73A9\u5BB6\u5728\u9661\u5CE1\u5730\u5F62\u7684\u884C\u52A8\u80FD\u529B\u3002\n\n" +
+                            "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
+                            "\u5927\u591A\u6570\u60C5\u51B5\u4E0B\u5EFA\u8BAE\u5F00\u542F\uFF0C\u907F\u514D\u73A9\u5BB6\u89C9\u5F97\u6309\u8DF3\u201C\u6CA1\u53CD\u5E94\u201D\u3002\n" +
+                            "\u63A8\u8350\u503C\uFF1Atrue");
                     }
                 }
                 else
@@ -451,6 +529,34 @@ namespace SkillCharacterControllerEditor
                 EditorGUI.indentLevel--;
             }
             EndSection();
+        }
+
+        #endregion
+
+        #region Helpers – PropertyWithHelp & Preset
+
+        /// <summary>绘制带 ? 帮助按钮的属性字段</summary>
+        private void DrawPropertyWithHelp(SerializedProperty prop, GUIContent label,
+            string helpTitle, string helpMessage)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(prop, label);
+            if (GUILayout.Button("?", EditorStyles.miniButton, GUILayout.Width(20), GUILayout.Height(18)))
+            {
+                EditorUtility.DisplayDialog(helpTitle, helpMessage, "确定");
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>一键设置推荐跳跃参数</summary>
+        private void ApplyRecommendedJumpPreset()
+        {
+            _jumpUpSpeedProp.floatValue = 10f;
+            _jumpScalableForwardSpeedProp.floatValue = 2f;
+            _jumpPreGroundingGraceTimeProp.floatValue = 0.15f;
+            _jumpPostGroundingGraceTimeProp.floatValue = 0.1f;
+            _allowJumpingWhenSlidingProp.boolValue = true;
+            serializedObject.ApplyModifiedProperties();
         }
 
         #endregion
