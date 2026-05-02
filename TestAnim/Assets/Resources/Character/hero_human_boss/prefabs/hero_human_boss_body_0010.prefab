@@ -1144,7 +1144,7 @@ MonoBehaviour:
   _jumpMode: 0
   _jumpUpSpeed: 10
   _jumpScalableForwardSpeed: 2
-  _jumpPreGroundingGraceTime: 0.15
+  _jumpPreGroundingGraceTime: 0
   _jumpPostGroundingGraceTime: 0.1
   _allowJumpingWhenSliding: 1
   _maxStableMoveSpeed: 6
