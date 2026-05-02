@@ -1597,6 +1597,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: _jumpAction
+      value: 
+      objectReference: {fileID: 6708370390949604966, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
+    - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _moveAction
       value: 
       objectReference: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
