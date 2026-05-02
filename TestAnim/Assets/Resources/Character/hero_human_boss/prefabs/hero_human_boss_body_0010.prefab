@@ -1143,9 +1143,9 @@ MonoBehaviour:
   _airRootMotionMode: 1
   _jumpMode: 0
   _jumpUpSpeed: 10
-  _jumpScalableForwardSpeed: 10
-  _jumpPreGroundingGraceTime: 0
-  _jumpPostGroundingGraceTime: 0
+  _jumpScalableForwardSpeed: 2
+  _jumpPreGroundingGraceTime: 0.15
+  _jumpPostGroundingGraceTime: 0.1
   _allowJumpingWhenSliding: 1
   _maxStableMoveSpeed: 6
   _stableMovementSharpness: 15
@@ -1156,7 +1156,7 @@ MonoBehaviour:
   _airAccelerationSpeed: 30
   _drag: 0.5
   _gravity: {x: 0, y: -30, z: 0}
-  _meshRoot: {fileID: 0}
+  _meshRoot: {fileID: 4666618876605010}
   _ignoredColliders: []
 --- !u!1 &1452558371039260
 GameObject:

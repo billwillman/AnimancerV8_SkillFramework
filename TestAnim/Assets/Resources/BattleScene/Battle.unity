@@ -1537,6 +1537,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 64136073}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: _meshRoot
+      value: 
+      objectReference: {fileID: 1724210588}
+    - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _orientationReference
       value: 
       objectReference: {fileID: 687292818}
