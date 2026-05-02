@@ -1137,7 +1137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveAction: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
-  _jumpAction: {fileID: 0}
+  _jumpAction: {fileID: 6708370390949604966, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
   _orientationReference: {fileID: 0}
   _groundRootMotionMode: 1
   _airRootMotionMode: 1
