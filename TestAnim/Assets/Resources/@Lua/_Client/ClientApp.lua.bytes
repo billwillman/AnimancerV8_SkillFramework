@@ -157,7 +157,6 @@ function _M:OnInit()
 
         RegisterCustomModels(self)
     end
-    _MOE.ResourceManager:CreateGameObjectAsync("Resources/DefaultHumanoid.prefab", nil)
 end
 
 function _M:OnQuit()
