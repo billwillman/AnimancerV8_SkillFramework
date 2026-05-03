@@ -1,0 +1,54 @@
+local _M = _MOE.class("ClientNetworkModel", _MOE.BaseModel)
+
+local GsNetClass = require("_Common.Net.BaseGSNet")
+require("_NetMsg.MsgId")
+
+function _M:OnInit()
+    self.GsNetwork = GsNetClass.New(_MOE.NetworkManager, _MOE.MsgIds.CM_Heart, _MOE.MsgIds.SM_Heart,
+        "OnGSSocketResult", "OnGSSocketAbort")
+    self.GsNetwork:Init()
+end
+
+function _M:RegisterEvents()
+    _MOE.EventManager:RegisterEvent("OnGSSocketResult", self, self._OnGSSocketResult)
+    _MOE.EventManager:RegisterEvent("OnGSSocketAbort", self, self._OnGSSocketAbort)
+end
+
+function _M:_OnGSSocketAbort()
+    _MOE.EventManager:DispatchEvent(_MOE.ClientEvents.ON_GS_CONNECT_ABORT)
+end
+
+function _M:_OnGSSocketResult(isOk)
+    _MOE.EventManager:DispatchEvent(_MOE.ClientEvents.ON_GS_CONNECT_RESULT, isOk)
+end
+
+function _M:ConnectServer()
+    if not _MOE.GsData then
+        return false
+    end
+    return self.GsNetwork:ConnectServer(_MOE.GsData.ip, _MOE.GsData.port)
+end
+
+function _M:SendMsg(msgId, data)
+    self.GsNetwork:SendMsg(msgId, data)
+end
+
+function _M:SendPBMsg(msgId, data, pbTypeName)
+    self.GsNetwork:SendPBMsg(msgId, data, pbTypeName)
+end
+
+function _M:RegisterPB(PBName)
+    if self.GsNetwork then
+        return self.GsNetwork:RegisterPB(PBName)
+    end
+    return false
+end
+
+function _M:OnUnInit()
+    if self.GsNetwork ~= nil then
+        self.GsNetwork:UnInit()
+        self.GsNetwork = nil
+    end
+end
+
+return _M
