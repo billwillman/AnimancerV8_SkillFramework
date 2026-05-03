@@ -1,0 +1,119 @@
+local CSharpEventContainer = require("_Common.CSharpEventContainer")
+local ModelContainerClass = require("_Common.ModelContainer")
+local _M = _MOE.class("BaseScene", CSharpEventContainer, ModelContainerClass)
+
+_M[".superctor"] = true -- 会调用父类方法
+
+local function _GetModel(self, key)
+    local ret = self:Old_GetModel(key)
+    ret.Scene = self
+    return ret
+end
+
+function _M:Ctor(sceneName, ...)
+    self.SceneName = sceneName
+
+    self.Old_GetModel = self.GetModel
+    self.GetModel = _GetModel
+
+    self.Models = {}
+    setmetatable(self.Models, {
+        __index = function (_, key)
+            if app then
+                local model = self:GetModel(key)
+                return model
+            end
+        end
+    })
+end
+
+function _M:HasResScene()
+    if not self.Config then
+        return false
+    end
+    if self.Config.resSceneName then
+        return string.len(self.Config.resSceneName ) > 0
+    elseif self.Config.GetResSceneName then
+        local sceneName = self.Config:GetResSceneName()
+        return sceneName ~= nil and string.len(sceneName) > 0
+    end
+    return false
+end
+
+function _M:GetSceneName()
+    return self.SceneName
+end
+
+function _M:SceneStartLoad()
+    xpcall(function()
+        self:OnStartLoad()
+    end, _G.ErrorHandler)
+end
+
+function _M:SceneFinishLoad()
+    xpcall(function ()
+        self:OnSceneLoadFinish()
+    end, _G.ErrorHandler)
+end
+
+function _M:SceneLoadFail()
+    xpcall(function ()
+        self:OnSceneLoadFail()
+    end, _G.ErrorHandler)
+end
+
+function _M:SceneProcessLoad(process)
+    xpcall(function ()
+        self:OnSceneLoadProcess(process)
+    end, _G.ErrorHandler)
+end
+
+function _M:Enter()
+    xpcall(function ()
+        self:OnEnter()
+    end, _G.ErrorHandler)
+end
+
+function _M:Exit()
+    xpcall(function ()
+        self:OnExit()
+    end, _G.ErrorHandler)
+    self:UnRegisterModels()
+    -- 事件注销
+    self:UnRegsterAllCsharpEvents()
+    _MOE.EventManager:UnRegisterEvents(self)
+end
+
+--- 当前激活场景名字
+function _M:GetCurrentActiveResSceneName()
+    local scene = _MOE.CSSceneManager:GetActiveScene()
+    local ret = scene.name
+    return ret
+end
+
+--------------------------- 需要继承 -----------------------------
+
+-- 是否需要回调SceneProcess
+function _M:CanProcessCallBack()
+    return false
+end
+
+function _M:OnStartLoad()
+end
+
+function _M:OnSceneLoadFinish()
+end
+
+function _M:OnSceneLoadFail()
+end
+
+function _M:OnSceneLoadProcess(process)
+end
+
+function _M:OnEnter()
+end
+
+function _M:OnExit()
+end
+
+return _M

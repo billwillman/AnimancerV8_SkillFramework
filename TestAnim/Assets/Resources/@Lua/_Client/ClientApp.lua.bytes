@@ -1,0 +1,169 @@
+----- Client的App
+local BaseAppClass = require("_Common.BaseApp")
+
+require("_Client.ClientSceneEnum")
+require("_Client.ClientEvents")
+
+local _M = _MOE.class("ClientApp", BaseAppClass)
+
+local function CreateUIRoot(self, onFinish)
+    local ret = _MOE.ResourceManager:CreateGameObjectAsync("Resources/UI/UI Root.prefab",
+    function(process, isDone, root)
+        if isDone then
+            if root then
+                root.name = "UI Root"
+                root.transform:SetParent(_MOE.GameStartTransform, false)
+                self.UIRoot = root.transform
+                _MOE.UIRoot = self.UIRoot
+                local eventSystemTrans = self.UIRoot:Find("EventSystem")
+                _MOE.UIEventSystem = eventSystemTrans:GetComponent(typeof(CS.UnityEngine.InputSystem.UI.InputSystemUIInputModule))
+                if onFinish then
+                    onFinish(self)
+                end
+            end
+        end
+    end
+    )
+    return ret
+end
+
+local function CreateMyPlayerInput(self, onFinish)
+    local ret = _MOE.ResourceManager:CreateGameObjectAsync("Resources/@Input/PlayerInput.prefab",
+    function(process, isDone, playerInput)
+        if isDone then
+            if playerInput then
+                playerInput.name = "PlayerInput"
+                playerInput.transform:SetParent(_MOE.GameStartTransform, false)
+                self.PlayerInput = playerInput.transform:GetComponent(typeof(CS.UnityEngine.InputSystem.PlayerInput))
+                _MOE.PlayerInput = self.PlayerInput
+                if onFinish then
+                    onFinish(self)
+                end
+            end
+        end
+    end
+    )
+    return ret
+end
+
+--[[
+local function CreateDsNetWorkObject(self, onFinish)
+    local ret = _MOE.ResourceManager:CreateGameObjectAsync("Resources/@NetCode/DsNetworkManager.prefab",
+    function(process, isDone, obj)
+        if isDone then
+            if obj then
+                obj.name = "DsNetworkManager"
+               -- obj.transform:SetParent(_MOE.GameStartTransform, false)
+                self.DsNetworkManager = obj:GetComponent(typeof(CS.Unity.Netcode.NetworkManager))
+                if onFinish then
+                    onFinish(self)
+                end
+            end
+        end
+    end
+    )
+    return ret
+end
+]]
+
+function _M:OnPreloadFinish()
+    if self.UIRoot and self.PlayerInput --[[and self.DsNetworkManager]] then
+        _MOE.Logger.Log("[ClientApp] OnPreloadFinish")
+        _MOE.UIManager = require("_Client.UIManager").New()
+        _MOE.UIManager:AttachInputManager()
+        _MOE.SceneManager:SwitchScene(_MOE.SceneEnum.LoginScene) --- 切换到登录场景
+    end
+end
+
+local function InitGSNetRegisterFunc(self)
+    self:RegisterModel("NetModel", "_Client.Models.ClientNetworkModel", false)
+     ------------------------ 注册消息处理函数 --------------------------
+     local NetModel = self:GetModel("NetModel")
+     _MOE = _MOE or {}
+     _MOE.GSClientModel = NetModel -- 连接GS的Model
+     _MOE.BindGSMsgNtf =  function (msgId, target, callBack)
+         if msgId and target and callBack then
+             NetModel.GsNetwork:RegisterReceiveMsgProcess(msgId, function(GsNetwork, msg)
+                 if not target then
+                     return
+                 end
+                 callBack(target, msg, GsNetwork)
+             end)
+         end
+     end
+
+     -- 注册网络pb文件
+     NetModel:RegisterPB("Login")
+     --------------------------------------------------------------------
+end
+
+--- 连接DS切换
+function _M:SwitchMultiScene(ds)
+    if not ds then
+        return false
+    end
+    _MOE.TB = ds
+    return self:Switch_TB_MultiScene()
+end
+
+function _M:Switch_TB_MultiScene()
+    if not _MOE.TB or next(_MOE.TB) == nil or not _MOE.TB["dsData"] or next(_MOE.TB["dsData"]) == nil then
+        return false
+    end
+    return _MOE.SceneManager:SwitchScene(_MOE.SceneEnum.MultiScene, self.DsNetworkManager, false)
+end
+
+--- 单机模式 sceneName是场景名
+function _M:SwitchSinglePlayScene(sceneName)
+    if not sceneName or type(sceneName) ~= "string" or string.len(sceneName) <= 0 then
+        return false
+    end
+    _MOE.TB = {
+        ["dsData"] = {
+            ["scene"] = sceneName,
+        }
+    }
+    return _MOE.SceneManager:SwitchScene(_MOE.SceneEnum.MultiScene, self.DsNetworkManager, true)
+end
+
+function _M:GetLocalPlayerController()
+    if not _MOE.PlayerControllerList then
+        return nil
+    end
+    local data = _MOE.PlayerControllerList[1]
+    if not data or not data.target then
+        return nil
+    end
+    return data.target.PlayerController
+end
+
+---------------------------------- 逻辑Models注册 ------------------------------------
+local function RegisterCustomModels(self)
+    ------ 业务逻辑Model注册 ------------------
+    ------------------------------------------
+end
+
+------------------------------ 继承方法 -------------------------------
+function _M:OnInit()
+    _MOE.IsClient = true
+    if CreateUIRoot(self, self.OnPreloadFinish) and CreateMyPlayerInput(self, self.OnPreloadFinish)
+        --[[and CreateDsNetWorkObject(self, self.OnPreloadFinish)]] then
+        _MOE.BaseViewClass = require("_Client.BaseView")
+        --- 这里给个默认值
+        _MOE.GsData = {ip = "49.235.182.106", port = 5000}
+        --_MOE.GsData = {ip = "127.0.0.1", port = 5000}
+        --- 注册网络Model
+        InitGSNetRegisterFunc(self)
+
+        RegisterCustomModels(self)
+    end
+    _MOE.ResourceManager:CreateGameObjectAsync("Resources/DefaultHumanoid.prefab", nil)
+end
+
+function _M:OnQuit()
+    if _MOE.UIManager then
+        _MOE.UIManager:CloseAllWindow()
+    end
+end
+
+return _M

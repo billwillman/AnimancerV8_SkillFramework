@@ -1,0 +1,451 @@
+local CSharpEventContainer = require("_Common.CSharpEventContainer")
+local BaseView = _MOE.class("BaseView", CSharpEventContainer)
+
+local function GetControlName(control)
+    if not control then
+        return
+    end
+    return control.gameObject.name
+end
+
+function BaseView:Ctor(gameObj, loader)
+    self.bp = {}
+    self.RootGameObject = gameObj
+    self.RootTransform = gameObj.transform
+    self.Loader = loader
+    self.ChildViewMap = {}
+    -- self.LoopScrollViews = {} -- 无限滚动列表
+end
+
+function BaseView:Init()
+    xpcall(self.OnInit, _G.ErrorHandler, self)
+end
+
+function BaseView:GetTransform()
+    return self.RootTransform
+end
+
+function BaseView:GetLayerId()
+    return self.LayerId
+end
+
+------------- TEXT组件 --------------------
+function BaseView:TextSetText(bp, str)
+    if not bp then
+        return false
+    end
+    str = str or ""
+    bp.text = str
+    return true
+end
+
+function BaseView:TextSetFontAsync(bp, resPath)
+    if not bp or not resPath then
+        return false
+    end
+    return self.Loader:LoadFontAsync(resPath, bp)
+end
+
+--------- RawImage组件 ----------------
+function BaseView:RawImageSetImage(bp, resPath)
+    if not bp or not resPath then
+        return false
+    end
+    return self.Loader:LoadTextureAsync(resPath, bp)
+end
+
+-- 清理调所有delegete
+function BaseView:ClearUIEvents()
+    if self.__UIEvents then
+        for name, params in pairs(self.__UIEvents) do
+            local ctl = self:GetControl(name)
+            if ctl then
+                for eventName, _ in pairs(params) do
+                    if eventName and string.len(eventName) > 0 then
+                        if ctl[eventName] then
+                            local ctlEvt = ctl[eventName]
+                            ctlEvt:RemoveAllListeners()
+                        end
+                    end
+                end
+            end
+        end
+        self.__UIEvents = nil
+    end
+end
+
+function BaseView:_RegisterUIEvent(name, eventName, func)
+    self.__UIEvents = self.__UIEvents or {}
+    local ctl = self:GetControl(name)
+    if ctl then
+        local params = self.__UIEvents[name]
+        if not params then
+            params = {}
+            self.__UIEvents[name] = params
+        end
+        local OnEvent = function(...)
+            func(self, ...)
+        end
+        params[eventName] = OnEvent
+        local ctlEvt = ctl[eventName]
+        ctlEvt:RemoveAllListeners()
+        ctlEvt:AddListener(OnEvent)
+        return true
+    end
+    return false
+end
+
+function BaseView:_UnRegisterUIEvent(name, eventName)
+    if self.__UIEvents then
+        local ctl = self:GetControl(name)
+        if ctl then
+            local params = self.__UIEvents[name]
+            if params then
+                params[eventName] = nil
+                if next(params) == nil then
+                    self.__UIEvents[name] = nil
+                end
+            end
+            local ctlEvt = ctl[eventName]
+            ctlEvt:RemoveAllListeners()
+            return true
+        end
+    end
+    return false
+end
+
+--[[
+function BaseView:RegisterEvent(eventName, callback)
+    if not eventName or not callback then
+        return
+    end
+    _MOE.EventManager:RegisterEvent(eventName, self, callback)
+end
+]]
+
+function BaseView:AddEventListener(eventName, func)
+    if not eventName or not func then
+        return
+    end
+    if not self.m_listenerMap then
+        self.m_listenerMap = {}
+    elseif self.m_listenerMap[eventName] then
+        _MOE.Logger.LogError("AddEventListener Error, Repeatedly Listen For Event")
+        return
+    end
+    self.m_listenerMap[eventName] = true
+    _MOE.EventManager:RegisterEvent(eventName, self, func)
+end
+
+function BaseView:RemoveEventListener(eventName)
+    if not eventName or not not self.m_listenerMap then
+        return
+    end
+    self.m_listenerMap[eventName] = nil
+    _MOE.EventManager:UnRegisterEvent(eventName, self)
+end
+
+function BaseView:UnRegisterCustomEvents()
+    self.m_listenerMap = nil
+    _MOE.EventManager:UnRegisterEvents(self)
+end
+
+function BaseView:RegisterCustomEvent(eventName, func)
+    _MOE.EventManager:RegisterEvent(eventName, self, func)
+end
+
+function BaseView:_ClearAllUIControls()
+    self.bp = nil
+    self.Loader = nil
+    self.RootGameObject = nil
+    self.RootTransform = nil
+end
+
+function BaseView:GetControl(name)
+    if not self.bp or not name then
+        return
+    end
+    local ret = self.bp[name]
+    return ret
+end
+
+function BaseView:SetEnabled(control, isEnable)
+    if not control or isEnable == nil then
+        return
+    end
+    control.enabled = isEnable
+end
+
+function BaseView:IsInteractable(control)
+    if not control then
+        return
+    end
+    return control.interactable
+end
+
+function BaseView:SetInteractable(control, IsInteractable)
+    if not control or IsInteractable == nil then
+        return
+    end
+    control.interactable = IsInteractable
+end
+
+function BaseView:IsEnabled(control)
+    if not control then
+        return
+    end
+    return control.enabled
+end
+
+-- Lua上的加载器
+function BaseView:GetLoader()
+    local ret = self.Loader
+    return ret
+end
+
+function BaseView:Open(...)
+    xpcall(self.OnOpen, _G.ErrorHandler, self, ...)
+end
+
+function BaseView:Close()
+    self:_ClearAllChildViews(true) --- 清理所有子View
+    xpcall(self.OnClose, _G.ErrorHandler, self)
+end
+
+---@protected
+---绑定一个计时器
+---@param interval   间隔
+---@param func  回调
+---@param inst	self
+---@param isLoop  是否循环
+---@return handle Timer 计时器
+function BaseView:BindTimer(interval, func, inst, isLoop, ...)
+    isLoop = isLoop or false
+    if isLoop then
+        local handle = _MOE.TimerManager:AddLoopTimer(interval, inst, func, ...)
+        self.m_timerMap = self.m_timerMap or {}
+        self.m_timerMap[handle] = true
+        return handle
+    else
+        local handle = _MOE.TimerManager:AddTimer(interval, inst, func, ...)
+        self.m_timerMap = self.m_timerMap or {}
+        self.m_timerMap[handle] = true
+        return handle
+    end
+end
+
+function BaseView:BindFrame(interval, func, inst, isLoop, ...)
+    isLoop = isLoop or false
+    if isLoop then
+        local handle = _MOE.TimerManager:AddLoopFrame(interval, inst, func, ...)
+        self.m_timerMap = self.m_timerMap or {}
+        self.m_timerMap[handle] = true
+        return handle
+    else
+        local handle = _MOE.TimerManager:AddFrame(interval, inst, func, ...)
+        self.m_timerMap = self.m_timerMap or {}
+        self.m_timerMap[handle] = true
+        return handle
+    end
+end
+
+---@protected
+---解绑一个计时器
+---@param handle Timer 计时器
+function BaseView:UnBindTimer(handle)
+    if not handle then
+        return
+    end
+    _MOE.TimerManager:RemoveTimer(handle)
+    if self.m_timerMap then
+        self.m_timerMap[handle] = nil
+    end
+end
+
+function BaseView:UnBindFrame(handle)
+    if not handle then
+        return
+    end
+    _MOE.TimerManager:RemoveTimer(handle)
+    if self.m_timerMap then
+        self.m_timerMap[handle] = nil
+    end
+end
+
+function BaseView:ClearTimers()
+    -- _MOE.Logger.Log("BaseViewClass:ClearTimers", self.className)
+    if not self.m_timerMap then
+        return
+    end
+    for handle, _ in pairs(self.m_timerMap) do
+        _MOE.TimerManager:RemoveTimer(handle)
+    end
+    self.m_timerMap = nil
+end
+
+--- UI释放
+function BaseView:Destroy()
+    xpcall(self.OnDestroy, _G.ErrorHandler, self)
+    self:ClearTimers()
+    self:ClearUIEvents()
+    self:UnRegisterCustomEvents()
+    self:UnRegsterAllCsharpEvents()
+    self:_ClearAllUIControls()
+end
+
+function BaseView:ReOpen(...)
+    xpcall(self.OnReOpen, _G.ErrorHandler, self, ...)
+end
+
+function BaseView:AddUIEvent(control, eventName, func)
+    if not eventName or not func or not control then
+        return false
+    end
+    if type(eventName) ~= "string" or type(func) ~= "function" then
+        _MOE.Logger.LogError("[BaseView] AddUIEvent: Param is not vaild~!")
+        return false
+    end
+
+    return self:_RegisterUIEvent(GetControlName(control), eventName, func)
+end
+
+function BaseView:AddButtonClick(control, func)
+    if not func or not control then
+        return false
+    end
+    return self:AddUIEvent(control, "onClick", func)
+end
+
+function BaseView:RemoveUIEvent(control, eventName)
+    if not eventName or not control then
+        return false
+    end
+    if type(eventName) ~= "string" then
+        _MOE.Logger.LogError("[BaseView] RemoveUIEvent: Param is not vaild~!")
+        return false
+    end
+    return self:_UnRegisterUIEvent(GetControlName(control), eventName)
+end
+
+function BaseView:DropListSetOptionData(dropList, optionArray)
+    if not dropList or not dropList.options then
+        return false
+    end
+    dropList.options:Clear()
+    -- 设置数据
+    if optionArray and next(optionArray) ~= nil then
+        dropList.options.Capacity = #optionArray
+        local OptionDataClass = CS.UnityEngine.UI.Dropdown.OptionData
+        local loader = self:GetLoader()
+        for idx, item in ipairs(optionArray) do
+            local optaion = OptionDataClass()
+            if item.text then
+                optaion.text = item.text
+            else
+                optaion.text = ""
+            end
+            if loader and item.imagePath then
+                local _, opt = loader:LoadSprite(dropList, optaion, idx, item.imagePath)
+                optaion = opt
+            end
+            dropList.options:Add(optaion)
+        end
+        if dropList.captionText then
+            local item0 = optionArray[1]
+            if item0 then
+                dropList.captionText.text = item0.text or ""
+            end
+        end
+    end
+    -- 精简
+    dropList.options:TrimExcess()
+end
+
+function BaseView:DoCloseSelf()
+    if self.__wndName then
+        _MOE.UIManager:CloseWindow(self.__wndName)
+    end
+end
+
+function BaseView:BindGSMsgNtf(msgId, selfCallBack)
+    if not msgId or not selfCallBack then
+        return
+    end
+    if not _MOE.BindGSMsgNtf then
+        return
+    end
+    _MOE.BindGSMsgNtf(msgId, self, selfCallBack) -- 注册网络消息
+end
+
+function BaseView:GetParentView()
+    return self.__parentView
+end
+
+function BaseView:GetParentWindowName()
+    if self.__parentView then
+        return self.__parentView.__wndName
+    end
+end
+
+------------------------------------------------- 增加子Child View -----------------------------------------------------
+function BaseView:AddView(widget, wndName, ...) --- 类似OnOpen的 ... 参数
+    if widget == nil or wndName == nil then
+        return
+    end
+    local instanceID = widget:GetInstanceID()
+    local hasMustUIBind = self.ChildViewMap and self.ChildViewMap[instanceID] == nil or nil
+    local childViewClass = _MOE.UIManager.GetViewClass(wndName)
+    if childViewClass == nil then
+        _MOE.Logger.LogErrorFormat("[BaseView] AddView Error,viewClass is nil, LuaView={0}", wndName)
+        return
+    end
+    local view = _MOE.UIManager.CreateAndInitViewBind(widget, childViewClass, self.Loader, hasMustUIBind)
+    if view then
+        view.__wndName = wndName -- 存放wndName
+        view.__parentView = self -- 父类 parentView
+    end
+    --- 缓存住
+    self.ChildViewMap = self.ChildViewMap or {}
+    self.ChildViewMap[instanceID] = view
+    ----------------
+    view:Init()
+    view:Open(...)
+    return view
+end
+
+function BaseView:_ClearAllChildViews(isClose)
+    if not self.ChildViewMap then
+        return
+    end
+    for _, childView in pairs(self.ChildViewMap) do
+        if childView then
+            childView:Close()
+            childView:Destroy()
+        end
+    end
+    if isClose then
+        self.ChildViewMap = nil
+    else
+        self.ChildViewMap = {}
+    end
+end
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------- 虚方法
+function BaseView:OnDestroy()
+end
+
+function BaseView:OnOpen(...)
+end
+
+function BaseView:OnReOpen(...)
+end
+
+function BaseView:OnClose()
+end
+
+function BaseView:OnInit()
+end
+
+return BaseView
