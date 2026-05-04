@@ -1536,9 +1536,29 @@ PrefabInstance:
       propertyPath: m_CinemachineInputProvider
       value: 
       objectReference: {fileID: 64136073}
+    - target: {fileID: 2199852835033532018, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: CapsuleHeight
+      value: 2.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199852835033532018, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: CapsuleYOffset
+      value: 1.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 7040085658049059204, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_Height
+      value: 2.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 7040085658049059204, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: m_Center.y
+      value: 1.44
+      objectReference: {fileID: 0}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _jumpUpSpeed
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
+      propertyPath: _orientationMethod
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8989767118116138421, guid: 629d555743a608e448b8600ec7a2efad, type: 3}
       propertyPath: _orientationReference

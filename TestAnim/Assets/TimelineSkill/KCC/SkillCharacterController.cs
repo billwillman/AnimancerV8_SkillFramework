@@ -314,6 +314,9 @@ namespace UnityTimeline
         // Cached effective target direction (shared between UpdateRotation and UpdateVelocity)
         private Vector3 _effectiveMoveDir;
 
+        // Cached raw input move direction (includes left/right strafe for TowardsReference mode)
+        private Vector3 _inputMoveDir;
+
         // Rotation lock: when angle between current facing and target > threshold, movement is locked
         private bool _movementLocked;
 
@@ -446,16 +449,24 @@ namespace UnityTimeline
             if (ExternalTargetDirection.sqrMagnitude > 0.001f)
             {
                 _effectiveMoveDir = ExternalTargetDirection.normalized;
+                _inputMoveDir = _effectiveMoveDir;
+            }
+            else if (_orientationMethod == OrientationMethod.TowardsReference)
+            {
+                // TowardsReference: 旋转目标=forward(面朝参照物)，但移动方向=完整输入(支持横移)
+                _effectiveMoveDir = forward;
+                _inputMoveDir = inputMoveDir;
             }
             else
             {
-                _effectiveMoveDir = _orientationMethod == OrientationMethod.TowardsReference
-                    ? forward : inputMoveDir;
+                _effectiveMoveDir = inputMoveDir;
+                _inputMoveDir = inputMoveDir;
             }
 
-            // === 旋转锁定检测：角度差超过阈值时锁定移动 ===
+            // === 旋转锁定检测：仅 TowardsMovement 模式下生效 ===
             _movementLocked = false;
-            if (_rotationLockAngle > 0.001f && _effectiveMoveDir.sqrMagnitude > 0.001f)
+            if (_rotationLockAngle > 0.001f && _effectiveMoveDir.sqrMagnitude > 0.001f
+                && _orientationMethod == OrientationMethod.TowardsMovement)
             {
                 Vector3 currentForward = currentRotation * Vector3.forward;
                 float angleToTarget = Vector3.Angle(currentForward, _effectiveMoveDir);
@@ -533,13 +544,19 @@ namespace UnityTimeline
                     return;
                 }
 
-                // 正常移动：使用 UpdateRotation 中计算好的有效移动方向（与旋转朝向一致）
+                // 正常移动：根据朝向策略选择移动方向
                 bool hasMoveInput = _inputs.MoveAxisForward != 0f || _inputs.MoveAxisRight != 0f
                                      || ExternalTargetDirection.sqrMagnitude > 0.001f;
 
-                if (hasMoveInput && _effectiveMoveDir.sqrMagnitude > 0.001f)
+                // TowardsReference 模式: 使用完整输入方向(含横移)，旋转目标仍为 forward
+                // TowardsMovement 模式: 使用 _effectiveMoveDir(与旋转朝向一致)
+                Vector3 moveDirForVelocity = (_orientationMethod == OrientationMethod.TowardsReference
+                    && ExternalTargetDirection.sqrMagnitude < 0.001f)
+                    ? _inputMoveDir : _effectiveMoveDir;
+
+                if (hasMoveInput && moveDirForVelocity.sqrMagnitude > 0.001f)
                 {
-                    Vector3 targetVel = _effectiveMoveDir * _maxStableMoveSpeed;
+                    Vector3 targetVel = moveDirForVelocity * _maxStableMoveSpeed;
                     velocity = Vector3.Lerp(velocity, targetVel,
                         1f - Mathf.Exp(-_stableMovementSharpness * dt));
                 }
@@ -562,14 +579,18 @@ namespace UnityTimeline
             }
             else
             {
-                // 使用有效移动方向（与旋转朝向一致）
+                // 根据朝向策略选择空中移动方向（TowardsReference 支持横移）
+                Vector3 airMoveDir = (_orientationMethod == OrientationMethod.TowardsReference
+                    && ExternalTargetDirection.sqrMagnitude < 0.001f)
+                    ? _inputMoveDir : _effectiveMoveDir;
+
                 bool hasMoveInput = _inputs.MoveAxisForward != 0f || _inputs.MoveAxisRight != 0f
                                      || ExternalTargetDirection.sqrMagnitude > 0.001f;
                 Vector3 hVel = new Vector3(velocity.x, 0f, velocity.z);
 
-                if (hasMoveInput && _effectiveMoveDir.sqrMagnitude > 0.0001f)
+                if (hasMoveInput && airMoveDir.sqrMagnitude > 0.0001f)
                 {
-                    hVel += _effectiveMoveDir * _airAccelerationSpeed * dt;
+                    hVel += airMoveDir * _airAccelerationSpeed * dt;
                     if (hVel.magnitude > _maxAirMoveSpeed)
                         hVel = hVel.normalized * _maxAirMoveSpeed;
                 }
