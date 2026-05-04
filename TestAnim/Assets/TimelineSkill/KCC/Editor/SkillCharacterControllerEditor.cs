@@ -504,14 +504,18 @@ namespace SkillCharacterControllerEditor
                         "Orientation Method - \u671D\u5411\u7B56\u7565",
                         "\u3010\u4F5C\u7528\u3011\u51B3\u5B9A\u89D2\u8272\u9762\u671D\u54EA\u4E2A\u65B9\u5411\u3002\n\n" +
                         "\u3010\u6A21\u5F0F\u8BF4\u660E\u3011\n" +
-                        "\u2022 TowardsCamera\uFF1A\u89D2\u8272\u59CB\u7EC8\u671D\u5411 Orientation Reference \u7684\u65B9\u5411\u3002\n" +
-                        "  \u9002\u5408\uFF1A\u5C04\u51FB\u6E38\u620F\u3001\u9501\u5B9A\u89C6\u89D2\u3002\n\n" +
-                        "\u2022 TowardsMovement\uFF1A\u89D2\u8272\u671D\u5411\u5F53\u524D\u79FB\u52A8\u65B9\u5411\u3002\n" +
+                        "\u2022 TowardsReference\uFF1A\u89D2\u8272\u59CB\u7EC8\u671D\u5411 Orientation Reference \uFF0C\u652F\u6301\u5DE6\u53F3\u6A2A\u79FB\uFF08\u4E0D\u8F6C\u5411\uFF09\u3002\n" +
+                        "  \u9002\u5408\uFF1A\u5C04\u51FB\u6E38\u620F\u3001\u9501\u5B9A\u89C6\u89D2\u3001\u6A2A\u7248\u52A8\u4F5C\u3002\n\n" +
+                        "\u2022 TowardsMovement\uFF1A\u89D2\u8272\u671D\u5411\u5F53\u524D\u79FB\u52A8\u65B9\u5411\uFF0C\u8FB9\u8D70\u8FB9\u8F6C\u3002\n" +
                         "  \u9002\u5408\uFF1A\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u3002\n\n" +
                         "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
-                        "\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u901A\u5E38\u7528 TowardsMovement\u3002");
+                        "\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u901A\u5E38\u7528 TowardsMovement\uFF0C\u5C04\u51FB/\u6A2A\u7248\u7528 TowardsReference\u3002");
 
-                    DrawPropertyWithHelp(_rotationLockAngleProp,
+                    // RotationLockAngle 仅在编辑器非运行 + TowardsMovement 时显示
+                    bool isTowardsRef = _orientationMethodProp.enumValueIndex == (int)OrientationMethod.TowardsReference;
+                    if (!Application.isPlaying && !isTowardsRef)
+                    {
+                        DrawPropertyWithHelp(_rotationLockAngleProp,
                         new GUIContent("Rotation Lock Angle",
                             "\u89D2\u8272\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5419\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\u5FC5\u987B\u5148\u65CB\u8F6C\u5230\u4F4D\u518D\u79FB\u52A8\u30020 = \u7981\u7528"),
                         "Rotation Lock Angle - \u65CB\u8F6C\u9501\u5B9A\u89D2\u5EA6",
@@ -523,6 +527,14 @@ namespace SkillCharacterControllerEditor
                         "\u2022 30~60\uFF1A\u8F83\u5C0F\u89D2\u5EA6\u5C31\u4F1A\u89E6\u53D1\u539F\u5730\u8F6C\u5411\n\n" +
                         "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
                         "\u8BBE\u4E3A 0 \u7981\u7528\u6B64\u529F\u80FD\u3002\u5982\u679C\u5E0C\u671B\u89D2\u8272\u5728\u5927\u89D2\u5EA6\u8F6C\u5411\u65F6\u66F4\u81EA\u7136\uFF0C\u8BBE\u4E3A 90~120\u3002");
+                    }
+                    else if (isTowardsRef)
+                    {
+                        EditorGUILayout.HelpBox(
+                            "Rotation Lock Angle 在 TowardsReference 模式下不可用。\n" +
+                            "此模式下角色固定朝向参照物，移动方向与旋转解耦。",
+                            MessageType.Info);
+                    }
                 }
                 EditorGUI.indentLevel--;
             }
