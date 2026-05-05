@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_Name
-      value: Soldier
+      value: Soldier_A
       objectReference: {fileID: 0}
     - target: {fileID: 400106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -174,7 +174,7 @@ MonoBehaviour:
   _moveAction: {fileID: 0}
   _jumpAction: {fileID: 0}
   _orientationReference: {fileID: 0}
-  _groundRootMotionMode: 0
+  _groundRootMotionMode: 1
   _airRootMotionMode: 1
   _jumpMode: 0
   _jumpUpSpeed: 10
@@ -220,7 +220,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f13ddb6ab32142845abb1a47b6480367, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AbilityCategories: []
+  m_AbilityCategories:
+  - CategoryName: "\u79FB\u52A8"
+    Abilities: []
+  - CategoryName: "\u6280\u80FD"
+    Abilities: []
+  - CategoryName: Buff
+    Abilities: []
   m_DefaultAbility: {fileID: 0}
   m_InputBindings: []
   m_CinemachineInputProvider: {fileID: 0}
