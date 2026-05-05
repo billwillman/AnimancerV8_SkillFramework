@@ -12,6 +12,7 @@ public class AnimancerAbilityLinkerEditor : Editor
     SerializedProperty m_CinemachineInputProviderProp;
 
     private Dictionary<int, bool> m_FoldoutStates = new Dictionary<int, bool>();
+    private bool m_InputBindingsFoldout = true;
 
     private static readonly string kHoldInteractionGuide =
         "如需「持续按住 N 秒后才触发」，请在 Input Action Asset 中为对应 Action 添加 Hold Interaction：\n\n" +
@@ -271,64 +272,86 @@ public class AnimancerAbilityLinkerEditor : Editor
 
     private void DrawInputBindings(List<AnimancerAbility> validAbilities)
     {
-        EditorGUILayout.LabelField("Input Bindings", EditorStyles.boldLabel);
-
-        var abilityDisplayNames = new string[] { "None" }.Concat(validAbilities.Select(a => a.name)).ToArray();
-
-        for (int i = 0; i < m_InputBindingsProp.arraySize; i++)
+        // 折叠标题行
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         {
-            var element = m_InputBindingsProp.GetArrayElementAtIndex(i);
-            var inputActionProp = element.FindPropertyRelative("InputAction");
-            var abilityProp = element.FindPropertyRelative("Ability");
-            var triggerModeProp = element.FindPropertyRelative("TriggerMode");
+            EditorGUILayout.BeginHorizontal();
+            m_InputBindingsFoldout = EditorGUILayout.Foldout(m_InputBindingsFoldout, "Input Bindings", true, EditorStyles.foldoutHeader);
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            // 右侧显示绑定数量
+            GUILayout.FlexibleSpace();
+            EditorGUI.indentLevel++;
+            using (new EditorGUI.DisabledScope(true))
+                EditorGUILayout.LabelField($"({m_InputBindingsProp.arraySize})", EditorStyles.miniLabel, GUILayout.Width(40));
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
+
+            // 展开时才显示内容
+            if (m_InputBindingsFoldout)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"Binding [{i}]", EditorStyles.miniBoldLabel);
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("\u00d7", GUILayout.Width(20)))
+                EditorGUI.indentLevel++;
+
+                var abilityDisplayNames = new string[] { "None" }.Concat(validAbilities.Select(a => a.name)).ToArray();
+
+                for (int i = 0; i < m_InputBindingsProp.arraySize; i++)
                 {
-                    m_InputBindingsProp.DeleteArrayElementAtIndex(i);
-                    break;
+                    var element = m_InputBindingsProp.GetArrayElementAtIndex(i);
+                    var inputActionProp = element.FindPropertyRelative("InputAction");
+                    var abilityProp = element.FindPropertyRelative("Ability");
+                    var triggerModeProp = element.FindPropertyRelative("TriggerMode");
+
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"Binding [{i}]", EditorStyles.miniBoldLabel);
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("\u00d7", GUILayout.Width(20)))
+                        {
+                            m_InputBindingsProp.DeleteArrayElementAtIndex(i);
+                            break;
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.PropertyField(inputActionProp, new GUIContent("Input Action"));
+
+                        var currentAbility = abilityProp.objectReferenceValue as AnimancerAbility;
+                        if (currentAbility != null && !validAbilities.Contains(currentAbility))
+                        {
+                            abilityProp.objectReferenceValue = null;
+                            currentAbility = null;
+                        }
+
+                        int abilityIndex = currentAbility == null ? 0 : validAbilities.IndexOf(currentAbility) + 1;
+                        using (new EditorGUI.DisabledScope(validAbilities.Count == 0))
+                        {
+                            int newIndex = EditorGUILayout.Popup("Ability", abilityIndex, abilityDisplayNames);
+                            abilityProp.objectReferenceValue = newIndex == 0 ? null : validAbilities[newIndex - 1];
+                        }
+
+                        EditorGUILayout.PropertyField(triggerModeProp, new GUIContent("Trigger Mode"));
+
+                        if (triggerModeProp.enumValueIndex == (int)AnimancerAbilityLinker.InputTriggerMode.OnPerformed)
+                        {
+                            DrawHoldDurationHint();
+                        }
+                    }
+                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.Space(2);
                 }
-                EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.PropertyField(inputActionProp, new GUIContent("Input Action"));
-
-                var currentAbility = abilityProp.objectReferenceValue as AnimancerAbility;
-                if (currentAbility != null && !validAbilities.Contains(currentAbility))
+                if (GUILayout.Button("+ Add Input Binding"))
                 {
-                    abilityProp.objectReferenceValue = null;
-                    currentAbility = null;
+                    m_InputBindingsProp.InsertArrayElementAtIndex(m_InputBindingsProp.arraySize);
+                    var newElement = m_InputBindingsProp.GetArrayElementAtIndex(m_InputBindingsProp.arraySize - 1);
+                    newElement.FindPropertyRelative("InputAction").objectReferenceValue = null;
+                    newElement.FindPropertyRelative("Ability").objectReferenceValue = null;
+                    newElement.FindPropertyRelative("TriggerMode").enumValueIndex = 0;
                 }
 
-                int abilityIndex = currentAbility == null ? 0 : validAbilities.IndexOf(currentAbility) + 1;
-                using (new EditorGUI.DisabledScope(validAbilities.Count == 0))
-                {
-                    int newIndex = EditorGUILayout.Popup("Ability", abilityIndex, abilityDisplayNames);
-                    abilityProp.objectReferenceValue = newIndex == 0 ? null : validAbilities[newIndex - 1];
-                }
-
-                EditorGUILayout.PropertyField(triggerModeProp, new GUIContent("Trigger Mode"));
-
-                if (triggerModeProp.enumValueIndex == (int)AnimancerAbilityLinker.InputTriggerMode.OnPerformed)
-                {
-                    DrawHoldDurationHint();
-                }
+                EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(2);
         }
-
-        if (GUILayout.Button("+ Add Input Binding"))
-        {
-            m_InputBindingsProp.InsertArrayElementAtIndex(m_InputBindingsProp.arraySize);
-            var newElement = m_InputBindingsProp.GetArrayElementAtIndex(m_InputBindingsProp.arraySize - 1);
-            newElement.FindPropertyRelative("InputAction").objectReferenceValue = null;
-            newElement.FindPropertyRelative("Ability").objectReferenceValue = null;
-            newElement.FindPropertyRelative("TriggerMode").enumValueIndex = 0;
-        }
+        EditorGUILayout.EndVertical();
     }
 
     private void DrawHoldDurationHint()
