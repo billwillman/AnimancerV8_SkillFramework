@@ -558,26 +558,26 @@ namespace CinemachineEditorTool
                     {
                         if (!anyFound)
                         {
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_HorizontalDamping"),
-                                new GUIContent("Horizontal Damping", "水平方向跟随目标的阻尼 (0=灵敏, 20=极慢)"));
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_VerticalDamping"),
-                                new GUIContent("Vertical Damping", "垂直方向跟随目标的阻尼 (0=灵敏, 20=极慢)"));
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_HorizontalDamping"),
+                                "Horizontal Damping", "水平方向跟随目标的阻尼 (0=灵敏, 20=极慢)", "Horizontal Damping");
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_VerticalDamping"),
+                                "Vertical Damping", "垂直方向跟随目标的阻尼 (0=灵敏, 20=极慢)", "Vertical Damping");
                             EditorGUILayout.Space(2);
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_DeadZoneWidth"),
-                                new GUIContent("死区宽度", "屏幕中心水平不触发相机移动范围 (0~2)"));
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_DeadZoneHeight"),
-                                new GUIContent("死区高度", "屏幕中心垂直不触发相机移动范围 (0~2)"));
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_DeadZoneWidth"),
+                                "死区宽度", "屏幕中心水平不触发相机移动范围 (0~2)", "Dead Zone Width");
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_DeadZoneHeight"),
+                                "死区高度", "屏幕中心垂直不触发相机移动范围 (0~2)", "Dead Zone Height");
                             EditorGUILayout.Space(2);
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_ScreenX"),
-                                new GUIContent("注视点 X", "屏幕上目标位置 X (-0.5左 ~ 1.5右)"));
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_ScreenY"),
-                                new GUIContent("注视点 Y", "屏幕上目标位置 Y (-0.5下 ~ 1.5上)"));
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_ScreenX"),
+                                "注视点 X", "屏幕上目标位置 X (-0.5左 ~ 1.5右)", "Screen X");
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_ScreenY"),
+                                "注视点 Y", "屏幕上目标位置 Y (-0.5下 ~ 1.5上)", "Screen Y");
 
                             EditorGUILayout.Space(2);
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_SoftZoneWidth"),
-                                new GUIContent("Soft Zone 宽", "软区域宽度，区域内相机逐渐重新对齐"));
-                            EditorGUILayout.PropertyField(FindRelative(composerProp, "m_SoftZoneHeight"),
-                                new GUIContent("Soft Zone 高", "软区域高度"));
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_SoftZoneWidth"),
+                                "Soft Zone 宽", "软区域宽度，区域内相机逐渐重新对齐", "Soft Zone Width");
+                            DrawPropertyWithHelp(FindRelative(composerProp, "m_SoftZoneHeight"),
+                                "Soft Zone 高", "软区域高度", "Soft Zone Height");
 
                             anyFound = true;
                         }
@@ -614,8 +614,8 @@ namespace CinemachineEditorTool
                             EditorGUI.indentLevel++;
                             var hProp = m_FreeLookSO.FindProperty($"m_Orbits.Array.data[{i}].m_Height");
                             var rProp = m_FreeLookSO.FindProperty($"m_Orbits.Array.data[{i}].m_Radius");
-                            EditorGUILayout.PropertyField(hProp, new GUIContent("高度", "相对于目标的高度偏移"));
-                            EditorGUILayout.PropertyField(rProp, new GUIContent("半径", "轨道半径"));
+                            DrawPropertyWithHelp(hProp, "高度", "相对于目标的高度偏移", "Orbit Height");
+                            DrawPropertyWithHelp(rProp, "半径", "轨道半径", "Orbit Radius");
                             EditorGUI.indentLevel--;
                             if (i < 2) EditorGUILayout.Space(2);
                         }
@@ -703,6 +703,7 @@ namespace CinemachineEditorTool
 
         private static readonly Dictionary<string, string> s_HelpTexts = new Dictionary<string, string>
         {
+            // ====== Advanced Section ======
             ["Common Lens"] =
                 "【Common Lens — 统一镜头】\n\n" +
                 "作用：当启用时，三个 Rig（Top / Middle / Bottom）共享同一套镜头参数（FOV、Near/Far Clip 等）。" +
@@ -757,7 +758,149 @@ namespace CinemachineEditorTool
                 "• 动作战斗：0 ~ 0.5（快速跟随）\n" +
                 "• RPG 探索：1 ~ 3（柔和过渡）\n" +
                 "• 赛车/载具：3 ~ 5（平滑感）\n\n" +
-                "建议：配合预设的 Damping X 一起调整，确保手感一致。"
+                "建议：配合预设的 Damping X 一起调整，确保手感一致。",
+
+            // ====== X Axis Section ======
+            ["X Max Speed"] =
+                "【X Max Speed — 水平旋转最大速度】\n\n" +
+                "作用：控制玩家输入驱动的水平环绕旋转最大角速度（度/秒）。\n" +
+                "取值范围：0 ~ 1000+\n" +
+                "• 较小值（100-200）→ 旋转缓慢，适合策略/探索类\n" +
+                "• 较大值（300-500）→ 旋转灵敏，适合动作/FPS 类\n\n" +
+                "建议：动作游戏 300-400，RPG 200-300，根据输入设备（手柄/鼠标）微调。",
+
+            ["X Accel Time"] =
+                "【X Accel Time — 水平加速时间】\n\n" +
+                "作用：从静止到达 Max Speed 所需的过渡时间（秒）。\n" +
+                "取值范围：0 ~ 5\n" +
+                "• 0 = 立即达到最大速度，手感直接\n" +
+                "• 较大值（0.1-0.5）→ 有加速过程，感觉更平滑\n\n" +
+                "建议：鼠标控制设 0 或极小值；手柄控制设 0.1-0.3 获得平滑起步感。",
+
+            ["X Decel Time"] =
+                "【X Decel Time — 水平减速时间】\n\n" +
+                "作用：松开输入后从当前速度减速到停止的缓冲时间（秒）。\n" +
+                "取值范围：0 ~ 5\n" +
+                "• 0 = 立即停止，操控精准\n" +
+                "• 较大值（0.1-0.5）→ 有惯性滑动，感觉更丝滑\n\n" +
+                "建议：动作游戏 0.1-0.2，探索类 0.2-0.5。过大会让玩家感到操控迟钝。",
+
+            // ====== Y Axis Section ======
+            ["Y Max Speed"] =
+                "【Y Max Speed — Rig 混合速度】\n\n" +
+                "作用：控制 Top/Middle/Bottom 三个 Rig 之间切换的速度（单位/秒）。\n" +
+                "Y 轴值域 0~1，此值决定每秒能变化多少。\n" +
+                "取值范围：0.1 ~ 10\n" +
+                "• 较小值（1-2）→ Rig 切换缓慢，适合电影感\n" +
+                "• 较大值（3-5）→ Rig 切换灵敏，适合动作类\n\n" +
+                "建议：动作游戏 2-4，RPG/慢节奏 1-2。",
+
+            ["Y Accel Time"] =
+                "【Y Accel Time — 垂直加速时间】\n\n" +
+                "作用：垂直方向（Rig 混合）从静止加速到目标速度的时间（秒）。\n" +
+                "取值范围：0 ~ 5\n" +
+                "• 0 = 立即响应，无加速过程\n" +
+                "• 较大值 → 有渐入感，过渡平滑\n\n" +
+                "建议：一般 0.1-0.3，让上下视角切换有轻微的起步过渡感。",
+
+            ["Y Decel Time"] =
+                "【Y Decel Time — 垂直减速时间】\n\n" +
+                "作用：松开垂直输入后的惯性缓冲时间（秒）。\n" +
+                "取值范围：0 ~ 5\n" +
+                "• 0 = 立即停止\n" +
+                "• 较大值 → 有下滑/惯性效果\n\n" +
+                "建议：0.1-0.3，保持与 X Decel Time 一致的手感。过大会导致 Rig 切换过冲。",
+
+            // ====== Composer Section ======
+            ["Horizontal Damping"] =
+                "【Horizontal Damping — 水平跟随阻尼】\n\n" +
+                "作用：目标在屏幕水平方向移动时，相机重新对齐的延迟程度。\n" +
+                "取值范围：0 ~ 20\n" +
+                "• 0 = 立即跟随，无延迟\n" +
+                "• 较大值 → 相机跟随滞后，有\"悬浮\"感\n\n" +
+                "建议：动作游戏 0.5-2，探索类 2-5。需配合 Dead Zone 一起调，\n" +
+                "Dead Zone 内不触发阻尼跟随。",
+
+            ["Vertical Damping"] =
+                "【Vertical Damping — 垂直跟随阻尼】\n\n" +
+                "作用：目标在屏幕垂直方向移动时，相机重新对齐的延迟程度。\n" +
+                "取值范围：0 ~ 20\n" +
+                "• 0 = 立即跟随\n" +
+                "• 较大值 → 垂直方向跟随更慢\n\n" +
+                "建议：通常与 Horizontal Damping 保持接近或略大（1-3），\n" +
+                "跳跃频繁的游戏可稍大以避免相机剧烈抖动。",
+
+            ["Dead Zone Width"] =
+                "【Dead Zone Width — 死区宽度】\n\n" +
+                "作用：屏幕中心的水平区域，目标在此范围内移动不会触发相机跟随。\n" +
+                "取值范围：0 ~ 2（比例值，0=无死区，1=满屏宽）\n\n" +
+                "效果：\n" +
+                "• 0 → 目标稍微移动相机就跟随，操控精确但可能晃动\n" +
+                "• 0.1-0.3 → 有一定容忍度，角色小幅移动时相机稳定\n\n" +
+                "建议：动作游戏 0-0.1，RPG 0.1-0.2，策略类 0.2-0.4。",
+
+            ["Dead Zone Height"] =
+                "【Dead Zone Height — 死区高度】\n\n" +
+                "作用：屏幕中心的垂直区域，目标在此范围内上下移动不触发相机跟随。\n" +
+                "取值范围：0 ~ 2（比例值）\n\n" +
+                "效果：\n" +
+                "• 0 → 垂直方向立即跟随\n" +
+                "• 较大值 → 角色跳跃或上下移动时相机不会跟着抖\n\n" +
+                "建议：平台跳跃类 0.2-0.5（避免跳跃时相机乱动），动作类 0.04-0.15。",
+
+            ["Screen X"] =
+                "【Screen X — 注视点水平位置】\n\n" +
+                "作用：目标在屏幕上的期望水平位置。0.5 = 屏幕正中。\n" +
+                "取值范围：-0.5 ~ 1.5\n" +
+                "• 0.5 = 目标居中\n" +
+                "• < 0.5 → 目标偏左，右侧空间更大\n" +
+                "• > 0.5 → 目标偏右，左侧空间更大\n\n" +
+                "建议：大多数游戏保持 0.5。需要\"越肩视角\"时偏移到 0.3 或 0.7。",
+
+            ["Screen Y"] =
+                "【Screen Y — 注视点垂直位置】\n\n" +
+                "作用：目标在屏幕上的期望垂直位置。0.5 = 屏幕正中。\n" +
+                "取值范围：-0.5 ~ 1.5\n" +
+                "• 0.5 = 目标居中\n" +
+                "• < 0.5 → 目标偏下，上方空间更大（看到更多天空）\n" +
+                "• > 0.5 → 目标偏上，下方空间更大（看到更多地面）\n\n" +
+                "建议：第三人称一般 0.55-0.65（角色略偏下，看到更多前方环境）。",
+
+            ["Soft Zone Width"] =
+                "【Soft Zone Width — 软区域宽度】\n\n" +
+                "作用：在死区之外、硬边界之内的水平区域。目标进入此区域时，相机会按阻尼\n" +
+                "逐渐重新对齐，将目标拉回死区。\n" +
+                "取值范围：0 ~ 2\n" +
+                "• 较大值 → 相机容忍目标偏移更大才开始激进跟随\n" +
+                "• 较小值 → 相机更早开始强制回拉\n\n" +
+                "建议：通常 0.6-1.0。配合 Damping 调整跟随体感。",
+
+            ["Soft Zone Height"] =
+                "【Soft Zone Height — 软区域高度】\n\n" +
+                "作用：死区之外的垂直软区域，目标在此范围内相机按阻尼平滑跟随。\n" +
+                "取值范围：0 ~ 2\n\n" +
+                "建议：与 Soft Zone Width 保持接近，一般 0.6-1.0。\n" +
+                "跳跃游戏可设大些避免频繁强制拉回。",
+
+            // ====== Orbit Section ======
+            ["Orbit Height"] =
+                "【Orbit Height — 轨道高度】\n\n" +
+                "作用：该 Rig 相对于跟随目标（Follow Target）的垂直高度偏移（世界单位）。\n\n" +
+                "三个 Rig 的典型配置：\n" +
+                "• TopRig: 正值（如 4-8），从上方俯视\n" +
+                "• MiddleRig: 接近 0 或略正（如 1-3），平视\n" +
+                "• BottomRig: 负值或 0（如 -2 到 0），仰视\n\n" +
+                "建议：根据角色身高和视角需求调整。TopRig 高度决定俯视极限，BottomRig 决定仰视极限。",
+
+            ["Orbit Radius"] =
+                "【Orbit Radius — 轨道半径】\n\n" +
+                "作用：相机在该 Rig 上距离目标的水平距离（世界单位）。\n\n" +
+                "三个 Rig 的典型配置：\n" +
+                "• TopRig: 较小半径（如 1-3），俯视时离角色近\n" +
+                "• MiddleRig: 中等半径（如 4-8），平视时适中\n" +
+                "• BottomRig: 可大可小，取决于仰视效果\n\n" +
+                "建议：半径越大相机离角色越远，视野越开阔。\n" +
+                "动作游戏 MiddleRig 3-6，RPG/开放世界 5-10。"
         };
 
         private GUIStyle GetHelpButtonStyle()
@@ -860,12 +1003,15 @@ namespace CinemachineEditorTool
                 return;
             }
 
-            EditorGUILayout.PropertyField(axisProp.FindPropertyRelative("m_MaxSpeed"),
-                new GUIContent("Max Speed", speedHint));
-            EditorGUILayout.PropertyField(axisProp.FindPropertyRelative("m_AccelTime"),
-                new GUIContent("Accel Time", accelHint));
-            EditorGUILayout.PropertyField(axisProp.FindPropertyRelative("m_DecelTime"),
-                new GUIContent("Decel Time", decelHint));
+            // 根据轴路径确定帮助文本 key 前缀
+            string prefix = axisPath == "m_XAxis" ? "X" : "Y";
+
+            DrawPropertyWithHelp(axisProp.FindPropertyRelative("m_MaxSpeed"),
+                "Max Speed", speedHint, $"{prefix} Max Speed");
+            DrawPropertyWithHelp(axisProp.FindPropertyRelative("m_AccelTime"),
+                "Accel Time", accelHint, $"{prefix} Accel Time");
+            DrawPropertyWithHelp(axisProp.FindPropertyRelative("m_DecelTime"),
+                "Decel Time", decelHint, $"{prefix} Decel Time");
 
             m_FreeLookSO.ApplyModifiedProperties();
         }
