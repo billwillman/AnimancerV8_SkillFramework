@@ -834,3 +834,32 @@ public class BranchNode : ActionNode
 }
 
 #endregion
+
+#region Vector2 分解
+
+/// <summary>
+/// 将 Vector2 分解为 X、Y 两个 float 输出
+/// </summary>
+[Serializable]
+[NodeName("Vector2Split")]
+[NodePath("Base/Value/Operate/Vector2Split")]
+public class Vector2SplitNode : ValueNode
+{
+    [SerializeField, PropertyPort(PortDirection.Input, "Vector2"), ShowInPanel]
+    protected Vector2PropertyPort m_Input = new Vector2PropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Output, "X"), ReadOnly]
+    protected FloatPropertyPort m_X = new FloatPropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Output, "Y"), ReadOnly]
+    protected FloatPropertyPort m_Y = new FloatPropertyPort();
+
+    protected override void OutputValue()
+    {
+        base.OutputValue();
+        m_X.Value = m_Input.Value.x;
+        m_Y.Value = m_Input.Value.y;
+    }
+}
+
+#endregion
