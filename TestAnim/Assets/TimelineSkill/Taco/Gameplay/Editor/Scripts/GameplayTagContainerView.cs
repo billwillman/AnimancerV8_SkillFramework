@@ -33,7 +33,7 @@ namespace Taco.Gameplay.Editor
         public static readonly string ussClassName = "unity-base-field";
         private static readonly string inspectorFieldUssClassName = ussClassName + "__inspector-field";
 
-        public GameplayTagContainerView(string fieldName, GameplayTagContainer gameplayTagContainer, Object owner)
+        public GameplayTagContainerView(string fieldName, GameplayTagContainer gameplayTagContainer, Object owner, string fieldTooltip = null)
         {
             var visualTree = Resources.Load<VisualTreeAsset>("VisualTree/GameplayTagContainer");
             visualTree.CloneTree(this);
@@ -42,6 +42,8 @@ namespace Taco.Gameplay.Editor
 
             m_FieldName = this.Q<Label>("field-name");
             m_FieldName.text = fieldName;
+            if (!string.IsNullOrEmpty(fieldTooltip))
+                m_FieldName.tooltip = fieldTooltip;
 
             m_ScrollView = this.Q<ScrollView>();          
             m_TagContainer = this.Q<Label>("tag-container");           

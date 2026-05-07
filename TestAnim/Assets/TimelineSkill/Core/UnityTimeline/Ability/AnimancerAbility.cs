@@ -14,16 +14,16 @@ using UnityTimeline;
 [AcceptableNodePaths("Character", "AnimancerAbility")]
 public partial class AnimancerAbility : OneRootTree
 {
-    [ShowInInspector]
+    [ShowInInspector, Tooltip("该技能自身的标签，用于被其他技能的 Cancel/Block 规则匹配")]
     public GameplayTagContainer AbilityTags;
-    [ShowInInspector]
+    [ShowInInspector, Tooltip("激活该技能时，取消所有拥有这些标签的正在运行的技能")]
     public GameplayTagContainer CancelAbilitiesWithTag;
-    [ShowInInspector]
+    [ShowInInspector, Tooltip("该技能激活期间，阻止拥有这些标签的技能启动")]
     public GameplayTagContainer BlockAbilitiesWithTag;
 
-    [ShowInInspector]
+    [ShowInInspector, Tooltip("该技能激活期间，向角色添加的临时状态标签（技能结束时自动移除）")]
     public GameplayTagContainer ActiveTags;
-    [ShowInInspector]
+    [ShowInInspector, Tooltip("启动该技能的前置条件：角色当前 ActiveTags 中必须包含这些标签")]
     public GameplayTagContainer RequiredTags;
 
     [SerializeField]
