@@ -116,9 +116,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.0049852
+          m_Value: 0.0073275
         m_OutputEdgeGUID: aa4fa533-ee3f-4637-a093-475dafb2d8c9
-        DeltaTime: 0.0049852
+        DeltaTime: 0.0073275
     - rid: 3727631565548683265
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -158,7 +158,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 12.973418
+        m_Value: 5.76467
     - rid: 3727631565548683269
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:

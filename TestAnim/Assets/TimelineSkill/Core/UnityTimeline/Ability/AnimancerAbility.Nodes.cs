@@ -863,3 +863,28 @@ public class Vector2SplitNode : ValueNode
 }
 
 #endregion
+
+#region Input 输入节点
+
+/// <summary>
+/// 检测指定 InputAction 是否被按下（IsPressed），输出 bool 值。
+/// </summary>
+[NodeName("InputKeyCondition")]
+[NodePath("AnimancerAbility/Value/InputKeyCondition")]
+public class AnimancerAbilityInputKeyConditionNode : ValueNode
+{
+    [SerializeField, ShowInPanel, Tooltip("要检测的 Input Action（从 Input Action Asset 拖入）")]
+    protected UnityEngine.InputSystem.InputActionReference m_Action;
+
+    [SerializeField, PropertyPort(PortDirection.Output, "Success"), ReadOnly]
+    protected BoolPropertyPort m_IsPressed = new BoolPropertyPort();
+
+    protected override void OutputValue()
+    {
+        base.OutputValue();
+        var action = m_Action?.action;
+        m_IsPressed.Value = action != null && action.IsPressed();
+    }
+}
+
+#endregion
