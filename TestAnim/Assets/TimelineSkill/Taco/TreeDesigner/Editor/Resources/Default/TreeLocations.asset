@@ -193,6 +193,11 @@ MonoBehaviour:
     name: LoomLocation
     type: BaseTree
     locked: 0
+  - guid: 9b3de0cc19e3fd34e945595896c00bdf
+    path: Assets/Resources/Character/Space_Soldier/@Skills/LoomLocation.asset
+    name: LoomLocation
+    type: BaseTree
+    locked: 0
   FolderInfos:
   - path: Assets
     expanded: 1
