@@ -24,7 +24,8 @@ namespace UnityTimeline
     public enum OrientationMethod
     {
         TowardsReference,
-        TowardsMovement
+        TowardsMovement,
+        TowardsMouse
     }
 
     /// <summary>玩家角色输入数据</summary>
@@ -105,6 +106,9 @@ namespace UnityTimeline
         [Tooltip("朝向策略")]                [SerializeField] private OrientationMethod _orientationMethod = OrientationMethod.TowardsMovement;
         [Tooltip("角色朝向与目标方向夹角超过此角度时，必须先旋转到位再移动(度)。0=禁用该机制，始终可边转边移")] 
         [SerializeField] private float _rotationLockAngle = 0f;
+
+        [Tooltip("TowardsMouse 模式：鼠标距角色小于此距离时不更新朝向（避免抖动）")]
+        [SerializeField] private float _mouseDeadzone = 0.5f;
 
         #endregion
 
@@ -320,6 +324,9 @@ namespace UnityTimeline
         // Rotation lock: when angle between current facing and target > threshold, movement is locked
         private bool _movementLocked;
 
+        // Cached camera for TowardsMouse mode
+        private Camera _cachedCamera;
+
         // === Input Lock System — 每通道独立 Tag 存储 ===
         private const string kBuiltinLockTag = "__builtin__";
 
@@ -451,6 +458,28 @@ namespace UnityTimeline
                 _effectiveMoveDir = ExternalTargetDirection.normalized;
                 _inputMoveDir = _effectiveMoveDir;
             }
+            else if (_orientationMethod == OrientationMethod.TowardsMouse)
+            {
+                // TowardsMouse: 面向鼠标在 XZ 平面的投影方向，移动方向=完整输入(支持横移)
+                _inputMoveDir = inputMoveDir;
+
+                if (_cachedCamera == null && _orientationReference != null)
+                    _cachedCamera = _orientationReference.GetComponent<Camera>();
+
+                if (_cachedCamera != null && Mouse.current != null)
+                {
+                    Vector2 mousePos = Mouse.current.position.ReadValue();
+                    Plane groundPlane = new Plane(Vector3.up, Motor.Transform.position);
+                    Ray ray = _cachedCamera.ScreenPointToRay(mousePos);
+                    if (groundPlane.Raycast(ray, out float dist))
+                    {
+                        Vector3 dir = ray.GetPoint(dist) - Motor.Transform.position;
+                        dir.y = 0f;
+                        if (dir.sqrMagnitude > _mouseDeadzone * _mouseDeadzone)
+                            _effectiveMoveDir = dir.normalized;
+                    }
+                }
+            }
             else if (_orientationMethod == OrientationMethod.TowardsReference)
             {
                 // TowardsReference: 旋转目标=forward(面朝参照物)，但移动方向=完整输入(支持横移)
@@ -548,9 +577,10 @@ namespace UnityTimeline
                 bool hasMoveInput = _inputs.MoveAxisForward != 0f || _inputs.MoveAxisRight != 0f
                                      || ExternalTargetDirection.sqrMagnitude > 0.001f;
 
-                // TowardsReference 模式: 使用完整输入方向(含横移)，旋转目标仍为 forward
+                // TowardsReference/TowardsMouse 模式: 使用完整输入方向(含横移)，旋转目标仍为 forward/鼠标
                 // TowardsMovement 模式: 使用 _effectiveMoveDir(与旋转朝向一致)
-                Vector3 moveDirForVelocity = (_orientationMethod == OrientationMethod.TowardsReference
+                Vector3 moveDirForVelocity = ((_orientationMethod == OrientationMethod.TowardsReference
+                    || _orientationMethod == OrientationMethod.TowardsMouse)
                     && ExternalTargetDirection.sqrMagnitude < 0.001f)
                     ? _inputMoveDir : _effectiveMoveDir;
 
@@ -579,8 +609,9 @@ namespace UnityTimeline
             }
             else
             {
-                // 根据朝向策略选择空中移动方向（TowardsReference 支持横移）
-                Vector3 airMoveDir = (_orientationMethod == OrientationMethod.TowardsReference
+                // 根据朝向策略选择空中移动方向（TowardsReference/TowardsMouse 支持横移）
+                Vector3 airMoveDir = ((_orientationMethod == OrientationMethod.TowardsReference
+                    || _orientationMethod == OrientationMethod.TowardsMouse)
                     && ExternalTargetDirection.sqrMagnitude < 0.001f)
                     ? _inputMoveDir : _effectiveMoveDir;
 

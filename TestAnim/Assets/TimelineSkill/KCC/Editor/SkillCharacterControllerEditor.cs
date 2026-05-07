@@ -29,6 +29,7 @@ namespace SkillCharacterControllerEditor
         private SerializedProperty _orientationSharpnessProp;
         private SerializedProperty _orientationMethodProp;
         private SerializedProperty _rotationLockAngleProp;
+        private SerializedProperty _mouseDeadzoneProp;
 
         private SerializedProperty _maxAirMoveSpeedProp;
         private SerializedProperty _airAccelerationSpeedProp;
@@ -96,6 +97,7 @@ namespace SkillCharacterControllerEditor
             _orientationSharpnessProp   = serializedObject.FindProperty("_orientationSharpness");
             _orientationMethodProp      = serializedObject.FindProperty("_orientationMethod");
             _rotationLockAngleProp      = serializedObject.FindProperty("_rotationLockAngle");
+            _mouseDeadzoneProp          = serializedObject.FindProperty("_mouseDeadzone");
 
             _maxAirMoveSpeedProp        = serializedObject.FindProperty("_maxAirMoveSpeed");
             _airAccelerationSpeedProp   = serializedObject.FindProperty("_airAccelerationSpeed");
@@ -511,24 +513,39 @@ namespace SkillCharacterControllerEditor
                         "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
                         "\u7B2C\u4E09\u4EBA\u79F0\u52A8\u4F5C\u6E38\u620F\u901A\u5E38\u7528 TowardsMovement\uFF0C\u5C04\u51FB/\u6A2A\u7248\u7528 TowardsReference\u3002");
 
-                    // RotationLockAngle 仅在编辑器非运行 + TowardsMovement 时显示
-                    bool isTowardsRef = _orientationMethodProp.enumValueIndex == (int)OrientationMethod.TowardsReference;
-                    if (!Application.isPlaying && !isTowardsRef)
+                    // 根据 OrientationMethod 条件显示相关属性
+                    var orientMethod = (OrientationMethod)_orientationMethodProp.enumValueIndex;
+
+                    if (orientMethod == OrientationMethod.TowardsMouse)
+                    {
+                        DrawPropertyWithHelp(_mouseDeadzoneProp,
+                            new GUIContent("Mouse Deadzone",
+                                "鼠标距角色小于此距离时不更新朝向（避免抖动）"),
+                            "Mouse Deadzone - 鼠标死区半径",
+                            "【作用】TowardsMouse 模式下，当鼠标在世界空间的投影点距角色\n" +
+                            "小于此距离时，不更新朝向，避免鼠标在角色附近时产生抖动。\n\n" +
+                            "【典型取值】\n" +
+                            "• 0.3~0.5：标准死区\n" +
+                            "• 1.0+：较大死区，适合角色模型较大的情况\n\n" +
+                            "【调整建议】\n" +
+                            "如果角色在鼠标靠近时抖动，适当增大此值。");
+                    }
+                    else if (orientMethod == OrientationMethod.TowardsMovement)
                     {
                         DrawPropertyWithHelp(_rotationLockAngleProp,
                         new GUIContent("Rotation Lock Angle",
-                            "\u89D2\u8272\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5419\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\u5FC5\u987B\u5148\u65CB\u8F6C\u5230\u4F4D\u518D\u79FB\u52A8\u30020 = \u7981\u7528"),
-                        "Rotation Lock Angle - \u65CB\u8F6C\u9501\u5B9A\u89D2\u5EA6",
-                        "\u3010\u4F5C\u7528\u3011\u5F53\u89D2\u8272\u5F53\u524D\u671D\u5411\u4E0E\u76EE\u6807\u65B9\u5411\u7684\u5939\u89D2\u8D85\u8FC7\u6B64\u503C\u65F6\uFF0C\n" +
-                        "\u89D2\u8272\u4F1A\u5148\u539F\u5730\u65CB\u8F6C\u5230\u76EE\u6807\u65B9\u5411\uFF0C\u518D\u5F00\u59CB\u79FB\u52A8\u3002\n\n" +
-                        "\u3010\u5178\u578B\u53D6\u503C\u3011\n" +
-                        "\u2022 0\uFF1A\u7981\u7528\u6B64\u529F\u80FD\uFF0C\u89D2\u8272\u59CB\u7EC8\u8FB9\u8D70\u8FB9\u8F6C\n" +
-                        "\u2022 90~120\uFF1A\u4EC5\u5F53\u8F6C\u5411\u8D85\u8FC7 90\u00B0 \u65F6\u624D\u5148\u539F\u5730\u8F6C\n" +
-                        "\u2022 30~60\uFF1A\u8F83\u5C0F\u89D2\u5EA6\u5C31\u4F1A\u89E6\u53D1\u539F\u5730\u8F6C\u5411\n\n" +
-                        "\u3010\u8C03\u6574\u5EFA\u8BAE\u3011\n" +
-                        "\u8BBE\u4E3A 0 \u7981\u7528\u6B64\u529F\u80FD\u3002\u5982\u679C\u5E0C\u671B\u89D2\u8272\u5728\u5927\u89D2\u5EA6\u8F6C\u5411\u65F6\u66F4\u81EA\u7136\uFF0C\u8BBE\u4E3A 90~120\u3002");
+                            "角色朝向与目标方向夹角超过此值时，必须先旋转到位再移动。0 = 禁用"),
+                        "Rotation Lock Angle - 旋转锁定角度",
+                        "【作用】当角色当前朝向与目标方向的夹角超过此值时，\n" +
+                        "角色会先原地旋转到目标方向，再开始移动。\n\n" +
+                        "【典型取值】\n" +
+                        "• 0：禁用此功能，角色始终边走边转\n" +
+                        "• 90~120：仅当转向超过 90° 时才先原地转\n" +
+                        "• 30~60：较小角度就会触发原地转向\n\n" +
+                        "【调整建议】\n" +
+                        "设为 0 禁用此功能。如果希望角色在大角度转向时更自然，设为 90~120。");
                     }
-                    else if (isTowardsRef)
+                    else // TowardsReference
                     {
                         EditorGUILayout.HelpBox(
                             "Rotation Lock Angle 在 TowardsReference 模式下不可用。\n" +
