@@ -53,13 +53,25 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 13700006, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700006, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 568d24ae65d697a4089c4a486b0cc0bf, type: 2}
     - target: {fileID: 13700008, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700008, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ceaa229ea18542d4fa2b0e4414c91b67, type: 2}
+    - target: {fileID: 13700010, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 13700010, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -171,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9b1d65ab60ee7c4da9853e23da58d79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveAction: {fileID: 0}
+  _moveAction: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
   _jumpAction: {fileID: 0}
   _orientationReference: {fileID: 0}
   _groundRootMotionMode: 1
@@ -185,8 +197,9 @@ MonoBehaviour:
   _maxStableMoveSpeed: 6
   _stableMovementSharpness: 15
   _orientationSharpness: 20
-  _orientationMethod: 1
+  _orientationMethod: 2
   _rotationLockAngle: 0
+  _mouseDeadzone: 0.5
   _maxAirMoveSpeed: 10
   _airAccelerationSpeed: 30
   _drag: 0.5
@@ -222,11 +235,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_AbilityCategories:
   - CategoryName: "\u79FB\u52A8"
-    Abilities: []
+    Abilities:
+    - {fileID: 11400000, guid: 282dd4d3b5bb50f45bdc5ec9f35664a9, type: 2}
   - CategoryName: "\u6280\u80FD"
     Abilities: []
   - CategoryName: Buff
     Abilities: []
-  m_DefaultAbility: {fileID: 0}
+  m_DefaultAbility: {fileID: 11400000, guid: 282dd4d3b5bb50f45bdc5ec9f35664a9, type: 2}
   m_InputBindings: []
   m_CinemachineInputProvider: {fileID: 0}

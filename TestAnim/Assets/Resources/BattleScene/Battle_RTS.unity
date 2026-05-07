@@ -264,9 +264,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BindingMode: 4
   m_FollowOffset: {x: 0, y: 12, z: -8}
-  m_XDamping: 0.8
-  m_YDamping: 0.8
-  m_ZDamping: 0.8
+  m_XDamping: 0
+  m_YDamping: 0
+  m_ZDamping: 0
   m_AngularDampingMode: 0
   m_PitchDamping: 0
   m_YawDamping: 0
@@ -429,7 +429,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 393432818}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.45248982, y: -0.000000089591154, z: 0.00000004545915, w: 0.8917696}
+  m_LocalRotation: {x: 0.45248982, y: -2.607968e-15, z: 1.3233003e-15, w: 0.8917696}
   m_LocalPosition: {x: 0, y: 12, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -723,7 +723,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 789150556}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4524898, y: -0.000000089591154, z: 0.00000004545915, w: 0.8917696}
+  m_LocalRotation: {x: 0.4524898, y: -3.0334046e-15, z: 2.1617532e-15, w: 0.8917696}
   m_LocalPosition: {x: 0, y: 12, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -784,25 +784,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2688322545882634839, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
-      propertyPath: _moveAction
-      value: 
-      objectReference: {fileID: -1680190386980627800, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
-    - target: {fileID: 2688322545882634839, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
       propertyPath: _orientationReference
       value: 
       objectReference: {fileID: 393432821}
-    - target: {fileID: 3205290826297097360, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3205290826297097362, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3205290826297097372, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
-      propertyPath: m_ReceiveShadows
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3205290826302304304, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
       propertyPath: m_Name
       value: Soldier_A
