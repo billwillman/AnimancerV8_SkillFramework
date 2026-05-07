@@ -29,7 +29,13 @@ namespace Taco.Gameplay.Editor
 
             m_MultiLabel = this.Q<Label>("multi-label");
             if (GameplayTagEditorUtility.GameplayTagData.Contains(detailTag))
-                m_MultiLabel.text = GameplayTagEditorUtility.GameplayTagData[detailTag].Multi ? "Multi" : "Single";
+            {
+                var tagInfo = GameplayTagEditorUtility.GameplayTagData[detailTag];
+                m_MultiLabel.text = tagInfo.Multi ? "Multi" : "Single";
+                // 鼠标悬停显示 Description tooltip
+                if (!string.IsNullOrEmpty(tagInfo.Description))
+                    tooltip = tagInfo.Description;
+            }
 
             m_OptionButton.AddManipulator(new DropdownMenuManipulator((menu) =>
             {

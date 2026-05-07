@@ -90,7 +90,14 @@ namespace Taco.Gameplay.Editor
             m_TagContainer.text = "Empty";
             foreach (var tag in m_GameplayTagContainer.Tags)
             {
-                m_TagContainer.Add(new Label(tag));
+                var label = new Label(tag);
+                // 添加 tooltip：如果 tag 有 Description 则显示
+                var tagInfo = GameplayTagUtility.GameplayTagData?.NameToInfo(tag);
+                if (tagInfo != null && !string.IsNullOrEmpty(tagInfo.Description))
+                    label.tooltip = tagInfo.Description;
+                else
+                    label.tooltip = tag;
+                m_TagContainer.Add(label);
                 m_TagContainer.text = string.Empty;
             }
         }

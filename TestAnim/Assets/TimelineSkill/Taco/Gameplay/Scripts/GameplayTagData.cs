@@ -199,6 +199,13 @@ namespace Taco.Gameplay
                 m_NameTagInfoMap[name].Multi = state;
             }
         }
+        public void SetDescription(string name, string description)
+        {
+            if (m_NameTagInfoMap.ContainsKey(name))
+            {
+                m_NameTagInfoMap[name].Description = description;
+            }
+        }
         public List<GameplayTagInfo> GetChildTagInfos(string parentTag, bool includeSelf)
         {
             List<GameplayTagInfo> childTags = new List<GameplayTagInfo>();
@@ -293,6 +300,7 @@ namespace Taco.Gameplay
 
         public bool Expanded;
         public bool Multi;
+        public string Description;
         public List<string> Reference;
 
         public GameplayTagInfo(string name, bool expanded, bool multi)
@@ -301,6 +309,7 @@ namespace Taco.Gameplay
             Guid = System.Guid.NewGuid().ToString();
             Expanded = expanded;
             Multi = multi;
+            Description = string.Empty;
             Reference = new List<string>();
         }
     }

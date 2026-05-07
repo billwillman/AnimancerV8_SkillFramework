@@ -76,5 +76,9 @@ namespace Taco.Gameplay.Editor
         {
             DataUndoHelper.Do(() => GameplayTagData.SetMultiState(name, state), "Change Multi State");
         }
+        public static void SetDescription(string name, string description)
+        {
+            DataUndoHelper.Do(() => GameplayTagData.SetDescription(name, description), "Change Tag Description");
+        }
     }
 }

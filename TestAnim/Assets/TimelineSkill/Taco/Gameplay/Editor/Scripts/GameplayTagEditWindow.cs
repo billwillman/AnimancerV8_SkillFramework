@@ -104,6 +104,11 @@ namespace Taco.Gameplay.Editor
 
                 FolderView folderView = new FolderView(shortTag, tag, (menu) =>
                 {
+                    menu.AppendAction("Edit Description", (a) =>
+                    {
+                        if (m_GameplayTagInfoMap.TryGetValue(tag, out FolderView fv))
+                            ShowDescriptionEditor(tag, fv);
+                    });
                     menu.AppendAction("Move Tag", (a) =>
                     {
                         m_Moving = true;
@@ -120,6 +125,11 @@ namespace Taco.Gameplay.Editor
 
                 StyleSheet style = Resources.Load<StyleSheet>("StyleSheet/GameplayTagFolder");
                 folderView.styleSheets.Add(style);
+
+                // ËÆæÁΩÆ tooltip ÊòæÁ§∫ Description
+                var tagInfo = m_TagData[tag];
+                if (tagInfo != null && !string.IsNullOrEmpty(tagInfo.Description))
+                    folderView.tooltip = tagInfo.Description;
 
                 folderView.Label.AddManipulator(new Clickable(() =>
                 {
@@ -199,7 +209,7 @@ namespace Taco.Gameplay.Editor
                 }
             }
 
-            m_TagNameField.value = m_TagNameField.value.Replace('°£', '.');
+            m_TagNameField.value = m_TagNameField.value.Replace('„ÄÇ', '.');
             m_TagNameField.value = m_TagNameField.value.Replace('/', '.');
 
             m_DataUndoHelper.Do(() => m_TagData.AddTag(m_TagNameField.value), "Add Tag");
@@ -215,7 +225,7 @@ namespace Taco.Gameplay.Editor
 #if UNITY_2023_1_OR_NEWER
             dialogueContext.RegisterCallbackOnce<DetachFromPanelEvent>((i) => m_TagData.OnReferenceChanged -= Draw);
 #else
-            // –¬µƒ∫Ø ˝¥¶¿Ì
+            // Êñ∞ÁöÑÂáΩÊï∞Â§ÑÁêÜ
             void OnCallbackOnce(DetachFromPanelEvent i) {
                 m_TagData.OnReferenceChanged -= Draw;
                 dialogueContext.UnregisterCallback<DetachFromPanelEvent>(OnCallbackOnce);
@@ -247,7 +257,7 @@ namespace Taco.Gameplay.Editor
 #if UNITY_2023_1_OR_NEWER
             dialogueContext.RegisterCallbackOnce<DetachFromPanelEvent>((i) => m_TagData.OnReferenceChanged -= Draw);
 #else
-            // –¬µƒ∫Ø ˝¥¶¿Ì
+            // Êñ∞ÁöÑÂáΩÊï∞Â§ÑÁêÜ
             void OnCallbackOnce(DetachFromPanelEvent i) {
                 m_TagData.OnReferenceChanged -= Draw;
                 dialogueContext.UnregisterCallback<DetachFromPanelEvent>(OnCallbackOnce);
@@ -304,6 +314,21 @@ namespace Taco.Gameplay.Editor
         void MoveToRoot(string movingTag)
         {
             m_DataUndoHelper.Do(() => m_TagData.MoveToRoot(movingTag), "Move to Root");
+        }
+
+        void ShowDescriptionEditor(string tag, VisualElement anchor)
+        {
+            var tagInfo = m_TagData[tag];
+            if (tagInfo == null) return;
+
+            var inputWindow = ScriptableObject.CreateInstance<DescriptionInputWindow>();
+            inputWindow.Init(tag, tagInfo.Description ?? string.Empty, (newDesc) =>
+            {
+                GameplayTagEditorUtility.SetDescription(tag, newDesc);
+            });
+            inputWindow.ShowAsDropDown(
+                GUIUtility.GUIToScreenRect(anchor.worldBound),
+                new Vector2(300, 80));
         }
 
         void StopMoving()
