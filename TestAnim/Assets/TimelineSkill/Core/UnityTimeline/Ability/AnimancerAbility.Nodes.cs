@@ -667,6 +667,55 @@ public class IsGroundMovingNode : ValueNode
     }
 }
 
+/// <summary>
+/// 获取移动输入 Vector2 及角色局部坐标系下的相对移动方向 Vector2。
+/// - MoveInput: 原始输入 (x=右, y=前)，直接从 InputAction 读取
+/// - LocalMoveDir: 世界空间移动方向投影到角色 transform.right / transform.forward 得到的 (x, y)
+/// </summary>
+[NodeName("GetMoveInput")]
+[NodePath("AnimancerAbility/Value/GetMoveInput")]
+public class GetMoveInputNode : ValueNode
+{
+    [SerializeField, PropertyPort(PortDirection.Output, "MoveInput"), ReadOnly]
+    protected Vector2PropertyPort m_MoveInput = new Vector2PropertyPort();
+
+    [SerializeField, PropertyPort(PortDirection.Output, "LocalMoveDir"), ReadOnly]
+    protected Vector2PropertyPort m_LocalMoveDir = new Vector2PropertyPort();
+
+    protected override void OutputValue()
+    {
+        base.OutputValue();
+        var animancerAbility = Owner as AnimancerAbility;
+        var controller = animancerAbility?.SkillCharacterController;
+        if (controller == null) return;
+
+        // 原始移动输入
+        Vector2 rawInput = Vector2.zero;
+        if (controller.MoveAction != null && controller.MoveAction.action != null)
+        {
+            rawInput = controller.MoveAction.action.ReadValue<Vector2>();
+        }
+        m_MoveInput.Value = rawInput;
+
+        // 世界空间移动方向（基于相机参照，只取 Y 轴旋转，与 SkillCharacterController 一致）
+        Transform charTransform = controller.transform;
+        Quaternion camRot = controller.OrientationReference != null
+            ? Quaternion.Euler(0f, controller.OrientationReference.eulerAngles.y, 0f)
+            : Quaternion.Euler(0f, charTransform.eulerAngles.y, 0f);
+
+        Vector3 camForward = camRot * Vector3.forward;
+        Vector3 camRight = camRot * Vector3.right;
+        Vector3 worldMoveDir = camForward * rawInput.y + camRight * rawInput.x;
+
+        // 投影到角色局部坐标系
+        Vector3 charForward = charTransform.forward;
+        Vector3 charRight = charTransform.right;
+        float localX = Vector3.Dot(worldMoveDir, charRight);
+        float localY = Vector3.Dot(worldMoveDir, charForward);
+        m_LocalMoveDir.Value = new Vector2(localX, localY);
+    }
+}
+
 #endregion
 
 #region Branch 分支节点
