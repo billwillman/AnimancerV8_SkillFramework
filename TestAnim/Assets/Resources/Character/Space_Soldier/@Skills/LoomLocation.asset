@@ -30,6 +30,12 @@ MonoBehaviour:
   - rid: 2323071452094660620
   - rid: 2323071452094660621
   - rid: 2323071452094660622
+  - rid: 2323071452094660623
+  - rid: 2323071452094660624
+  - rid: 2323071452094660632
+  - rid: 2323071452094660637
+  - rid: 2323071452094660638
+  - rid: 2323071452094660639
   m_Edges:
   - m_GUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
     m_StartNodeGUID: 0e8aabb4-2ed3-4413-93a5-cef66f7758a5
@@ -76,10 +82,20 @@ MonoBehaviour:
     m_EndNodeGUID: 90788eaf-d80e-44b4-ab67-dfcbeeb40323
     m_StartPortName: Output
     m_EndPortName: Input
-  - m_GUID: 94815a90-f8c2-4674-9ae1-52d52a0c68b5
+  - m_GUID: ef6ac37d-49b7-462f-a899-eb14123a7971
     m_StartNodeGUID: cc5f4783-1980-4d46-b230-946abfd61ae6
-    m_EndNodeGUID: 390332f5-3a46-4606-92e0-8f8a9eb43385
+    m_EndNodeGUID: 1cb379d2-2810-4c06-b928-46ffb154aaf8
     m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: c7c073b5-57f3-4d7f-90aa-4e33ac857602
+    m_StartNodeGUID: 1cb379d2-2810-4c06-b928-46ffb154aaf8
+    m_EndNodeGUID: 9b80e933-a12f-4df7-bed1-18356129b0f8
+    m_StartPortName: False
+    m_EndPortName: Input
+  - m_GUID: a1cbeecb-ef98-44a1-9211-6d88295d4e7c
+    m_StartNodeGUID: 1cb379d2-2810-4c06-b928-46ffb154aaf8
+    m_EndNodeGUID: 390332f5-3a46-4606-92e0-8f8a9eb43385
+    m_StartPortName: True
     m_EndPortName: Input
   m_PropertyEdges:
   - m_GUID: c2fcbb90-3ad7-4a93-a2cc-9e46e385ca9e
@@ -127,6 +143,36 @@ MonoBehaviour:
     m_EndNodeGUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
     m_StartPortName: m_AnimancerState
     m_EndPortName: m_AnimacerState
+  - m_GUID: ae0b9325-b903-450a-a265-2b8fbd5989c3
+    m_StartNodeGUID: 232a0a60-f355-49cc-9458-86e403db0f2e
+    m_EndNodeGUID: adc5eb17-384a-49f8-951f-114ce2ad7497
+    m_StartPortName: m_Float
+    m_EndPortName: m_InputValue1
+  - m_GUID: 95028f3c-28be-41aa-8440-730943300c1a
+    m_StartNodeGUID: fdd4e0d7-f66d-4b61-b84e-30ea6364f8bc
+    m_EndNodeGUID: adc5eb17-384a-49f8-951f-114ce2ad7497
+    m_StartPortName: m_OutputValue
+    m_EndPortName: m_InputValue2
+  - m_GUID: 5808157d-c0a9-4d77-90e2-119c32c120e2
+    m_StartNodeGUID: adc5eb17-384a-49f8-951f-114ce2ad7497
+    m_EndNodeGUID: 9b3905d1-3b2b-43c6-930d-52a6a51a4142
+    m_StartPortName: m_OutputValue
+    m_EndPortName: m_InputValue1
+  - m_GUID: 357810cd-7948-4431-b769-7cbe96c93115
+    m_StartNodeGUID: 9b3905d1-3b2b-43c6-930d-52a6a51a4142
+    m_EndNodeGUID: 1cb379d2-2810-4c06-b928-46ffb154aaf8
+    m_StartPortName: m_Result
+    m_EndPortName: m_Condition
+  - m_GUID: e8dceb27-937e-418d-b9d1-f77cb0d7a501
+    m_StartNodeGUID: adc5eb17-384a-49f8-951f-114ce2ad7497
+    m_EndNodeGUID: 1bdba976-acbb-4af2-a5f0-4efed55416e1
+    m_StartPortName: m_OutputValue
+    m_EndPortName: m_InputValue1
+  - m_GUID: f502390f-5f00-4e39-a620-669230702e50
+    m_StartNodeGUID: 1bdba976-acbb-4af2-a5f0-4efed55416e1
+    m_EndNodeGUID: 390332f5-3a46-4606-92e0-8f8a9eb43385
+    m_StartPortName: m_OutputValue
+    m_EndPortName: m_GroundSpeed
   m_ExposedProperties:
   - rid: 3727631565548683267
   - rid: 3727631565548683268
@@ -201,7 +247,7 @@ MonoBehaviour:
         m_GUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1202.6666, y: -82}
+        m_Position: {x: 1418, y: -136.66667}
         m_InputEdgeGUID: c32c5166-b210-434c-aa63-3ffc48f1109a
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -225,7 +271,7 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 2
           m_Expanded: 0
-          m_Value: 1.9997445
+          m_Value: 0
         m_IgnoreFailure: 1
     - rid: 2323071452094660611
       type: {class: MultiplyNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
@@ -249,7 +295,7 @@ MonoBehaviour:
         m_OutputEdgeGUIDs: []
         m_Index: 0
         m_Expanded: 0
-        m_Value: 0.99987227
+        m_Value: 0
     - rid: 2323071452094660616
       type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -268,9 +314,10 @@ MonoBehaviour:
         m_InputEdgeGUID: 
         m_OutputEdgeGUIDs:
         - 1b9a63cb-3ae4-4845-9a6a-6f3aa648e166
+        - 95028f3c-28be-41aa-8440-730943300c1a
         m_Index: 0
         m_Expanded: 0
-        m_Value: 1.9997445
+        m_Value: 0
     - rid: 2323071452094660619
       type: {class: SequenceNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -281,7 +328,7 @@ MonoBehaviour:
         m_InputEdgeGUID: 87114051-ff51-42f4-92c2-40e494d4949e
         m_OutputEdgeGUIDs:
         - c32c5166-b210-434c-aa63-3ffc48f1109a
-        - 94815a90-f8c2-4674-9ae1-52d52a0c68b5
+        - ef6ac37d-49b7-462f-a899-eb14123a7971
     - rid: 2323071452094660620
       type: {class: SequenceNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -299,7 +346,7 @@ MonoBehaviour:
         m_GUID: 90788eaf-d80e-44b4-ab67-dfcbeeb40323
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1183.3334, y: 458}
+        m_Position: {x: 1462, y: 422.66666}
         m_InputEdgeGUID: c8a57f35-ee95-4829-9a8e-2785d12bc9bc
         m_GroundSpeed:
           m_Name: m_GroundSpeed
@@ -323,16 +370,16 @@ MonoBehaviour:
         m_GUID: 390332f5-3a46-4606-92e0-8f8a9eb43385
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1218, y: 98.666664}
-        m_InputEdgeGUID: 94815a90-f8c2-4674-9ae1-52d52a0c68b5
+        m_Position: {x: 1848.6667, y: 25.333334}
+        m_InputEdgeGUID: a1cbeecb-ef98-44a1-9211-6d88295d4e7c
         m_GroundSpeed:
           m_Name: m_GroundSpeed
           m_Direction: 0
-          m_InputEdgeGUID: 
+          m_InputEdgeGUID: f502390f-5f00-4e39-a620-669230702e50
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 6
+          m_Value: 2.234769
         m_AirSpeed:
           m_Name: m_AirSpeed
           m_Direction: 0
@@ -341,6 +388,203 @@ MonoBehaviour:
           m_Index: 1
           m_Expanded: 0
           m_Value: -1
+    - rid: 2323071452094660623
+      type: {class: FloatNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 232a0a60-f355-49cc-9458-86e403db0f2e
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1107.3334, y: 117.333336}
+        m_NodeType: 0
+        m_Float:
+          m_Name: m_Float
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs:
+          - ae0b9325-b903-450a-a265-2b8fbd5989c3
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 3
+        m_FloatList:
+          m_Name: m_FloatList
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: []
+    - rid: 2323071452094660624
+      type: {class: MultiplyNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: adc5eb17-384a-49f8-951f-114ce2ad7497
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1236, y: 108.666664}
+        m_InputValue1:
+          rid: 2323071452094660628
+        m_InputValue2:
+          rid: 2323071452094660629
+        m_OutputValue:
+          rid: 2323071452094660630
+    - rid: 2323071452094660628
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue1
+        m_Direction: 0
+        m_InputEdgeGUID: ae0b9325-b903-450a-a265-2b8fbd5989c3
+        m_OutputEdgeGUIDs: []
+        m_Index: 0
+        m_Expanded: 0
+        m_Value: 3
+    - rid: 2323071452094660629
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue2
+        m_Direction: 0
+        m_InputEdgeGUID: 95028f3c-28be-41aa-8440-730943300c1a
+        m_OutputEdgeGUIDs: []
+        m_Index: 1
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660630
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_OutputValue
+        m_Direction: 1
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs:
+        - 5808157d-c0a9-4d77-90e2-119c32c120e2
+        - e8dceb27-937e-418d-b9d1-f77cb0d7a501
+        m_Index: 0
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660632
+      type: {class: CompareNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 9b3905d1-3b2b-43c6-930d-52a6a51a4142
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1418, y: 170}
+        m_CompareType: 5
+        m_InputValue1:
+          rid: 2323071452094660635
+        m_InputValue2:
+          rid: 2323071452094660636
+        m_Result:
+          m_Name: m_Result
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs:
+          - 357810cd-7948-4431-b769-7cbe96c93115
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+    - rid: 2323071452094660635
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue1
+        m_Direction: 0
+        m_InputEdgeGUID: 5808157d-c0a9-4d77-90e2-119c32c120e2
+        m_OutputEdgeGUIDs: []
+        m_Index: 0
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660636
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue2
+        m_Direction: 0
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs: []
+        m_Index: 1
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660637
+      type: {class: BranchNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 1cb379d2-2810-4c06-b928-46ffb154aaf8
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1552, y: 50.666664}
+        m_InputEdgeGUID: ef6ac37d-49b7-462f-a899-eb14123a7971
+        m_Condition:
+          m_Name: m_Condition
+          m_Direction: 0
+          m_InputEdgeGUID: 357810cd-7948-4431-b769-7cbe96c93115
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+        m_TrueEdgeGUID: a1cbeecb-ef98-44a1-9211-6d88295d4e7c
+        m_FalseEdgeGUID: c7c073b5-57f3-4d7f-90aa-4e33ac857602
+    - rid: 2323071452094660638
+      type: {class: SetMoveSpeedAbilityNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 9b80e933-a12f-4df7-bed1-18356129b0f8
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1848.6667, y: 240.66667}
+        m_InputEdgeGUID: c7c073b5-57f3-4d7f-90aa-4e33ac857602
+        m_GroundSpeed:
+          m_Name: m_GroundSpeed
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 3
+        m_AirSpeed:
+          m_Name: m_AirSpeed
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: -1
+    - rid: 2323071452094660639
+      type: {class: MaxNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 1bdba976-acbb-4af2-a5f0-4efed55416e1
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 1632, y: 134}
+        m_InputValue1:
+          rid: 2323071452094660643
+        m_InputValue2:
+          rid: 2323071452094660644
+        m_OutputValue:
+          rid: 2323071452094660645
+    - rid: 2323071452094660643
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue1
+        m_Direction: 0
+        m_InputEdgeGUID: e8dceb27-937e-418d-b9d1-f77cb0d7a501
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660644
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue2
+        m_Direction: 0
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 3
+    - rid: 2323071452094660645
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_OutputValue
+        m_Direction: 1
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs:
+        - f502390f-5f00-4e39-a620-669230702e50
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
     - rid: 3727631565548683264
       type: {class: RootNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -355,9 +599,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.0168472
+          m_Value: 0.0194381
         m_OutputEdgeGUID: aa4fa533-ee3f-4637-a093-475dafb2d8c9
-        DeltaTime: 0.0168472
+        DeltaTime: 0.0194381
     - rid: 3727631565548683265
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -397,7 +641,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 21.26632
+        m_Value: 60.323742
     - rid: 3727631565548683269
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:
@@ -541,7 +785,7 @@ MonoBehaviour:
         m_GUID: 8164e254-9011-48d3-8a4a-0ff9d97ac03e
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 1183.3334, y: 267.3333}
+        m_Position: {x: 1434.6666, y: 267.3333}
         m_InputEdgeGUID: 1d8267c3-9631-4404-928b-3218518b50fd
         m_AnimacerState:
           m_Name: m_AnimacerState
