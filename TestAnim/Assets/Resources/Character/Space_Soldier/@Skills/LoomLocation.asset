@@ -22,6 +22,10 @@ MonoBehaviour:
   - rid: 3727631565548683272
   - rid: 3727631565548683273
   - rid: 3727631565548683274
+  - rid: 2323071452094660608
+  - rid: 2323071452094660609
+  - rid: 2323071452094660610
+  - rid: 2323071452094660611
   m_Edges:
   - m_GUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
     m_StartNodeGUID: 0e8aabb4-2ed3-4413-93a5-cef66f7758a5
@@ -38,10 +42,20 @@ MonoBehaviour:
     m_EndNodeGUID: 387bd173-514e-4216-83f6-28b07d8dd70e
     m_StartPortName: Output
     m_EndPortName: Input
-  - m_GUID: 18267172-cd30-43c2-9d1d-49802adfe79e
+  - m_GUID: 3a8330be-3782-436a-a850-c19d2d3e30e7
     m_StartNodeGUID: 179859aa-494f-4a65-837b-579d9bbf180f
-    m_EndNodeGUID: 8164e254-9011-48d3-8a4a-0ff9d97ac03e
+    m_EndNodeGUID: 48f54476-07a4-4e87-8ae1-e4bc89895f59
     m_StartPortName: Output
+    m_EndPortName: Input
+  - m_GUID: c478631b-046a-4e1c-b14c-70dc632d4f90
+    m_StartNodeGUID: 48f54476-07a4-4e87-8ae1-e4bc89895f59
+    m_EndNodeGUID: 8164e254-9011-48d3-8a4a-0ff9d97ac03e
+    m_StartPortName: False
+    m_EndPortName: Input
+  - m_GUID: 43a7a8cc-509f-4a3b-a080-4d4cd9ebeccd
+    m_StartNodeGUID: 48f54476-07a4-4e87-8ae1-e4bc89895f59
+    m_EndNodeGUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
+    m_StartPortName: True
     m_EndPortName: Input
   m_PropertyEdges:
   - m_GUID: c2fcbb90-3ad7-4a93-a2cc-9e46e385ca9e
@@ -67,6 +81,26 @@ MonoBehaviour:
   - m_GUID: d434a810-5477-489d-a27b-be6dd87cadfc
     m_StartNodeGUID: d0c25018-f87f-4f27-a324-85a165542ec3
     m_EndNodeGUID: 8164e254-9011-48d3-8a4a-0ff9d97ac03e
+    m_StartPortName: m_AnimancerState
+    m_EndPortName: m_AnimacerState
+  - m_GUID: 83b1c52a-20f1-43b6-8b78-e042199eda70
+    m_StartNodeGUID: 3947f7b6-5301-4208-b8f5-dd0f91f8e1ec
+    m_EndNodeGUID: 48f54476-07a4-4e87-8ae1-e4bc89895f59
+    m_StartPortName: m_IsPressed
+    m_EndPortName: m_Condition
+  - m_GUID: c161e04e-1d74-4079-bf70-0ab8fd737148
+    m_StartNodeGUID: ead52c73-46e4-49bc-822f-0dd0eb83a0b7
+    m_EndNodeGUID: fdd4e0d7-f66d-4b61-b84e-30ea6364f8bc
+    m_StartPortName: m_Y
+    m_EndPortName: m_InputValue1
+  - m_GUID: 1b9a63cb-3ae4-4845-9a6a-6f3aa648e166
+    m_StartNodeGUID: fdd4e0d7-f66d-4b61-b84e-30ea6364f8bc
+    m_EndNodeGUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
+    m_StartPortName: m_OutputValue
+    m_EndPortName: m_Value
+  - m_GUID: 9d75c3cc-e09e-408b-9f49-1c9e5dab6d9d
+    m_StartNodeGUID: d0c25018-f87f-4f27-a324-85a165542ec3
+    m_EndNodeGUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
     m_StartPortName: m_AnimancerState
     m_EndPortName: m_AnimacerState
   m_ExposedProperties:
@@ -102,6 +136,117 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 2323071452094660608
+      type: {class: AnimancerAbilityInputKeyConditionNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 3947f7b6-5301-4208-b8f5-dd0f91f8e1ec
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 496, y: 133.33334}
+        m_Action: {fileID: -5060777816674499217, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
+        m_IsPressed:
+          m_Name: m_IsPressed
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs:
+          - 83b1c52a-20f1-43b6-8b78-e042199eda70
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+    - rid: 2323071452094660609
+      type: {class: BranchNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 48f54476-07a4-4e87-8ae1-e4bc89895f59
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 744.6667, y: 50.666664}
+        m_InputEdgeGUID: 3a8330be-3782-436a-a850-c19d2d3e30e7
+        m_Condition:
+          m_Name: m_Condition
+          m_Direction: 0
+          m_InputEdgeGUID: 83b1c52a-20f1-43b6-8b78-e042199eda70
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+        m_TrueEdgeGUID: 43a7a8cc-509f-4a3b-a080-4d4cd9ebeccd
+        m_FalseEdgeGUID: c478631b-046a-4e1c-b14c-70dc632d4f90
+    - rid: 2323071452094660610
+      type: {class: SetAnimatorFloatNode, ns: , asm: Assembly-CSharp}
+      data:
+        m_GUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 962.6666, y: 50.666664}
+        m_InputEdgeGUID: 43a7a8cc-509f-4a3b-a080-4d4cd9ebeccd
+        m_AnimacerState:
+          m_Name: m_AnimacerState
+          m_Direction: 0
+          m_InputEdgeGUID: 9d75c3cc-e09e-408b-9f49-1c9e5dab6d9d
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+        m_Key:
+          m_Name: m_Key
+          m_Direction: 0
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 1
+          m_Expanded: 0
+          m_Value: MoveY
+        m_Value:
+          m_Name: m_Value
+          m_Direction: 0
+          m_InputEdgeGUID: 1b9a63cb-3ae4-4845-9a6a-6f3aa648e166
+          m_OutputEdgeGUIDs: []
+          m_Index: 2
+          m_Expanded: 0
+          m_Value: 0
+        m_IgnoreFailure: 1
+    - rid: 2323071452094660611
+      type: {class: MultiplyNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: fdd4e0d7-f66d-4b61-b84e-30ea6364f8bc
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 744.6667, y: 158.66667}
+        m_InputValue1:
+          rid: 2323071452094660615
+        m_InputValue2:
+          rid: 2323071452094660616
+        m_OutputValue:
+          rid: 2323071452094660617
+    - rid: 2323071452094660615
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue1
+        m_Direction: 0
+        m_InputEdgeGUID: c161e04e-1d74-4079-bf70-0ab8fd737148
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
+    - rid: 2323071452094660616
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_InputValue2
+        m_Direction: 0
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs: []
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 2
+    - rid: 2323071452094660617
+      type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_Name: m_OutputValue
+        m_Direction: 1
+        m_InputEdgeGUID: 
+        m_OutputEdgeGUIDs:
+        - 1b9a63cb-3ae4-4845-9a6a-6f3aa648e166
+        m_Index: -1
+        m_Expanded: 0
+        m_Value: 0
     - rid: 3727631565548683264
       type: {class: RootNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -165,7 +310,7 @@ MonoBehaviour:
         m_GUID: d0c25018-f87f-4f27-a324-85a165542ec3
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 288, y: 222}
+        m_Position: {x: 227.33334, y: 292}
         m_InputEdgeGUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
         m_TransitionAsset: {fileID: 11400000, guid: c752d203554f1944d9a655892a66db5b, type: 2}
         m_FadeDuration:
@@ -192,6 +337,7 @@ MonoBehaviour:
           m_OutputEdgeGUIDs:
           - d9a3f781-c762-4b9b-bbb1-35cb52e58617
           - d434a810-5477-489d-a27b-be6dd87cadfc
+          - 9d75c3cc-e09e-408b-9f49-1c9e5dab6d9d
           m_Index: 0
           m_Expanded: 0
     - rid: 3727631565548683270
@@ -248,6 +394,7 @@ MonoBehaviour:
           m_InputEdgeGUID: 
           m_OutputEdgeGUIDs:
           - c097a1d8-7964-498a-9915-25869fd53a1f
+          - c161e04e-1d74-4079-bf70-0ab8fd737148
           m_Index: 1
           m_Expanded: 0
           m_Value: 0
@@ -257,7 +404,7 @@ MonoBehaviour:
         m_GUID: 387bd173-514e-4216-83f6-28b07d8dd70e
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 685, y: -34}
+        m_Position: {x: 753.3333, y: -116.66667}
         m_InputEdgeGUID: c6751ff4-a3a0-4118-bf03-9cb14f15d7dc
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -293,15 +440,15 @@ MonoBehaviour:
         m_InputEdgeGUID: aa4fa533-ee3f-4637-a093-475dafb2d8c9
         m_OutputEdgeGUIDs:
         - c6751ff4-a3a0-4118-bf03-9cb14f15d7dc
-        - 18267172-cd30-43c2-9d1d-49802adfe79e
+        - 3a8330be-3782-436a-a850-c19d2d3e30e7
     - rid: 3727631565548683274
       type: {class: SetAnimatorFloatNode, ns: , asm: Assembly-CSharp}
       data:
         m_GUID: 8164e254-9011-48d3-8a4a-0ff9d97ac03e
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 685, y: 109}
-        m_InputEdgeGUID: 18267172-cd30-43c2-9d1d-49802adfe79e
+        m_Position: {x: 950.6666, y: 258}
+        m_InputEdgeGUID: c478631b-046a-4e1c-b14c-70dc632d4f90
         m_AnimacerState:
           m_Name: m_AnimacerState
           m_Direction: 0
