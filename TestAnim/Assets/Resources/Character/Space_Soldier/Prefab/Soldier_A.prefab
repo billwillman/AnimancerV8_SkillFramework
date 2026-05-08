@@ -236,11 +236,13 @@ MonoBehaviour:
   m_AbilityCategories:
   - CategoryName: "\u79FB\u52A8"
     Abilities:
-    - {fileID: 11400000, guid: 282dd4d3b5bb50f45bdc5ec9f35664a9, type: 2}
+    - {fileID: 11400000, guid: 9b3de0cc19e3fd34e945595896c00bdf, type: 2}
   - CategoryName: "\u6280\u80FD"
     Abilities: []
   - CategoryName: Buff
     Abilities: []
-  m_DefaultAbility: {fileID: 11400000, guid: 282dd4d3b5bb50f45bdc5ec9f35664a9, type: 2}
+  - CategoryName: "\u53D7\u51FB"
+    Abilities: []
+  m_DefaultAbility: {fileID: 11400000, guid: 9b3de0cc19e3fd34e945595896c00bdf, type: 2}
   m_InputBindings: []
   m_CinemachineInputProvider: {fileID: 0}
