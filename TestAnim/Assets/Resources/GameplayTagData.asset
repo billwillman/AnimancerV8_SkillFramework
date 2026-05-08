@@ -28,9 +28,15 @@ MonoBehaviour:
       With Tag
     - GlobalObjectId_V1-3-9b3de0cc19e3fd34e945595896c00bdf-11400000-0/Cancel Abilities
       With Tag
+  - Name: Hit
+    Guid: e8b61d9d-4bd4-40f6-876f-81b0e1e5487d
+    Expanded: 1
+    Multi: 0
+    Description: "\u53D7\u51FB"
+    Reference: []
   - Name: LoomLocation
     Guid: c0838831-7c20-4635-b100-0e37146b0207
-    Expanded: 1
+    Expanded: 0
     Multi: 0
     Description: "\u79FB\u52A8"
     Reference:
