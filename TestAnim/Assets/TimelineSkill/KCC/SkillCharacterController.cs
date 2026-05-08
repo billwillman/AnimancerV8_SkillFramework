@@ -142,6 +142,8 @@ namespace UnityTimeline
         public RootMotionMode AirRootMotionMode { get => _airRootMotionMode; set => _airRootMotionMode = value; }
         public JumpMode CurrentJumpMode => _jumpMode;
         public float RotationLockAngle { get => _rotationLockAngle; set => _rotationLockAngle = value; }
+        public float MaxStableMoveSpeed { get => _maxStableMoveSpeed; set => _maxStableMoveSpeed = value; }
+        public float MaxAirMoveSpeed { get => _maxAirMoveSpeed; set => _maxAirMoveSpeed = value; }
 
         /// <summary>
         /// 外部目标朝向方向（世界空间）。
