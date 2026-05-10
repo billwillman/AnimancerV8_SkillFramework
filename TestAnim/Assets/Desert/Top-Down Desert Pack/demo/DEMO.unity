@@ -61241,6 +61241,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: platform (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 4a1c54c92ee55d243aa02539c26681bf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 4a1c54c92ee55d243aa02539c26681bf, type: 3}
       propertyPath: m_RootOrder
       value: 1366

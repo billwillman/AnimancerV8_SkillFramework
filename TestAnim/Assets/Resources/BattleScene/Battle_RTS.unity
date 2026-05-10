@@ -56373,6 +56373,7 @@ GameObject:
   m_Component:
   - component: {fileID: 789150557}
   - component: {fileID: 789150558}
+  - component: {fileID: 789150559}
   m_Layer: 0
   m_Name: RTS Camera
   m_TagString: Untagged
@@ -56435,6 +56436,22 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 364533420}
+--- !u!114 &789150559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789150556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb7194dc27b9df64c8beca7482ee8e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
+  XYAxis: {fileID: 0}
+  ZAxis: {fileID: 0}
 --- !u!1001 &790002246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -71338,6 +71355,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 4a1c54c92ee55d243aa02539c26681bf, type: 3}
       propertyPath: m_Name
       value: platform (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 4a1c54c92ee55d243aa02539c26681bf, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 4a1c54c92ee55d243aa02539c26681bf, type: 3}
       propertyPath: m_RootOrder
@@ -98296,6 +98317,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4119268401655083178, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
+      propertyPath: m_CinemachineInputProvider
+      value: 
+      objectReference: {fileID: 789150559}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

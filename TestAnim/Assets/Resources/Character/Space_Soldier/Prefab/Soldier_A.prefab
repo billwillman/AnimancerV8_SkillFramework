@@ -14,15 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 93.28572
       objectReference: {fileID: 0}
     - target: {fileID: 400106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 8.79
       objectReference: {fileID: 0}
     - target: {fileID: 400106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 74.314926
       objectReference: {fileID: 0}
     - target: {fileID: 400106, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -147,7 +147,7 @@ MonoBehaviour:
   CapsuleYOffset: 1
   CapsulePhysicsMaterial: {fileID: 0}
   GroundDetectionExtraDistance: 0
-  MaxStableSlopeAngle: 60
+  MaxStableSlopeAngle: 30
   StableGroundLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -204,7 +204,7 @@ MonoBehaviour:
   _airAccelerationSpeed: 30
   _drag: 0.5
   _gravity: {x: 0, y: -30, z: 0}
-  _meshRoot: {fileID: 0}
+  _meshRoot: {fileID: 3205290826302664120}
   _ignoredColliders: []
 --- !u!114 &2265956743951511067
 MonoBehaviour:
@@ -246,3 +246,8 @@ MonoBehaviour:
   m_DefaultAbility: {fileID: 11400000, guid: 9b3de0cc19e3fd34e945595896c00bdf, type: 2}
   m_InputBindings: []
   m_CinemachineInputProvider: {fileID: 0}
+--- !u!4 &3205290826302664120 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400002, guid: cfeff1d67ecb92245941b957cebd290e, type: 3}
+  m_PrefabInstance: {fileID: 3205290826302273338}
+  m_PrefabAsset: {fileID: 0}
