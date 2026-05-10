@@ -58,6 +58,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RTSCameraZ",
+                    "type": "Value",
+                    "id": "08faae73-5d40-42a3-a43e-8cf7c92dcd24",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -333,6 +342,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "ForwardRun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1af94ae1-6a0c-423f-a616-af73d078e66e",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "RTSCameraZ",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
