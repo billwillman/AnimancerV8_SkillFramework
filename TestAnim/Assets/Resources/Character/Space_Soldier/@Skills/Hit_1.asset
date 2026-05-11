@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 524468131c598cd4897d4cb756df0fba, type: 3}
+  m_Name: Hit_1
+  m_EditorClassIdentifier: 
+  m_Nodes:
+  - rid: 2323071452094660646
+  - rid: 2323071452094660647
+  - rid: 2323071452094660648
+  m_Edges: []
+  m_PropertyEdges: []
+  m_ExposedProperties:
+  - rid: 2323071452094660649
+  - rid: 2323071452094660650
+  - rid: 2323071452094660652
+  - rid: 2323071452094660653
+  m_NodeGroups: []
+  m_StackNodes: []
+  m_RootGUID: d857fa9e-16e3-4a62-b204-6c006a38bbed
+  AbilityTags:
+    TagGuids:
+    - e8b61d9d-4bd4-40f6-876f-81b0e1e5487d
+    ReferencePath: GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Ability
+      Tags
+  CancelAbilitiesWithTag:
+    TagGuids:
+    - c0838831-7c20-4635-b100-0e37146b0207
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
+    ReferencePath: GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Cancel
+      Abilities With Tag
+  BlockAbilitiesWithTag:
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
+    - c0838831-7c20-4635-b100-0e37146b0207
+    ReferencePath: GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Block
+      Abilities With Tag
+  ActiveTags:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Active
+      Tags
+  RequiredTags:
+    TagGuids: []
+    ReferencePath: GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Required
+      Tags
+  m_OnStartGUID: 575dbac1-14d4-4143-9630-e0439f21d76b
+  m_OnStopGUID: 93944c90-f612-40c6-b4a7-7e0b0e266f8b
+  references:
+    version: 2
+    RefIds:
+    - rid: 2323071452094660646
+      type: {class: RootNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: d857fa9e-16e3-4a62-b204-6c006a38bbed
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 0}
+        m_DeltaTime:
+          m_Name: m_DeltaTime
+          m_Direction: 1
+          m_InputEdgeGUID: 
+          m_OutputEdgeGUIDs: []
+          m_Index: 0
+          m_Expanded: 0
+          m_Value: 0
+        m_OutputEdgeGUID: 
+        DeltaTime: 0
+    - rid: 2323071452094660647
+      type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 575dbac1-14d4-4143-9630-e0439f21d76b
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 200}
+        m_OutputEdgeGUID: 
+        NodeName: OnStart
+    - rid: 2323071452094660648
+      type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 93944c90-f612-40c6-b4a7-7e0b0e266f8b
+        m_Expanded: 1
+        m_ShowPanel: 0
+        m_Position: {x: 0, y: 400}
+        m_OutputEdgeGUID: 
+        NodeName: OnStop
+    - rid: 2323071452094660649
+      type: {class: BoolExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 8d50817a-4c19-4b2e-98c8-78cdaade99ec
+        m_Name: Active
+        m_Index: 0
+        m_Expanded: 1
+        m_Internal: 1
+        m_ShowOutside: 1
+        m_CanEdit: 0
+        m_Value: 0
+    - rid: 2323071452094660650
+      type: {class: FloatExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: a9c0987d-3c82-429a-990c-ecee2f201294
+        m_Name: Duration
+        m_Index: 1
+        m_Expanded: 1
+        m_Internal: 1
+        m_ShowOutside: 1
+        m_CanEdit: 0
+        m_Value: 0
+    - rid: 2323071452094660652
+      type: {class: Vector3ExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: b16461cc-0f39-428f-bd87-461bc7dd774a
+        m_Name: hitOffsetPos
+        m_Index: 2
+        m_Expanded: 1
+        m_Internal: 0
+        m_ShowOutside: 1
+        m_CanEdit: 1
+        m_Value: {x: 0, y: 0, z: 0}
+    - rid: 2323071452094660653
+      type: {class: Vector3ExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
+      data:
+        m_GUID: 9c8c7d83-f1de-46bc-8aa8-5fa36d28af8d
+        m_Name: hitSpeed
+        m_Index: 3
+        m_Expanded: 1
+        m_Internal: 0
+        m_ShowOutside: 1
+        m_CanEdit: 1
+        m_Value: {x: 0, y: 0, z: 0}

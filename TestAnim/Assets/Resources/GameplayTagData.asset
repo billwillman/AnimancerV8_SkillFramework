@@ -28,15 +28,19 @@ MonoBehaviour:
       With Tag
     - GlobalObjectId_V1-3-9b3de0cc19e3fd34e945595896c00bdf-11400000-0/Cancel Abilities
       With Tag
+    - CustomData
+    - GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Block Abilities
+      With Tag
   - Name: Hit
     Guid: e8b61d9d-4bd4-40f6-876f-81b0e1e5487d
     Expanded: 1
     Multi: 0
     Description: "\u53D7\u51FB"
-    Reference: []
+    Reference:
+    - CustomData
   - Name: LoomLocation
     Guid: c0838831-7c20-4635-b100-0e37146b0207
-    Expanded: 0
+    Expanded: 1
     Multi: 0
     Description: "\u79FB\u52A8"
     Reference:
@@ -45,6 +49,9 @@ MonoBehaviour:
     - GlobalObjectId_V1-3-0cb6d73baa7f73e4b895155e35e3aa66-11400000-0/Ability Tags
     - GlobalObjectId_V1-3-282dd4d3b5bb50f45bdc5ec9f35664a9-11400000-0/Ability Tags
     - GlobalObjectId_V1-3-9b3de0cc19e3fd34e945595896c00bdf-11400000-0/Ability Tags
+    - CustomData
+    - GlobalObjectId_V1-3-7efa4df1f2ba78a45a171e17658c330d-11400000-0/Block Abilities
+      With Tag
   - Name: LoomLocation.Idle
     Guid: b290e005-e571-4109-91d1-d5cb7eac019d
     Expanded: 1
