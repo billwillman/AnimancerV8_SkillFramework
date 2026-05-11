@@ -61,9 +61,9 @@
                 },
                 {
                     "name": "RTSCameraZ",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "08faae73-5d40-42a3-a43e-8cf7c92dcd24",
-                    "expectedControlType": "",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true

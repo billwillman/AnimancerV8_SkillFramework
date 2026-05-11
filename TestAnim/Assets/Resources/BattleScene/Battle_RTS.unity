@@ -56428,6 +56428,13 @@ MonoBehaviour:
     GateFit: 2
     FocusDistance: 10
     m_SensorSize: {x: 1, y: 1}
+    Iso: 200
+    ShutterSpeed: 0.005
+    Aperture: 16
+    BladeCount: 5
+    Curvature: {x: 2, y: 11}
+    BarrelClipping: 0.25
+    Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -56445,13 +56452,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 789150556}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb7194dc27b9df64c8beca7482ee8e0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 2534fd9ff706d81489dca4cd06a422b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerIndex: -1
   AutoEnableInputs: 1
   XYAxis: {fileID: 0}
   ZAxis: {fileID: -3975204594991554486, guid: d389e2e02ffef6b4188040aa75f003bd, type: 3}
+  ZoomSpeed: 0.02
+  MinOffset: 10
+  MaxOffset: 20
+  SmoothTime: 0.1
 --- !u!1001 &790002246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -98320,7 +98331,7 @@ PrefabInstance:
     - target: {fileID: 4119268401655083178, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
       propertyPath: m_CinemachineInputProvider
       value: 
-      objectReference: {fileID: 789150559}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
