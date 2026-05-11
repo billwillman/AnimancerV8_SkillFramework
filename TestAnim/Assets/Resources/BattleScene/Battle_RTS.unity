@@ -35585,6 +35585,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4ca53ada-db9b-4433-8831-849a9a508f9f
     m_ActionName: Player/ForwardRun[/Keyboard/leftShift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 08faae73-5d40-42a3-a43e-8cf7c92dcd24
+    m_ActionName: Player/RTSCameraZ[/Mouse/scroll/y]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -98331,7 +98335,7 @@ PrefabInstance:
     - target: {fileID: 4119268401655083178, guid: 91f11257345a81a4e93326c9f498a610, type: 3}
       propertyPath: m_CinemachineInputProvider
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 789150559}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -159762,11 +159766,69 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 435372, guid: 606febe19d62a8544a7c8c508940985c, type: 3}
   m_PrefabInstance: {fileID: 2147355727}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5494513935835779236
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 95.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 8.79
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 74.314926
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751561077, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 608744711751922325, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_Name
+      value: Soldier_B
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1344274181}
+  - {fileID: 5494513935835779236}
   - {fileID: 380326010}
   - {fileID: 393432821}
   - {fileID: 1928988924}
