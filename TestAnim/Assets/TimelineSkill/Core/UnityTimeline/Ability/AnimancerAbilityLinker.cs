@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using Animancer;
 using TreeDesigner;
 using UnityTimeline;
+using UnityTimeline.Blackboard;
 using Cinemachine;
 
 /// <summary>
@@ -73,6 +74,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     [Tooltip("Cinemachine 相机输入提供者（场景中拖入），用于 CinemachineCamera 锁定时禁用相机输入")]
     private CinemachineInputProvider m_CinemachineInputProvider;
 
+    [SerializeField, Tooltip("数据黑板组件（同 GameObject 或子对象上，留空则自动查找）")]
+    private SkillBlackboard m_Blackboard;
+
     public AnimancerAbilityAgent AnimancerAbilityAgent { get; set; }
 
     public AnimancerComponent AnimancerComponent { get; private set; }
@@ -95,6 +99,19 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     /// 获取输入绑定列表（只读）
     /// </summary>
     public IReadOnlyList<InputAbilityBinding> InputBindings => m_InputBindings;
+
+    /// <summary>
+    /// 数据黑板引用（延迟查找：同 GameObject 或父/子对象上的 SkillBlackboard 组件）
+    /// </summary>
+    public SkillBlackboard Blackboard
+    {
+        get
+        {
+            if (m_Blackboard == null)
+                m_Blackboard = GetComponent<SkillBlackboard>();
+            return m_Blackboard;
+        }
+    }
 
     private void Awake()
     {
@@ -120,6 +137,8 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                     AnimancerAbilityAgent.AddAbility(ability);
                     ability.SetContextAnimancerComponent(AnimancerComponent);
                     ability.SetContextAgent(AnimancerAbilityAgent);
+                    // ★ 注册到黑板：将 Ability 资产上的局部变量 Schema 合并到隔离槽位
+                    Blackboard?.RegisterConsumer(ability);
                 }
             }
         }
@@ -164,6 +183,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             AnimancerAbilityAgent.Dispose();
             AnimancerAbilityAgent = null;
         }
+
+        // ★ L2: 批量清理黑板上该角色的所有隔离槽位（默认保留 Global Slot）
+        Blackboard?.UnregisterAll();
     }
 
     private void OnEnable()
@@ -343,6 +365,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             ability.SetContextAnimancerComponent(AnimancerComponent);
             ability.SetContextAgent(AnimancerAbilityAgent);
 
+            // ★ 注册到黑板
+            Blackboard?.RegisterConsumer(ability);
+
             var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
             if (category == null)
             {
@@ -361,6 +386,9 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
+            // ★ L1: 先从黑板注销该 Ability 的隔离槽位
+            Blackboard?.UnregisterConsumer(ability);
+
             AnimancerAbilityAgent.RemoveAbility(ability);
             foreach (var category in m_AbilityCategories)
             {
