@@ -73,12 +73,15 @@ namespace TreeDesigner.Editor
             string valueLabel = m_ExposedProperty.GetType().Name;
             valueLabel = valueLabel.Substring(0, valueLabel.Length - "ExposedProperty".Length);
             SerializedProperty serializedValueProperty = m_ExposedProperty.GetExposedPropertySerializedProperty("m_Value");
-            PropertyField valueField = new PropertyField(serializedValueProperty, valueLabel);
-            valueField.name = "property-value-field";
-            valueField.Bind(serializedValueProperty.serializedObject);
-            m_Content.Add(valueField);
-            if (!m_ExposedProperty.CanEdit)
-                valueField.SetEnabled(false);
+            if (serializedValueProperty != null && serializedValueProperty.serializedObject != null)
+            {
+                PropertyField valueField = new PropertyField(serializedValueProperty, valueLabel);
+                valueField.name = "property-value-field";
+                valueField.Bind(serializedValueProperty.serializedObject);
+                m_Content.Add(valueField);
+                if (!m_ExposedProperty.CanEdit)
+                    valueField.SetEnabled(false);
+            }
         }
         public void Rebind()
         {
@@ -88,9 +91,13 @@ namespace TreeDesigner.Editor
             nameField.BindProperty(serializedNameProperty);
 
             PropertyField valueField = this.Q<PropertyField>("property-value-field");
-            valueField.Unbind();
-            SerializedProperty serializedValueProperty = m_ExposedProperty.GetExposedPropertySerializedProperty("m_Value");
-            valueField.BindProperty(serializedValueProperty);
+            if (valueField != null)
+            {
+                valueField.Unbind();
+                SerializedProperty serializedValueProperty = m_ExposedProperty.GetExposedPropertySerializedProperty("m_Value");
+                if (serializedValueProperty != null)
+                    valueField.BindProperty(serializedValueProperty);
+            }
         }
 
         void BuildContextualMenu(DropdownMenu menu)

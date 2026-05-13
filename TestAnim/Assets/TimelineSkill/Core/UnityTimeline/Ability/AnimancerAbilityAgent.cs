@@ -183,6 +183,7 @@ public class AnimancerAbilityAgent
             {
                 if (ability.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
                 {
+                    ApplyAbilityContext(ability);
                     ability.CancelAbility(abilityToStart);
                     TryStopAbility(ability);
                     Debug.Log($"{ability} is canceled by {abilityToStart}");
@@ -192,6 +193,7 @@ public class AnimancerAbilityAgent
         }
 
         BufferedAbilities.Clear();
+        ApplyAbilityContext(abilityToStart);
         abilityToStart.StartAbility();
         OnAbilityStart?.Invoke(abilityToStart);
 
@@ -218,6 +220,7 @@ public class AnimancerAbilityAgent
         Stopping = true;
         if (abilityToStop.Active)
         {
+            ApplyAbilityContext(abilityToStop);
             abilityToStop.StopAbility();
             OnAbilityStop?.Invoke(abilityToStop);
         }
@@ -237,16 +240,22 @@ public class AnimancerAbilityAgent
         {
             if (ability.Active)
             {
-                // 每帧更新前确保 AnimancerComponent 已注入
-                var linker = Owner as AnimancerAbilityLinker;
-                if (linker != null)
-                    ability.SetContextAnimancerComponent(linker.AnimancerComponent);
+                ApplyAbilityContext(ability);
                 ability.UpdateAbility(deltaTime);
             }
             else
             {
                 ability.InactiveUpdate();
             }
+        }
+    }
+
+    void ApplyAbilityContext(AnimancerAbility ability) {
+        // 每帧更新前确保运行时上下文已注入到 ExposedProperty
+        var linker = Owner as AnimancerAbilityLinker;
+        if (linker != null) {
+            ability.SetContextAnimancerComponent(linker.AnimancerComponent);
+            ability.SetContextAgent(this);
         }
     }
 }

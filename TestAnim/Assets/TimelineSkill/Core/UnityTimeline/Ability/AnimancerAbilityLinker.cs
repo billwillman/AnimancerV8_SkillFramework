@@ -118,7 +118,8 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                 if (ability != null)
                 {
                     AnimancerAbilityAgent.AddAbility(ability);
-                    //ability.SetContextAnimancerComponent(AnimancerComponent);
+                    ability.SetContextAnimancerComponent(AnimancerComponent);
+                    ability.SetContextAgent(AnimancerAbilityAgent);
                 }
             }
         }
@@ -340,6 +341,7 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         {
             AnimancerAbilityAgent.AddAbility(ability);
             ability.SetContextAnimancerComponent(AnimancerComponent);
+            ability.SetContextAgent(AnimancerAbilityAgent);
 
             var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
             if (category == null)
