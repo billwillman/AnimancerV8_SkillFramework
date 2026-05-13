@@ -424,7 +424,8 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        var animator = state.Graph?.Component?.Animator;
+        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
+        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
         if (animator == null) return;
 
         animator.SetFloat(m_Key.Value, m_Value.Value);
@@ -469,7 +470,8 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        var animator = state.Graph?.Component?.Animator;
+        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
+        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
         if (animator == null) return;
 
         animator.SetInteger(m_Key.Value, m_Value.Value);
@@ -514,7 +516,8 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        var animator = state.Graph?.Component?.Animator;
+        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
+        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
         if (animator == null) return;
 
         animator.SetBool(m_Key.Value, m_Value.Value);
@@ -556,7 +559,8 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        var animator = state.Graph?.Component?.Animator;
+        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
+        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
         if (animator == null) return;
 
         animator.SetTrigger(m_Key.Value);
