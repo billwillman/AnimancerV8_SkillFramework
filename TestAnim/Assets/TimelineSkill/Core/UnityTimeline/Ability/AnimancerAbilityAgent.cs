@@ -53,6 +53,11 @@ public class AnimancerAbilityAgent
     /// </summary>
     public string DefaultAbilityName { get; set; }
 
+    /// <summary>
+    /// Agent 的所有者（Linker），由 Linker 在初始化时设置
+    /// </summary>
+    public IAnimancerAbilityAgentOwner Owner { get; set; }
+
     public virtual void Init()
     {
         Abilities.Clear();
@@ -232,6 +237,10 @@ public class AnimancerAbilityAgent
         {
             if (ability.Active)
             {
+                // 每帧更新前确保 AnimancerComponent 已注入
+                var linker = Owner as AnimancerAbilityLinker;
+                if (linker != null)
+                    ability.SetContextAnimancerComponent(linker.AnimancerComponent);
                 ability.UpdateAbility(deltaTime);
             }
             else

@@ -35,7 +35,24 @@ public partial class AnimancerAbility : OneRootTree
     public string OnStopGUID { get => m_OnStopGUID; set => m_OnStopGUID = value; }
 
     public AnimancerAbilityAgent Runner { get; private set; }
-    public AnimancerComponent AnimancerComponent { get; set; }
+
+    protected AnimancerComponentExposedProperty m_AnimCompEP;
+    /// <summary>
+    /// 运行时 AnimancerComponent 引用，由 AnimancerAbilityLinker 注入到 ExposedProperty
+    /// </summary>
+    public AnimancerComponent AnimancerComponent
+    {
+        get => m_AnimCompEP != null ? m_AnimCompEP.Value : null;
+    }
+
+    /// <summary>
+    /// 由 Linker 在运行时调用，将 AnimancerComponent 注入到 ExposedProperty
+    /// </summary>
+    public void SetContextAnimancerComponent(AnimancerComponent animancerComponent)
+    {
+        if (m_AnimCompEP != null)
+            m_AnimCompEP.Value = animancerComponent;
+    }
 
     /// <summary>
     /// 缓存的 ECM2 Character 组件，首次访问时从 User 上 GetComponent 并缓存
@@ -99,6 +116,7 @@ public partial class AnimancerAbility : OneRootTree
 
         m_Active = GetExposedProperty<BoolExposedProperty>("Active");
         m_Duration = GetExposedProperty<FloatExposedProperty>("Duration");
+        m_AnimCompEP = GetExposedProperty<AnimancerComponentExposedProperty>("AnimancerComponent");
     }
 
     public override void DisposeTree()
@@ -132,10 +150,18 @@ public partial class AnimancerAbility : OneRootTree
             return true;
     }
 
+    protected void ApplyAnimancerComponentInRuntime() {
+        var linker = Runner?.Owner as AnimancerAbilityLinker;
+        if (linker != null)
+            SetContextAnimancerComponent(linker.AnimancerComponent);
+    }
+
     public virtual void StartAbility()
     {
         m_Active.Value = true;
         m_Duration.Value = 0;
+        // 启动时确保 AnimancerComponent 已注入
+        ApplyAnimancerComponentInRuntime();
         ResetTree();
         OnStartAbility();
     }
@@ -143,12 +169,16 @@ public partial class AnimancerAbility : OneRootTree
     public virtual void StopAbility()
     {
         m_Active.Value = false;
+        // 停止时确保 AnimancerComponent 已注入
+        ApplyAnimancerComponentInRuntime();
         OnStopAbility();
         OnStop();
     }
 
     public virtual void UpdateAbility(float deltaTime)
     {
+        // 每帧确保 AnimancerComponent 已注入到 ExposedProperty
+        ApplyAnimancerComponentInRuntime();
         m_Duration.Value += deltaTime;
         UpdateTree(deltaTime);
     }
@@ -157,6 +187,7 @@ public partial class AnimancerAbility : OneRootTree
 
     public virtual void CancelAbility(AnimancerAbility abilityCancelBy)
     {
+        ApplyAnimancerComponentInRuntime();
         OnAnimancerAbilityCancel?.Trigger(abilityCancelBy);
     }
 
@@ -189,6 +220,7 @@ public partial class AnimancerAbility
             m_OnStart = m_GUIDNodeMap[m_OnStartGUID] as EnterNode;
         if (!string.IsNullOrEmpty(m_OnStopGUID))
             m_OnStop = m_GUIDNodeMap[m_OnStopGUID] as EnterNode;
+
         return dirty;
     }
 
@@ -223,6 +255,7 @@ public partial class AnimancerAbility
     {
         CreateInternalExposedProperty(typeof(BoolExposedProperty), "Active", false);
         CreateInternalExposedProperty(typeof(FloatExposedProperty), "Duration", false);
+        CreateInternalExposedProperty(typeof(AnimancerComponentExposedProperty), "AnimancerComponent", false);
     }
 }
 #endif

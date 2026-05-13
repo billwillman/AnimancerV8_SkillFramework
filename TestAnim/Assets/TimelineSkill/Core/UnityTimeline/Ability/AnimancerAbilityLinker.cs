@@ -101,6 +101,7 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         AnimancerComponent = GetComponent<AnimancerComponent>();
         SkillCharacterController = GetComponent<SkillCharacterController>();
         AnimancerAbilityAgent = new AnimancerAbilityAgent();
+        AnimancerAbilityAgent.Owner = this;
     }
 
     private void Start()
@@ -116,8 +117,8 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             {
                 if (ability != null)
                 {
-                    ability.AnimancerComponent = AnimancerComponent;
                     AnimancerAbilityAgent.AddAbility(ability);
+                    //ability.SetContextAnimancerComponent(AnimancerComponent);
                 }
             }
         }
@@ -325,21 +326,6 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     /// <summary>
     /// 获取所有分组中的全部 Ability（只读）
     /// </summary>
-    public List<AnimancerAbility> GetAllAbilities()
-    {
-        var all = new List<AnimancerAbility>();
-        foreach (var category in m_AbilityCategories)
-        {
-            if (category == null) continue;
-            foreach (var ability in category.Abilities)
-            {
-                if (ability != null)
-                    all.Add(ability);
-            }
-        }
-        return all;
-    }
-
     /// <summary>
     /// 获取分组列表（只读）
     /// </summary>
@@ -352,8 +338,8 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
-            ability.AnimancerComponent = AnimancerComponent;
             AnimancerAbilityAgent.AddAbility(ability);
+            ability.SetContextAnimancerComponent(AnimancerComponent);
 
             var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
             if (category == null)
