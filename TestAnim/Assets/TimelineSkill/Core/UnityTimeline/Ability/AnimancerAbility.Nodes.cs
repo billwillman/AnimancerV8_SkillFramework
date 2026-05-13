@@ -425,7 +425,13 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
         // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
-        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
+        var epAnimator = Animancer?.Animator;
+        var graphAnimator = state.Graph?.Component?.Animator;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (epAnimator != null && graphAnimator != null && epAnimator != graphAnimator)
+            Debug.LogWarning($"[SetAnimatorFloat] Agent mismatch! EP={epAnimator.name}(inst{epAnimator.GetInstanceID()}) vs Graph={graphAnimator.name}(inst{graphAnimator.GetInstanceID()}) key={m_Key.Value}");
+#endif
+        var animator = epAnimator ?? graphAnimator;
         if (animator == null) return;
 
         animator.SetFloat(m_Key.Value, m_Value.Value);
@@ -471,7 +477,13 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
         // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
-        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
+        var epAnimator = Animancer?.Animator;
+        var graphAnimator = state.Graph?.Component?.Animator;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (epAnimator != null && graphAnimator != null && epAnimator != graphAnimator)
+            Debug.LogWarning($"[SetAnimatorInt] Agent mismatch! EP={epAnimator.name}(inst{epAnimator.GetInstanceID()}) vs Graph={graphAnimator.name}(inst{graphAnimator.GetInstanceID()}) key={m_Key.Value}");
+#endif
+        var animator = epAnimator ?? graphAnimator;
         if (animator == null) return;
 
         animator.SetInteger(m_Key.Value, m_Value.Value);
@@ -517,7 +529,13 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
         // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
-        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
+        var epAnimator = Animancer?.Animator;
+        var graphAnimator = state.Graph?.Component?.Animator;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (epAnimator != null && graphAnimator != null && epAnimator != graphAnimator)
+            Debug.LogWarning($"[SetAnimatorBool] Agent mismatch! EP={epAnimator.name}(inst{epAnimator.GetInstanceID()}) vs Graph={graphAnimator.name}(inst{graphAnimator.GetInstanceID()}) key={m_Key.Value}");
+#endif
+        var animator = epAnimator ?? graphAnimator;
         if (animator == null) return;
 
         animator.SetBool(m_Key.Value, m_Value.Value);
@@ -560,7 +578,13 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
         // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
-        var animator = Animancer?.Animator ?? state.Graph?.Component?.Animator;
+        var epAnimator = Animancer?.Animator;
+        var graphAnimator = state.Graph?.Component?.Animator;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (epAnimator != null && graphAnimator != null && epAnimator != graphAnimator)
+            Debug.LogWarning($"[SetAnimatorTrigger] Agent mismatch! EP={epAnimator.name}(inst{epAnimator.GetInstanceID()}) vs Graph={graphAnimator.name}(inst{graphAnimator.GetInstanceID()}) key={m_Key.Value}");
+#endif
+        var animator = epAnimator ?? graphAnimator;
         if (animator == null) return;
 
         animator.SetTrigger(m_Key.Value);
