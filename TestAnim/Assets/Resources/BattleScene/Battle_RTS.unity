@@ -159818,6 +159818,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Soldier_B
       objectReference: {fileID: 0}
+    - target: {fileID: 8764914970612044149, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_DefaultAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: f4c055a4a323eb54a98a554430c6c4be, type: 2}
+    - target: {fileID: 8764914970612044149, guid: 8558216445b611e469c1e9f8ffd069bc, type: 3}
+      propertyPath: m_AbilityCategories.Array.data[0].Abilities.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: f4c055a4a323eb54a98a554430c6c4be, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
