@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TreeDesigner;
 using Taco.Gameplay;
@@ -54,56 +55,71 @@ public partial class AnimancerAbility : OneRootTree
     public AnimancerComponent AnimancerComponent => m_AnimancerComponent;
 
     /// <summary>
-    /// 由 Linker 在运行时调用，直接注入 AnimancerComponent 引用
+    /// 由 BeginContext 注入 AnimancerComponent 及可选的角色组件引用。
+    /// character / skillController 若不传则默认为 null。
     /// </summary>
-    public void SetContextAnimancerComponent(AnimancerComponent animancerComponent)
-        => m_AnimancerComponent = animancerComponent;
+    public void SetContextAnimancerComponent(AnimancerComponent animancerComponent,
+        Character character = null, SkillCharacterController skillController = null)
+    {
+        m_AnimancerComponent = animancerComponent;
+        m_Character          = character;
+        m_SkillController    = skillController;
+    }
 
-    /// <summary>
-    /// 缓存的 ECM2 Character 组件，首次访问时从 User 上 GetComponent 并缓存
-    /// </summary>
     private Character m_Character;
-    public Character Character
-    {
-        get
-        {
-            if (m_Character == null)
-            {
-                var userComponent = User as UnityEngine.Component;
-                if (userComponent != null)
-                    m_Character = userComponent.GetComponent<Character>();
-            }
-            return m_Character;
-        }
-    }
+    public Character Character => m_Character;
 
-    /// <summary>
-    /// 缓存的 SkillCharacterController，首次访问时从 User 上 GetComponent 并缓存
-    /// </summary>
     private SkillCharacterController m_SkillController;
-    public SkillCharacterController SkillCharacterController
-    {
-        get
-        {
-            if (m_SkillController == null)
-            {
-                var userComponent = this.AnimancerComponent;
-                if (userComponent != null)
-                    m_SkillController = userComponent.GetComponent<SkillCharacterController>();
-            }
-            return m_SkillController;
-        }
-    }
+    public SkillCharacterController SkillCharacterController => m_SkillController;
 
     protected BoolExposedProperty m_Active;
     public bool Active => m_Active != null && m_Active.Value;
-    /// <summary>由 AnimancerAbilityAgent.ApplyAbilityContext 注入 per-instance EP</summary>
+    /// <summary>由 AnimancerAbilityAgent.BeginContext 注入 per-instance EP</summary>
     public void SetContextActiveEP(BoolExposedProperty ep) => m_Active = ep;
 
     protected FloatExposedProperty m_Duration;
     public float Duration => m_Duration?.Value ?? 0f;
-    /// <summary>由 AnimancerAbilityAgent.ApplyAbilityContext 注入 per-instance EP</summary>
+    /// <summary>由 AnimancerAbilityAgent.BeginContext 注入 per-instance EP</summary>
     public void SetContextDurationEP(FloatExposedProperty ep) => m_Duration = ep;
+
+    /// <summary>
+    /// 用户自定义 EP 的 per-instance 重定向表，由 BeginContext 绑定、EndContext 清除。
+    /// GetExposedProperty 优先从此表返回，使节点图中的 EP 访问读写 per-instance 副本。
+    /// </summary>
+    [NonSerialized]
+    private Dictionary<string, BaseExposedProperty> m_CurrentEPMap;
+
+    public void SetContextEPMap(Dictionary<string, BaseExposedProperty> map)
+        => m_CurrentEPMap = map;
+
+    public new BaseExposedProperty GetExposedProperty(string name)
+    {
+        if (m_CurrentEPMap != null && m_CurrentEPMap.TryGetValue(name, out var ep))
+            return ep;
+        return base.GetExposedProperty(name);
+    }
+    public new T GetExposedProperty<T>(string name) where T : BaseExposedProperty
+        => GetExposedProperty(name) as T;
+
+    /// <summary>
+    /// 从上下文的节点状态字典恢复所有 RunnableNode.m_State（BeginContext 调用）
+    /// </summary>
+    public void RestoreNodeStates(Dictionary<string, State> stateMap)
+    {
+        foreach (var kv in stateMap)
+            if (m_GUIDNodeMap.TryGetValue(kv.Key, out var node) && node is RunnableNode rn)
+                rn.State = kv.Value;
+    }
+
+    /// <summary>
+    /// 将所有 RunnableNode.m_State 保存回上下文字典（EndContext 调用）
+    /// </summary>
+    public void SaveNodeStates(Dictionary<string, State> stateMap)
+    {
+        foreach (var kv in m_GUIDNodeMap)
+            if (kv.Value is RunnableNode rn)
+                stateMap[kv.Key] = rn.State;
+    }
 
     protected EnterNode m_OnStart;
     protected EnterNode m_OnStop;
@@ -130,10 +146,10 @@ public partial class AnimancerAbility : OneRootTree
         base.DisposeTree();
         m_OnStart            = null;
         m_OnStop             = null;
-        m_Character          = null;
-        m_SkillController    = null;
         m_Agent              = null;
         m_AnimancerComponent = null;
+        m_Character          = null;
+        m_SkillController    = null;
     }
 
     public override void OnReset()
