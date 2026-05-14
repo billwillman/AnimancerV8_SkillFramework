@@ -193,8 +193,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         RegisterInputBindings();
 
         // 订阅输入锁变化事件
-        if (m_SkillCharacterController != null)
-            m_SkillCharacterController.OnInputLockChanged += HandleInputLockChanged;
+        if (SkillCharacterController != null)
+            SkillCharacterController.OnInputLockChanged += HandleInputLockChanged;
 
         // 启动时自动播放 DefaultAbility
         if (m_DefaultAbility != null)
@@ -215,8 +215,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     {
         UnregisterInputBindings();
 
-        if (m_SkillCharacterController != null)
-            m_SkillCharacterController.OnInputLockChanged -= HandleInputLockChanged;
+        if (SkillCharacterController != null)
+            SkillCharacterController.OnInputLockChanged -= HandleInputLockChanged;
 
         // 清理所有运行时 ScriptMachine 子对象
         foreach (var entry in m_AllEntries)
@@ -262,8 +262,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         if (variables == null)
             variables = childObj.AddComponent<Variables>();
         variables.declarations.Set("Owner", gameObject);
-        variables.declarations.Set("Animancer", m_AnimancerComponent);
-        variables.declarations.Set("SkillController", m_SkillCharacterController);
+        variables.declarations.Set("Animancer", AnimancerComponent);
+        variables.declarations.Set("SkillController", SkillCharacterController);
         variables.declarations.Set("Linker", this);
 
         var entry = new RuntimeEntry
@@ -719,8 +719,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         {
             callback = (ctx) =>
             {
-                if (m_SkillCharacterController != null
-                    && m_SkillCharacterController.IsInputLocked(InputLockFlags.AbilityInput))
+                if (SkillCharacterController != null
+                    && SkillCharacterController.IsInputLocked(InputLockFlags.AbilityInput))
                     return;
                 TryStartAbility(abilityName);
             };
