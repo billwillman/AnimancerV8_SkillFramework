@@ -121,6 +121,7 @@ public class AnimancerAbilityAgent
 
         // 立即绑定确保初始状态正确
         BeginContext(ability);
+        EndContext(ability);  // 补上缺失的 EndContext，避免 Context 残留绑定
     }
 
     public virtual void RemoveAbility(AnimancerAbility ability)

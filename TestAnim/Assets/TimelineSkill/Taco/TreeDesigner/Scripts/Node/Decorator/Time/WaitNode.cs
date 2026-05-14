@@ -27,8 +27,8 @@ namespace TreeDesigner
         protected override void OnStart()
         {
             base.OnStart();
-            m_NodeData.GetRuntime<float>("CurrentTime").Value = 0;
-            m_NodeData.GetRuntime<int>("CurrentFrame").Value = 0;
+            NodeData.GetRuntime<float>("CurrentTime").Value = 0;
+            NodeData.GetRuntime<int>("CurrentFrame").Value = 0;
         }
 
         protected override State OnUpdate()
@@ -36,14 +36,14 @@ namespace TreeDesigner
             if (m_Parent.State != State.Running)
                 return State.None;
 
-            if (m_WaitType == WaitType.Time && m_NodeData.GetRuntime<float>("CurrentTime").Value < m_Time.Value)
+            if (m_WaitType == WaitType.Time && NodeData.GetRuntime<float>("CurrentTime").Value < m_Time.Value)
             {
-                m_NodeData.GetRuntime<float>("CurrentTime").Value += UnityEngine.Time.deltaTime;
+                NodeData.GetRuntime<float>("CurrentTime").Value += UnityEngine.Time.deltaTime;
                 return State.Running;
             }
-            else if (m_WaitType == WaitType.Frame && m_NodeData.GetRuntime<int>("CurrentFrame").Value < m_Frame.Value)
+            else if (m_WaitType == WaitType.Frame && NodeData.GetRuntime<int>("CurrentFrame").Value < m_Frame.Value)
             {
-                m_NodeData.GetRuntime<int>("CurrentFrame").Value++;
+                NodeData.GetRuntime<int>("CurrentFrame").Value++;
                 return State.Running;
             }
             return m_Child?.UpdateNode() ?? State.Success;

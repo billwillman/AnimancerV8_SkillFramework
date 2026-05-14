@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TreeDesigner 
@@ -20,7 +21,10 @@ namespace TreeDesigner
         protected RunnableNode m_Child;
         public RunnableNode Child => m_Child;
 
-        public float DeltaTime;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["DeltaTime"] = new FloatExposedProperty { Name = "DeltaTime" };
+        }
 
         public override void Init(BaseTree tree)
         {
@@ -50,7 +54,13 @@ namespace TreeDesigner
 
         protected override State OnUpdate()
         {
-            m_DeltaTime.Value = DeltaTime;
+            // 从 RuntimeProperty 读取外部写入的 DeltaTime，赋给 PropertyPort 供下游连线节点读取
+            var nodeData = NodeData;
+            if (nodeData != null)
+            {
+                var dtEP = nodeData.GetRuntime<float>("DeltaTime");
+                if (dtEP != null) m_DeltaTime.Value = dtEP.Value;
+            }
             if ((m_Owner as RunnableTree).Running && m_Child)
                 return m_Child.UpdateNode();
             else

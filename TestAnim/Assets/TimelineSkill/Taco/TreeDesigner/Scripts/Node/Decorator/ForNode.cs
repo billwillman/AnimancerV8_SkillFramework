@@ -24,13 +24,13 @@ namespace TreeDesigner
         }
 
         private IList GetValueList()
-            => m_NodeData.RuntimeProperties["ValueList"].GetValue() as IList;
+            => NodeData.RuntimeProperties["ValueList"].GetValue() as IList;
 
         protected override void OnStart()
         {
             base.OnStart();
             m_ElementIndex.Value = 0;
-            m_NodeData.RuntimeProperties["ValueList"].SetValue((IList)m_List.GetValue());
+            NodeData.RuntimeProperties["ValueList"].SetValue((IList)m_List.GetValue());
         }
 
         protected override State OnUpdate()

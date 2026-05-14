@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Animancer;
+using UnityTimeline;
 
 namespace TreeDesigner
 {
@@ -178,10 +180,21 @@ namespace TreeDesigner
             if (valueType == typeof(Vector2)) return new Vector2ExposedProperty();
             if (valueType == typeof(Vector3)) return new Vector3ExposedProperty();
 
-            // 非标准类型：尝试通过反射创建泛型 EP
-            // 如果已有对应的 ExposedProperty 子类（如 AnimancerStateExposedProperty），
-            // 调用方可在 RegisterTree 后手动替换
-            return null;
+            // 非标准类型专用分支
+            if (valueType == typeof(AnimancerState))   return new AnimancerStateExposedProperty();
+            if (valueType == typeof(AnimancerAbility)) return new AnimancerAbilityExposedProperty();
+            if (valueType == typeof(InputLockFlags))   return new InputLockFlagsExposedProperty();
+
+            // 反射兜底：为未注册的非标准类型创建 GenericExposedProperty<T>
+            try
+            {
+                var epType = typeof(GenericExposedProperty<>).MakeGenericType(valueType);
+#if UNITY_EDITOR
+                Debug.LogWarning($"[CommonBlackboard] CreateEPForPort: 类型 '{valueType.Name}' 没有专用 ExposedProperty，使用反射兜底 GenericExposedProperty<{valueType.Name}>。建议创建专用 EP 子类以获得更好的性能和类型安全。");
+#endif
+                return (BaseExposedProperty)Activator.CreateInstance(epType);
+            }
+            catch { return null; }
         }
 
         /// <summary>克隆单个 ExposedProperty</summary>

@@ -20,10 +20,10 @@ namespace TreeDesigner
 
         private List<BaseNode> GetCompletedChildren()
         {
-            var obj = m_NodeData.RuntimeProperties["CompletedChildren"].GetValue();
+            var obj = NodeData.RuntimeProperties["CompletedChildren"].GetValue();
             if (obj is List<BaseNode> list) return list;
             var newList = new List<BaseNode>();
-            m_NodeData.RuntimeProperties["CompletedChildren"].SetValue(newList);
+            NodeData.RuntimeProperties["CompletedChildren"].SetValue(newList);
             return newList;
         }
 

@@ -122,4 +122,14 @@ namespace TreeDesigner
     {
         public AnimationCurveExposedProperty() { }
     }
+
+    /// <summary>
+    /// 反射兜底泛型 EP，当 CreateEPForPort 找不到专用 EP 子类时使用。
+    /// 不建议长期依赖，应为常用类型创建专用 EP 子类以获得更好的性能和类型安全。
+    /// </summary>
+    [Serializable]
+    public class GenericExposedProperty<T> : BaseExposedProperty<T>
+    {
+        public GenericExposedProperty() { }
+    }
 }

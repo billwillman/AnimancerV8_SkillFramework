@@ -7,15 +7,15 @@ namespace TreeDesigner
         /// <summary>树是否正在运行，强制走 BlackboardContext。</summary>
         public bool Running
         {
-            get => m_CurrentContext.TreeRunning;
-            set => m_CurrentContext.TreeRunning = value;
+            get => m_CurrentContext?.TreeRunning ?? false;
+            set { if (m_CurrentContext != null) m_CurrentContext.TreeRunning = value; }
         }
 
         /// <summary>树级执行状态，强制走 BlackboardContext。</summary>
         public State State
         {
-            get => m_CurrentContext.TreeState;
-            set => m_CurrentContext.TreeState = value;
+            get => m_CurrentContext?.TreeState ?? State.None;
+            set { if (m_CurrentContext != null) m_CurrentContext.TreeState = value; }
         }
 
         public float DeltaTime { get; private set; }

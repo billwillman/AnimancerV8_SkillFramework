@@ -174,20 +174,23 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("Completed").Value = false;
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
+        NodeData.GetRuntime<bool>("Completed").Value = false;
+        NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 
     protected override State OnUpdate()
     {
-        if (!m_NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
-        return m_NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
+        if (!NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
+        return NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
-        m_NodeData.GetRuntime<bool>("Completed").Value = false;
+        var nodeData = NodeData;
+        if (nodeData == null) return;
+
+        nodeData.GetRuntime<bool>("IsFailure").Value = false;
+        nodeData.GetRuntime<bool>("Completed").Value = false;
 
         if (Animancer != null)
         {
@@ -198,35 +201,37 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
             {
                 if (m_CompletionMode == NodeCompletionMode.OnStart)
                 {
-                    m_NodeData.GetRuntime<bool>("Completed").Value = true;
+                    nodeData.GetRuntime<bool>("Completed").Value = true;
                 }
                 else
                 {
-                    state.Events(this).OnEnd -= OnDone;
-                    state.Events(this).OnEnd += OnDone;
+                    // 用闭包捕获当前 Context 和 GUID，避免使用节点字段（多实例安全）
+                    var capturedCtx = m_Owner?.CurrentContext;
+                    var capturedGUID = m_GUID;
+                    Action onDone = null;
+                    onDone = () =>
+                    {
+                        state.Events(this).OnEnd -= onDone;
+                        var nd = capturedCtx?.GetNodeData(capturedGUID);
+                        if (nd == null) return;
+                        nd.GetRuntime<bool>("Completed").Value = true;
+                        nd.GetRuntime<bool>("IsFailure").Value = false;
+                    };
+                    state.Events(this).OnEnd -= onDone;
+                    state.Events(this).OnEnd += onDone;
                 }
             }
             else
             {
-                m_NodeData.GetRuntime<bool>("Completed").Value = true;
-                m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
+                nodeData.GetRuntime<bool>("Completed").Value = true;
+                nodeData.GetRuntime<bool>("IsFailure").Value = true;
             }
         }
         else
         {
-            m_NodeData.GetRuntime<bool>("Completed").Value = true;
-            m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
+            nodeData.GetRuntime<bool>("Completed").Value = true;
+            nodeData.GetRuntime<bool>("IsFailure").Value = true;
         }
-    }
-
-    void OnDone()
-    {
-        if (m_AnimancerState.Value != null)
-        {
-            m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
-        }
-        m_NodeData.GetRuntime<bool>("Completed").Value = true;
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 }
 
@@ -262,20 +267,23 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("Completed").Value = false;
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
+        NodeData.GetRuntime<bool>("Completed").Value = false;
+        NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 
     protected override State OnUpdate()
     {
-        if (!m_NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
-        return m_NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
+        if (!NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
+        return NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
-        m_NodeData.GetRuntime<bool>("Completed").Value = false;
+        var nodeData = NodeData;
+        if (nodeData == null) return;
+
+        nodeData.GetRuntime<bool>("IsFailure").Value = false;
+        nodeData.GetRuntime<bool>("Completed").Value = false;
 
         if (Animancer != null && m_TransitionAsset != null)
         {
@@ -287,35 +295,37 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
 
                 if (m_CompletionMode == NodeCompletionMode.OnStart)
                 {
-                    m_NodeData.GetRuntime<bool>("Completed").Value = true;
+                    nodeData.GetRuntime<bool>("Completed").Value = true;
                 }
                 else
                 {
-                    state.Events(this).OnEnd -= OnDone;
-                    state.Events(this).OnEnd += OnDone;
+                    // 用闭包捕获当前 Context 和 GUID，避免使用节点字段（多实例安全）
+                    var capturedCtx = m_Owner?.CurrentContext;
+                    var capturedGUID = m_GUID;
+                    Action onDone = null;
+                    onDone = () =>
+                    {
+                        state.Events(this).OnEnd -= onDone;
+                        var nd = capturedCtx?.GetNodeData(capturedGUID);
+                        if (nd == null) return;
+                        nd.GetRuntime<bool>("Completed").Value = true;
+                        nd.GetRuntime<bool>("IsFailure").Value = false;
+                    };
+                    state.Events(this).OnEnd -= onDone;
+                    state.Events(this).OnEnd += onDone;
                 }
             }
             else
             {
-                m_NodeData.GetRuntime<bool>("Completed").Value = true;
-                m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
+                nodeData.GetRuntime<bool>("Completed").Value = true;
+                nodeData.GetRuntime<bool>("IsFailure").Value = true;
             }
         }
         else
         {
-            m_NodeData.GetRuntime<bool>("Completed").Value = true;
-            m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
+            nodeData.GetRuntime<bool>("Completed").Value = true;
+            nodeData.GetRuntime<bool>("IsFailure").Value = true;
         }
-    }
-
-    void OnDone()
-    {
-        if (m_AnimancerState.Value != null)
-        {
-            m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
-        }
-        m_NodeData.GetRuntime<bool>("Completed").Value = true;
-        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 }
 
@@ -403,17 +413,17 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
         properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
     }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
@@ -427,7 +437,7 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetFloat(m_Key.Value, m_Value.Value);
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -456,17 +466,17 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
         properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
     }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
@@ -480,7 +490,7 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetInteger(m_Key.Value, m_Value.Value);
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -509,17 +519,17 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
         properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
     }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
@@ -533,7 +543,7 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetBool(m_Key.Value, m_Value.Value);
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -559,17 +569,17 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
     }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
@@ -583,7 +593,7 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetTrigger(m_Key.Value);
-        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
+        NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -805,8 +815,8 @@ public class BranchNode : ActionNode
 
     private RunnableNode ActiveChild
     {
-        get => m_NodeData?.RuntimeProperties["ActiveChild"].GetValue() as RunnableNode;
-        set => m_NodeData?.RuntimeProperties["ActiveChild"].SetValue(value);
+        get => NodeData?.RuntimeProperties["ActiveChild"].GetValue() as RunnableNode;
+        set => NodeData?.RuntimeProperties["ActiveChild"].SetValue(value);
     }
 
     public override void Init(BaseTree tree)

@@ -20,7 +20,7 @@ namespace TreeDesigner
         protected override void OnStart()
         {
             base.OnStart();
-            m_NodeData.GetRuntime<int>("CurrentIndex").Value = 0;
+            NodeData.GetRuntime<int>("CurrentIndex").Value = 0;
         }
 
         protected override State OnUpdate()
@@ -28,7 +28,7 @@ namespace TreeDesigner
             if (m_Parent.State != State.Running)
                 return State.None;
 
-            var currentIndex = m_NodeData.GetRuntime<int>("CurrentIndex");
+            var currentIndex = NodeData.GetRuntime<int>("CurrentIndex");
             State childState = m_Child.UpdateNode();
             if (childState == State.Running)
                 return State.Running;

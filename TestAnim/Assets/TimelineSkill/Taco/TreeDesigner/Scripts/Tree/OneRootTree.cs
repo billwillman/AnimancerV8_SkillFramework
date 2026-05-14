@@ -31,7 +31,7 @@ namespace TreeDesigner
         }
         public override State OnUpdate()
         {
-            m_Root.DeltaTime = DeltaTime;
+            m_Root.NodeData?.GetRuntime<float>("DeltaTime")?.SetValue(DeltaTime);
             return m_Root.UpdateNode();
         }
         public override void OnStop()

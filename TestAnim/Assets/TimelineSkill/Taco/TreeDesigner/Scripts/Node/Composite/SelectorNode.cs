@@ -15,12 +15,12 @@ namespace TreeDesigner
         protected override void OnStart()
         {
             base.OnStart();
-            m_NodeData.GetRuntime<int>("CurrentIndex").Value = 0;
+            NodeData.GetRuntime<int>("CurrentIndex").Value = 0;
         }
 
         protected override State OnUpdate()
         {
-            var currentIndex = m_NodeData.GetRuntime<int>("CurrentIndex");
+            var currentIndex = NodeData.GetRuntime<int>("CurrentIndex");
             if (m_Parent.State != State.Running || currentIndex.Value >= m_Children.Count)
                 return State.None;
 

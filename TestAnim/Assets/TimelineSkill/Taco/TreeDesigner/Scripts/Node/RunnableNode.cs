@@ -8,18 +8,22 @@ namespace TreeDesigner
     [Serializable]
     public abstract class RunnableNode : BaseNode
     {
-        // ── Blackboard 节点数据（由 BindBlackboard 注入）──
+        // ── Blackboard 节点数据（通过 CurrentContext 实时查找）──
 
-        [NonSerialized]
-        protected NodeBlackboardData m_NodeData;
+        /// <summary>
+        /// 节点运行时数据，通过 CurrentContext 实时查找。
+        /// 在 Context 绑定期间（OnStart/OnUpdate/DoAction 等）始终有效。
+        /// </summary>
+        public NodeBlackboardData NodeData
+            => m_Owner?.CurrentContext?.GetNodeData(m_GUID);
 
         /// <summary>
         /// 节点执行状态，强制通过 NodeBlackboardData 读写。
         /// </summary>
         public State State
         {
-            get => m_NodeData.State;
-            set => m_NodeData.State = value;
+            get => NodeData?.State ?? State.None;
+            set { if (NodeData != null) NodeData.State = value; }
         }
 
         // ── Callbacks ──
@@ -80,13 +84,11 @@ namespace TreeDesigner
 
         public override void BindBlackboard(NodeBlackboardData nodeData)
         {
-            m_NodeData = nodeData;
             base.BindBlackboard(nodeData);
         }
 
         public override void UnbindBlackboard()
         {
-            m_NodeData = null;
             base.UnbindBlackboard();
         }
 

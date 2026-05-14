@@ -105,7 +105,7 @@ public partial class AnimancerAbility : OneRootTree
 
     public override State OnUpdate()
     {
-        m_Root.DeltaTime = DeltaTime;
+        m_Root.NodeData?.GetRuntime<float>("DeltaTime")?.SetValue(DeltaTime);
         m_Root.UpdateNode();
         return State.Running;
     }
