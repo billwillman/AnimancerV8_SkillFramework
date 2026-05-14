@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using TreeDesigner;
 using Taco.Gameplay;
@@ -11,10 +10,9 @@ using UnityEditor;
 
 // SkillCharacterController 定义在 UnityTimeline 命名空间，本文件在全局命名空间需显式引入
 using UnityTimeline;
-using UnityTimeline.Blackboard;
 
 [AcceptableNodePaths("Character", "AnimancerAbility")]
-public partial class AnimancerAbility : OneRootTree, IBlackboardEntryProvider
+public partial class AnimancerAbility : OneRootTree
 {
     [ShowInInspector, Tooltip("该技能自身的标签，用于被其他技能的 Cancel/Block 规则匹配")]
     public GameplayTagContainer AbilityTags;
@@ -27,12 +25,6 @@ public partial class AnimancerAbility : OneRootTree, IBlackboardEntryProvider
     public GameplayTagContainer ActiveTags;
     [ShowInInspector, Tooltip("启动该技能的前置条件：角色当前 ActiveTags 中必须包含这些标签")]
     public GameplayTagContainer RequiredTags;
-
-    [SerializeField, Tooltip("该技能的黑板局部变量 Schema（运行时合并到黑板的该技能隔离槽位）")]
-    private List<BlackboardEntry> m_BlackboardEntries = new();
-
-    /// <summary>IBlackboardEntryProvider: 该技能资产声明的黑板变量列表</summary>
-    public IList<BlackboardEntry> BlackboardEntries => m_BlackboardEntries;
 
     [SerializeField]
     protected string m_OnStartGUID;

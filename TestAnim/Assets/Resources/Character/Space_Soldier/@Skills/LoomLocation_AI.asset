@@ -13,56 +13,57 @@ MonoBehaviour:
   m_Name: LoomLocation_AI
   m_EditorClassIdentifier: 
   m_Nodes:
-  - rid: 3727631703089086503
-  - rid: 3727631703089086504
-  - rid: 3727631703089086505
-  - rid: 3727631703089086509
+  - rid: 3727631565548683264
+  - rid: 3727631565548683265
+  - rid: 3727631565548683266
+  - rid: 3727631565548683269
   m_Edges:
-  - m_GUID: 0cdd8869-5cd0-4a71-a3a4-96c143ca632b
-    m_StartNodeGUID: 5c303f53-2820-4aeb-ac6e-aadaace2fe8e
-    m_EndNodeGUID: f1acb410-e97a-4a71-8ae7-4de6c086c01e
+  - m_GUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
+    m_StartNodeGUID: 0e8aabb4-2ed3-4413-93a5-cef66f7758a5
+    m_EndNodeGUID: d0c25018-f87f-4f27-a324-85a165542ec3
     m_StartPortName: Output
     m_EndPortName: Input
   m_PropertyEdges: []
   m_ExposedProperties:
-  - rid: 3727631703089086506
-  - rid: 3727631703089086507
-  - rid: 3727631703089086508
+  - rid: 3727631565548683267
+  - rid: 3727631565548683268
   m_NodeGroups: []
   m_StackNodes: []
-  m_RootGUID: ffe7498b-c919-4dda-b3b3-07603953ff95
+  m_RootGUID: 8f8560cb-3db0-4619-b44c-5f094ce89887
   AbilityTags:
-    TagGuids: []
-    ReferencePath: GlobalObjectId_V1-3-3e6fb1a4e23a5fe4199c2c99b97b0566-11400000-0/Ability
+    TagGuids:
+    - c0838831-7c20-4635-b100-0e37146b0207
+    ReferencePath: GlobalObjectId_V1-3-f4c055a4a323eb54a98a554430c6c4be-11400000-0/Ability
       Tags
   CancelAbilitiesWithTag:
-    TagGuids: []
-    ReferencePath: GlobalObjectId_V1-3-3e6fb1a4e23a5fe4199c2c99b97b0566-11400000-0/Cancel
+    TagGuids:
+    - bc3f013c-4453-410a-8e0b-5c61b9dc3a52
+    ReferencePath: GlobalObjectId_V1-3-f4c055a4a323eb54a98a554430c6c4be-11400000-0/Cancel
       Abilities With Tag
   BlockAbilitiesWithTag:
     TagGuids: []
-    ReferencePath: GlobalObjectId_V1-3-3e6fb1a4e23a5fe4199c2c99b97b0566-11400000-0/Block
+    ReferencePath: GlobalObjectId_V1-3-f4c055a4a323eb54a98a554430c6c4be-11400000-0/Block
       Abilities With Tag
   ActiveTags:
     TagGuids: []
-    ReferencePath: GlobalObjectId_V1-3-3e6fb1a4e23a5fe4199c2c99b97b0566-11400000-0/Active
+    ReferencePath: GlobalObjectId_V1-3-f4c055a4a323eb54a98a554430c6c4be-11400000-0/Active
       Tags
   RequiredTags:
     TagGuids: []
-    ReferencePath: GlobalObjectId_V1-3-3e6fb1a4e23a5fe4199c2c99b97b0566-11400000-0/Required
+    ReferencePath: GlobalObjectId_V1-3-f4c055a4a323eb54a98a554430c6c4be-11400000-0/Required
       Tags
-  m_OnStartGUID: 5c303f53-2820-4aeb-ac6e-aadaace2fe8e
-  m_OnStopGUID: 8d4abad7-edf6-4c5e-850b-8489eb970f75
+  m_OnStartGUID: 0e8aabb4-2ed3-4413-93a5-cef66f7758a5
+  m_OnStopGUID: 2b5dceb5-7026-420c-96f7-07255512ae90
   references:
     version: 2
     RefIds:
-    - rid: 3727631703089086503
+    - rid: 3727631565548683264
       type: {class: RootNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
-        m_GUID: ffe7498b-c919-4dda-b3b3-07603953ff95
+        m_GUID: 8f8560cb-3db0-4619-b44c-5f094ce89887
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 0, y: 0}
+        m_Position: {x: 19, y: -62}
         m_DeltaTime:
           m_Name: m_DeltaTime
           m_Direction: 1
@@ -70,31 +71,31 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0
+          m_Value: 0.0227385
         m_OutputEdgeGUID: 
-        DeltaTime: 0
-    - rid: 3727631703089086504
+        DeltaTime: 0.0227385
+    - rid: 3727631565548683265
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
-        m_GUID: 5c303f53-2820-4aeb-ac6e-aadaace2fe8e
+        m_GUID: 0e8aabb4-2ed3-4413-93a5-cef66f7758a5
         m_Expanded: 1
         m_ShowPanel: 0
         m_Position: {x: 0, y: 200}
-        m_OutputEdgeGUID: 0cdd8869-5cd0-4a71-a3a4-96c143ca632b
+        m_OutputEdgeGUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
         NodeName: OnStart
-    - rid: 3727631703089086505
+    - rid: 3727631565548683266
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
-        m_GUID: 8d4abad7-edf6-4c5e-850b-8489eb970f75
+        m_GUID: 2b5dceb5-7026-420c-96f7-07255512ae90
         m_Expanded: 1
         m_ShowPanel: 0
         m_Position: {x: 0, y: 400}
         m_OutputEdgeGUID: 
         NodeName: OnStop
-    - rid: 3727631703089086506
+    - rid: 3727631565548683267
       type: {class: BoolExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
-        m_GUID: 125a2118-aa83-4a79-b20c-e573ea6ca9dd
+        m_GUID: 6eaf91f3-e2c6-4ed1-a572-d598d3a20769
         m_Name: Active
         m_Index: 0
         m_Expanded: 1
@@ -102,36 +103,25 @@ MonoBehaviour:
         m_ShowOutside: 1
         m_CanEdit: 0
         m_Value: 0
-    - rid: 3727631703089086507
+    - rid: 3727631565548683268
       type: {class: FloatExposedProperty, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
-        m_GUID: 4082ddbc-7e16-43c0-b939-a83c58107533
+        m_GUID: 1cf500f4-9348-41c8-8353-2f289b8b6a9d
         m_Name: Duration
         m_Index: 1
         m_Expanded: 1
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 0
-    - rid: 3727631703089086508
-      type: {class: AnimancerComponentExposedProperty, ns: TreeDesigner, asm: Assembly-CSharp}
-      data:
-        m_GUID: 2aa414ab-9f2d-4523-8acb-260bcbf84e53
-        m_Name: AnimancerComponent
-        m_Index: 2
-        m_Expanded: 1
-        m_Internal: 1
-        m_ShowOutside: 1
-        m_CanEdit: 0
-        m_Value: {fileID: 0}
-    - rid: 3727631703089086509
+        m_Value: 1066.4081
+    - rid: 3727631565548683269
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:
-        m_GUID: f1acb410-e97a-4a71-8ae7-4de6c086c01e
+        m_GUID: d0c25018-f87f-4f27-a324-85a165542ec3
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 399, y: 231.5}
-        m_InputEdgeGUID: 0cdd8869-5cd0-4a71-a3a4-96c143ca632b
+        m_Position: {x: 339, y: 216}
+        m_InputEdgeGUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
         m_TransitionAsset: {fileID: 11400000, guid: c752d203554f1944d9a655892a66db5b, type: 2}
         m_FadeDuration:
           m_Name: m_FadeDuration

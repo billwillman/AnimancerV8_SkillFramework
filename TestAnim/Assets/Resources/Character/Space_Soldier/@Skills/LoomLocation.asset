@@ -219,9 +219,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.0188298
+          m_Value: 0
         m_OutputEdgeGUID: 38908079-0814-40a7-8944-e33e11fc35a4
-        DeltaTime: 0.0188298
+        DeltaTime: 0
     - rid: 3727631703089086467
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -261,7 +261,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 6.273474
+        m_Value: 0
     - rid: 3727631703089086471
       type: {class: AnimancerComponentExposedProperty, ns: TreeDesigner, asm: Assembly-CSharp}
       data:
@@ -279,7 +279,7 @@ MonoBehaviour:
         m_GUID: 1dd159c6-ee1b-47d3-b451-5388e8eda799
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 362, y: 400}
+        m_Position: {x: 362, y: 395}
         m_InputEdgeGUID: 4a9ba107-a7e3-4a94-a607-72de74afbff4
         m_TransitionAsset: {fileID: 11400000, guid: c752d203554f1944d9a655892a66db5b, type: 2}
         m_FadeDuration:
@@ -615,7 +615,7 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 5.9968004
+          m_Value: 3
         m_AirSpeed:
           m_Name: m_AirSpeed
           m_Direction: 0
@@ -782,7 +782,7 @@ MonoBehaviour:
       data:
         m_GUID: a2132156-865b-42cc-a492-d30f6260925d
         m_Expanded: 1
-        m_ShowPanel: 1
+        m_ShowPanel: 0
         m_Position: {x: 1684, y: 201}
         m_InputValue1:
           rid: 3727631703089086500
@@ -799,7 +799,7 @@ MonoBehaviour:
         m_OutputEdgeGUIDs: []
         m_Index: 0
         m_Expanded: 0
-        m_Value: 5.9968004
+        m_Value: 1.5766644
     - rid: 3727631703089086501
       type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -820,4 +820,4 @@ MonoBehaviour:
         - 3aa8b9c5-2a11-48f1-9526-1783d980894d
         m_Index: 0
         m_Expanded: 0
-        m_Value: 5.9968004
+        m_Value: 3
