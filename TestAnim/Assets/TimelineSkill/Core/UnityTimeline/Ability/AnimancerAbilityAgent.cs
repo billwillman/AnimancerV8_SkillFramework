@@ -2,13 +2,26 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Taco.Gameplay;
+using TreeDesigner;
+
+/// <summary>
+/// 单个 Ability 在本角色实例上的运行时数据（per-instance，不存放在 SO 上）
+/// </summary>
+public class AbilityContext
+{
+    /// <summary>该 Ability 在本角色上是否激活</summary>
+    public BoolExposedProperty  IsActive = new BoolExposedProperty()  { Name = "Active"   };
+    /// <summary>该 Ability 在本角色上已运行的时长</summary>
+    public FloatExposedProperty Duration = new FloatExposedProperty() { Name = "Duration" };
+}
 
 /// <summary>
 /// Animancer Ability 的运行管理器，复用 AbilityRunner 的全部 Tag 阻塞/取消/缓冲逻辑
 /// </summary>
 public class AnimancerAbilityAgent
 {
-    public HashSet<AnimancerAbility> Abilities = new HashSet<AnimancerAbility>();
+    /// <summary>Key = Ability SO，Value = 本角色对该 Ability 的运行时上下文</summary>
+    public Dictionary<AnimancerAbility, AbilityContext> Abilities = new Dictionary<AnimancerAbility, AbilityContext>();
     public Dictionary<string, AnimancerAbility> AbilityMap = new Dictionary<string, AnimancerAbility>();
 
     public event Action<AnimancerAbility> OnAbilityStart;
@@ -66,10 +79,10 @@ public class AnimancerAbilityAgent
 
     public virtual void Dispose()
     {
-        foreach (var ability in Abilities)
+        foreach (var kv in Abilities)
         {
-            TryStopAbility(ability);
-            ability.DisposeTree();
+            TryStopAbility(kv.Key);
+            kv.Key.DisposeTree();
         }
         Abilities.Clear();
         AbilityMap.Clear();
@@ -77,17 +90,20 @@ public class AnimancerAbilityAgent
 
     public virtual void AddAbility(AnimancerAbility ability)
     {
-        if (!Abilities.Contains(ability))
+        if (!Abilities.ContainsKey(ability))
         {
             ability.InitTree(this);
-            Abilities.Add(ability);
+            var ctx = new AbilityContext();
+            Abilities[ability] = ctx;
             AbilityMap.Add(ability.name, ability);
+            // 立即绑定，确保 m_Active / m_Duration 指向 per-instance 实例
+            ApplyAbilityContext(ability);
         }
     }
 
     public virtual void RemoveAbility(AnimancerAbility ability)
     {
-        if (Abilities.Contains(ability))
+        if (Abilities.ContainsKey(ability))
         {
             ability.DisposeTree();
             Abilities.Remove(ability);
@@ -107,6 +123,12 @@ public class AnimancerAbilityAgent
             }
         }
     }
+
+    /// <summary>
+    /// 获取 Ability 的运行时上下文，若不存在则返回 null
+    /// </summary>
+    public AbilityContext GetContext(AnimancerAbility ability)
+        => Abilities.TryGetValue(ability, out var ctx) ? ctx : null;
 
     public virtual bool TryStartAbility(string name)
     {
@@ -158,14 +180,14 @@ public class AnimancerAbilityAgent
             }
         }
 
-        foreach (var ability in Abilities)
+        foreach (var kv in Abilities)
         {
-            ApplyAbilityContext(ability);
-            if (ability.Active && abilityToStart.AbilityTags.PartChildOf(ability.BlockAbilitiesWithTag))
+            ApplyAbilityContext(kv.Key);
+            if (kv.Key.Active && abilityToStart.AbilityTags.PartChildOf(kv.Key.BlockAbilitiesWithTag))
             {
                 Starting = false;
                 AddToBuffer(abilityToStart);
-                Debug.Log($"{abilityToStart} is blocked by {ability}");
+                Debug.Log($"{abilityToStart} is blocked by {kv.Key}");
                 return false;
             }
         }
@@ -179,16 +201,16 @@ public class AnimancerAbilityAgent
             return false;
         }
 
-        foreach (var ability in Abilities)
+        foreach (var kv in Abilities)
         {
-            ApplyAbilityContext(ability);
-            if (ability.Active)
+            ApplyAbilityContext(kv.Key);
+            if (kv.Key.Active)
             {
-                if (ability.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
+                if (kv.Key.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
                 {
-                    ability.CancelAbility(abilityToStart);
-                    TryStopAbility(ability);
-                    Debug.Log($"{ability} is canceled by {abilityToStart}");
+                    kv.Key.CancelAbility(abilityToStart);
+                    TryStopAbility(kv.Key);
+                    Debug.Log($"{kv.Key} is canceled by {abilityToStart}");
                     break;
                 }
             }
@@ -238,26 +260,33 @@ public class AnimancerAbilityAgent
                 break;
         }
 
-        foreach (var ability in Abilities)
+        foreach (var kv in Abilities)
         {
-            ApplyAbilityContext(ability);
-            if (ability.Active)
+            ApplyAbilityContext(kv.Key);
+            if (kv.Key.Active)
             {
-                ability.UpdateAbility(deltaTime);
+                kv.Key.UpdateAbility(deltaTime);
             }
             else
             {
-                ability.InactiveUpdate();
+                kv.Key.InactiveUpdate();
             }
         }
     }
 
-    void ApplyAbilityContext(AnimancerAbility ability) {
-        // 每帧更新前确保运行时上下文已注入到 ExposedProperty
+    void ApplyAbilityContext(AnimancerAbility ability)
+    {
         var linker = Owner as AnimancerAbilityLinker;
-        if (linker != null) {
+        if (linker != null)
+        {
             ability.SetContextAnimancerComponent(linker.AnimancerComponent);
             ability.SetContextAgent(this);
+        }
+
+        if (Abilities.TryGetValue(ability, out var ctx))
+        {
+            ability.SetContextActiveEP(ctx.IsActive);
+            ability.SetContextDurationEP(ctx.Duration);
         }
     }
 }

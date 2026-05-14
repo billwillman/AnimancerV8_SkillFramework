@@ -96,10 +96,14 @@ public partial class AnimancerAbility : OneRootTree
     }
 
     protected BoolExposedProperty m_Active;
-    public bool Active => m_Active.Value;
+    public bool Active => m_Active != null && m_Active.Value;
+    /// <summary>由 AnimancerAbilityAgent.ApplyAbilityContext 注入 per-instance EP</summary>
+    public void SetContextActiveEP(BoolExposedProperty ep) => m_Active = ep;
 
     protected FloatExposedProperty m_Duration;
-    public float Duration => m_Duration.Value;
+    public float Duration => m_Duration?.Value ?? 0f;
+    /// <summary>由 AnimancerAbilityAgent.ApplyAbilityContext 注入 per-instance EP</summary>
+    public void SetContextDurationEP(FloatExposedProperty ep) => m_Duration = ep;
 
     protected EnterNode m_OnStart;
     protected EnterNode m_OnStop;

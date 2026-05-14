@@ -219,9 +219,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0
+          m_Value: 0.022132
         m_OutputEdgeGUID: 38908079-0814-40a7-8944-e33e11fc35a4
-        DeltaTime: 0
+        DeltaTime: 0.022132
     - rid: 3727631703089086467
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
