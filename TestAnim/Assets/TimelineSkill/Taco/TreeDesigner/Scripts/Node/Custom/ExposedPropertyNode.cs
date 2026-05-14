@@ -57,17 +57,30 @@ namespace TreeDesigner
             m_InputEdgeGUID = string.Empty;
             m_Parent = null;
         }
+        /// <summary>
+        /// 通过 Tree.GetExposedProperty 按优先级查找 EP：
+        /// Context.EPMap → CommonBlackboard → SO 默认值。
+        /// 避免直接读写 SO 上的原始 EP（多实例共享时会冲突）。
+        /// </summary>
+        private BaseExposedProperty ResolveEP()
+        {
+            if (m_ExposedProperty == null) return null;
+            return m_Owner?.GetExposedProperty(m_ExposedProperty.Name) ?? m_ExposedProperty;
+        }
+
         protected override void OutputValue()
         {
             base.OutputValue();
-            if (m_NodeType == ExposedPropertyNodeType.Get && m_ExposedProperty)
-                m_Value.SetValue(m_ExposedProperty.GetValue());
+            var ep = ResolveEP();
+            if (m_NodeType == ExposedPropertyNodeType.Get && ep != null)
+                m_Value.SetValue(ep.GetValue());
         }
         protected override void OnStart()
         {
             base.OnStart();
-            if (m_Parent.State == State.Running && m_NodeType == ExposedPropertyNodeType.Set && m_ExposedProperty)
-                m_ExposedProperty.SetValue(m_Value.GetValue());
+            var ep = ResolveEP();
+            if (m_Parent.State == State.Running && m_NodeType == ExposedPropertyNodeType.Set && ep != null)
+                ep.SetValue(m_Value.GetValue());
         }
         protected override State OnUpdate()
         {
