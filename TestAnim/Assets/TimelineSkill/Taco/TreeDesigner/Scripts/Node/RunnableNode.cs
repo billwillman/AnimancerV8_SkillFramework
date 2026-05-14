@@ -80,18 +80,6 @@ namespace TreeDesigner
             OnResetCallback?.Invoke();
         }
 
-        // ── Blackboard 绑定 ──
-
-        public override void BindBlackboard(NodeBlackboardData nodeData)
-        {
-            base.BindBlackboard(nodeData);
-        }
-
-        public override void UnbindBlackboard()
-        {
-            base.UnbindBlackboard();
-        }
-
         /// <summary>
         /// 子类 override 此方法声明额外的运行时 EP（Key=变量名, Value=EP 实例）。
         /// RegisterTree 时调用，创建的 EP 会放入 NodeBlackboardData.RuntimeProperties 字典。

@@ -123,11 +123,8 @@ public class AnimancerStateEventNode : AnimancerAbilityActionNode
             nd.GetRuntime<int>("EventIndex").Value = -1;
             nd.GetRuntime<bool>("EventTriggered").Value = true;
             nd.RuntimeProperties["BoundCallback"].SetValue(null);
-
-            if (outputChild != null)
-                nd.GetRuntime<int>("OutputResult").Value = (int)outputChild.UpdateNode();
-            else
-                nd.GetRuntime<int>("OutputResult").Value = (int)State.Success;
+            // 不在异步回调中驱动子节点（Context 已解绑，PropertyPort 读写不安全）
+            // 子节点将由 OnUpdate() 在 Context 绑定期间安全驱动
         };
 
         // 存储回调引用到 RuntimeProperties

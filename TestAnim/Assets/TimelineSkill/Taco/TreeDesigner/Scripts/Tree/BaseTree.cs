@@ -146,32 +146,22 @@ namespace TreeDesigner
         // ── Blackboard 绑定 ──
 
         /// <summary>
-        /// 将 BlackboardContext 绑定到 Tree 及其所有节点。
+        /// 将 BlackboardContext 绑定到 Tree。
+        /// 只设置引用，Node/Port 按需通过 Tree.CurrentContext 查找。
         /// 由 CommonBlackboard.BindTree 调用（BeginContext）。
         /// </summary>
         public void BindBlackboardContext(BlackboardContext context, CommonBlackboard blackboard)
         {
             m_CurrentContext = context;
             m_CurrentBlackboard = blackboard;
-
-            // 遍历所有节点，注入对应的 NodeBlackboardData
-            foreach (var node in m_Nodes)
-            {
-                var nodeData = context.GetNodeData(node.GUID);
-                if (nodeData != null)
-                    node.BindBlackboard(nodeData);
-            }
         }
 
         /// <summary>
-        /// 解绑 BlackboardContext。
+        /// 解绑 BlackboardContext。只清除引用。
         /// 由 CommonBlackboard.UnbindTree 调用（EndContext）。
         /// </summary>
         public void UnbindBlackboardContext()
         {
-            foreach (var node in m_Nodes)
-                node.UnbindBlackboard();
-
             m_CurrentContext = null;
             m_CurrentBlackboard = null;
         }

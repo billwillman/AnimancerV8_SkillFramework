@@ -17,7 +17,22 @@ namespace TreeDesigner
         protected RunnableNode m_Child;
         public RunnableNode Child => m_Child;
 
-        Queue<Action> m_Actions = new Queue<Action>();
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            // 用占位 EP 存储 Queue<Action> 引用（per-instance 安全）
+            properties["Actions"] = new StringExposedProperty { Name = "Actions" };
+        }
+
+        private Queue<Action> GetActions()
+        {
+            var nodeData = NodeData;
+            if (nodeData == null) return null;
+            var obj = nodeData.RuntimeProperties["Actions"].GetValue();
+            if (obj is Queue<Action> q) return q;
+            var newQ = new Queue<Action>();
+            nodeData.RuntimeProperties["Actions"].SetValue(newQ);
+            return newQ;
+        }
 
         public override void Init(BaseTree tree)
         {
@@ -44,13 +59,14 @@ namespace TreeDesigner
         protected override void OnStop()
         {
             base.OnStop();
-            if (m_Actions.Count > 0)
-                m_Actions.Dequeue()?.Invoke();
+            var actions = GetActions();
+            if (actions != null && actions.Count > 0)
+                actions.Dequeue()?.Invoke();
         }
         protected override void OnReset()
         {
             base.OnReset();
-            m_Actions.Clear();
+            GetActions()?.Clear();
         }
 
         public override void OnAfterDeserialize()
@@ -65,7 +81,7 @@ namespace TreeDesigner
         public virtual void OnTriggered()
         {
             if (State == State.Running)
-                m_Actions.Enqueue(() => UpdateNode());
+                GetActions()?.Enqueue(() => UpdateNode());
             else
                 UpdateNode();
         }

@@ -66,26 +66,36 @@ namespace TreeDesigner
             m_TargetPorts.Clear();
         }
 
-        /// <summary>Blackboard EP 引用（非泛型基类层），BindBlackboard 时注入</summary>
-        [NonSerialized]
-        protected BaseExposedProperty m_BlackboardEP;
+        /// <summary>
+        /// 按需查找当前 Context 中对应的 EP。
+        /// 访问链路：Port.m_Owner(Node) → Node.Owner(Tree) → Tree.CurrentContext → NodeData → EP
+        /// </summary>
+        protected BaseExposedProperty FindBlackboardEP()
+        {
+            var ctx = m_Owner?.Owner?.CurrentContext;
+            if (ctx == null) return null;
+            var nodeData = ctx.GetNodeData(m_Owner.GUID);
+            if (nodeData == null) return null;
+            BaseExposedProperty ep = null;
+            if (m_Direction == PortDirection.Input)
+                nodeData.InputProperties.TryGetValue(m_Name, out ep);
+            else
+                nodeData.OutputProperties.TryGetValue(m_Name, out ep);
+            return ep;
+        }
 
         public virtual object GetValue()
         {
-            return m_BlackboardEP != null ? m_BlackboardEP.GetValue() : null;
+            var ep = FindBlackboardEP();
+            return ep != null ? ep.GetValue() : null;
         }
         public virtual void SetValue(object value)
         {
-            if (m_BlackboardEP != null)
-                m_BlackboardEP.SetValue(value);
+            var ep = FindBlackboardEP();
+            if (ep != null)
+                ep.SetValue(value);
         }
         public virtual void GetSourceValue() { }
-
-        /// <summary>绑定 Blackboard EP 引用</summary>
-        public void BindBlackboardEP(BaseExposedProperty ep) => m_BlackboardEP = ep;
-
-        /// <summary>解绑 Blackboard EP 引用</summary>
-        public void UnbindBlackboardEP() => m_BlackboardEP = null;
 
         public static implicit operator bool(PropertyPort exists) => exists != null;
     }
@@ -97,17 +107,21 @@ namespace TreeDesigner
         protected T m_Value;
 
         /// <summary>
-        /// 读写值。有 Blackboard EP 时走 EP 副本（per-instance 隔离），否则走 SO 字段。
+        /// 读写值。按需通过 Node→Tree→Context 查找 EP（per-instance 隔离）。
+        /// Context 未绑定时 get 返回 m_Value（编辑器预览），set 静默忽略（绝不写 SO）。
         /// </summary>
         public virtual T Value
         {
-            get => m_BlackboardEP is BaseExposedProperty<T> ep ? ep.Value : m_Value;
+            get
+            {
+                var ep = FindBlackboardEP();
+                return ep is BaseExposedProperty<T> typed ? typed.Value : m_Value;
+            }
             set
             {
-                if (m_BlackboardEP is BaseExposedProperty<T> ep)
-                    ep.Value = value;
-                else
-                    m_Value = value;
+                var ep = FindBlackboardEP();
+                if (ep is BaseExposedProperty<T> typed)
+                    typed.Value = value;
             }
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TreeDesigner
@@ -17,12 +18,24 @@ namespace TreeDesigner
         [SerializeField, PropertyPort(PortDirection.Output, "Result"), ReadOnly]
         FloatPropertyPort m_Result = new FloatPropertyPort();
 
-        float m_CurrentVelocity;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["CurrentVelocity"] = new FloatExposedProperty { Name = "CurrentVelocity" };
+        }
 
         protected override void OutputValue()
         {
             base.OutputValue();
-            m_Result.Value = Mathf.SmoothDamp(m_Current.Value, m_Target.Value, ref m_CurrentVelocity, m_SmoothTime.Value);
+            var nodeData = NodeData;
+            if (nodeData == null)
+            {
+                m_Result.Value = m_Current.Value;
+                return;
+            }
+            var velocityEP = nodeData.GetRuntime<float>("CurrentVelocity");
+            float velocity = velocityEP.Value;
+            m_Result.Value = Mathf.SmoothDamp(m_Current.Value, m_Target.Value, ref velocity, m_SmoothTime.Value);
+            velocityEP.Value = velocity;
         }
     }
 }
