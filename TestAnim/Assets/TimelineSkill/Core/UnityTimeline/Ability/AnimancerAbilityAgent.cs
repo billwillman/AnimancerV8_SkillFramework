@@ -118,10 +118,6 @@ public class AnimancerAbilityAgent
 
         Abilities[ability] = ctx;
         AbilityMap[ability.name] = ability;
-
-        // 立即绑定确保初始状态正确
-        BeginContext(ability);
-        EndContext(ability);  // 补上缺失的 EndContext，避免 Context 残留绑定
     }
 
     public virtual void RemoveAbility(AnimancerAbility ability)
@@ -228,11 +224,14 @@ public class AnimancerAbilityAgent
         bool canStart = abilityToStart.CanStart();
         if (!canStart)
         {
+            EndContext(abilityToStart);
             Starting = false;
             AddToBuffer(abilityToStart);
             Debug.Log($"{abilityToStart} can't start");
             return false;
         }
+
+        EndContext(abilityToStart);
 
         // 取消冲突的激活 Ability
         foreach (var kv in Abilities)
@@ -252,8 +251,8 @@ public class AnimancerAbilityAgent
         BufferedAbilities.Clear();
         BeginContext(abilityToStart);
         abilityToStart.StartAbility();
-        EndContext(abilityToStart);
         OnAbilityStart?.Invoke(abilityToStart);
+        EndContext(abilityToStart);
 
         Starting = false;
         return true;
@@ -278,8 +277,8 @@ public class AnimancerAbilityAgent
         {
             BeginContext(abilityToStop);
             abilityToStop.StopAbility();
-            EndContext(abilityToStop);
             OnAbilityStop?.Invoke(abilityToStop);
+            EndContext(abilityToStop);
         }
         Stopping = false;
     }
