@@ -18,8 +18,6 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
     [DoNotSerialize] public ValueInput FadeDuration;
     [DoNotSerialize] public ValueInput Speed;
 
-    [DoNotSerialize] public ValueOutput AnimancerStateOut;
-
     [Serialize, Inspectable] public NodeCompletionMode CompletionMode = NodeCompletionMode.OnStart;
 
     protected override void Definition()
@@ -32,12 +30,8 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
         FadeDuration = ValueInput<float>("FadeDuration", 0.25f);
         Speed = ValueInput<float>("Speed", 1f);
 
-        // getter 仅作为 fallback：当 flow 中尚未通过 SetValue 赋值时返回 null
-        AnimancerStateOut = ValueOutput<AnimancerState>("AnimancerState", (flow) => null);
-
         Succession(Enter, Exit);
         Succession(Enter, Done);
-        Assignment(Enter, AnimancerStateOut);
     }
 
     private ControlOutput OnEnter(Flow flow)
@@ -54,9 +48,6 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
 
         if (state == null)
             return Exit;
-
-        // 将 state 存入 flow 变量，避免多实例数据冲突
-        flow.SetValue(AnimancerStateOut, state);
 
         state.Speed = speed;
 
