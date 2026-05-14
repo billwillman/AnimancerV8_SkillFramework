@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TreeDesigner
@@ -11,25 +12,30 @@ namespace TreeDesigner
         [SerializeField, PropertyPort(PortDirection.Input, "Int")]
         IntPropertyPort m_Count = new IntPropertyPort();
 
-        int m_CurrentIndex;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["CurrentIndex"] = new IntExposedProperty { Name = "CurrentIndex" };
+        }
 
         protected override void OnStart()
         {
             base.OnStart();
-            m_CurrentIndex = 0;
+            m_NodeData.GetRuntime<int>("CurrentIndex").Value = 0;
         }
+
         protected override State OnUpdate()
         {
             if (m_Parent.State != State.Running)
                 return State.None;
 
+            var currentIndex = m_NodeData.GetRuntime<int>("CurrentIndex");
             State childState = m_Child.UpdateNode();
-            if(childState == State.Running)
+            if (childState == State.Running)
                 return State.Running;
             else
             {
-                m_CurrentIndex++;
-                if (m_CurrentIndex < m_Count.Value)
+                currentIndex.Value++;
+                if (currentIndex.Value < m_Count.Value)
                     return OnUpdate();
                 else
                     return State.Success;

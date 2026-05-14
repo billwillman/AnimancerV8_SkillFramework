@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TreeDesigner
@@ -17,28 +18,32 @@ namespace TreeDesigner
         [SerializeField, PropertyPort(PortDirection.Input, "Frame"), ShowIf("m_WaitType", WaitType.Frame)]
         IntPropertyPort m_Frame = new IntPropertyPort();
 
-        float m_CurrentTime;
-        int m_CurrentFrame;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["CurrentTime"] = new FloatExposedProperty { Name = "CurrentTime" };
+            properties["CurrentFrame"] = new IntExposedProperty { Name = "CurrentFrame" };
+        }
 
         protected override void OnStart()
         {
             base.OnStart();
-            m_CurrentTime = 0;
-            m_CurrentFrame = 0;
+            m_NodeData.GetRuntime<float>("CurrentTime").Value = 0;
+            m_NodeData.GetRuntime<int>("CurrentFrame").Value = 0;
         }
+
         protected override State OnUpdate()
         {
             if (m_Parent.State != State.Running)
                 return State.None;
 
-            if (m_WaitType == WaitType.Time && m_CurrentTime < m_Time.Value)
+            if (m_WaitType == WaitType.Time && m_NodeData.GetRuntime<float>("CurrentTime").Value < m_Time.Value)
             {
-                m_CurrentTime += Time.deltaTime;
+                m_NodeData.GetRuntime<float>("CurrentTime").Value += UnityEngine.Time.deltaTime;
                 return State.Running;
             }
-            else if (m_WaitType == WaitType.Frame && m_CurrentFrame < m_Frame.Value)
+            else if (m_WaitType == WaitType.Frame && m_NodeData.GetRuntime<int>("CurrentFrame").Value < m_Frame.Value)
             {
-                m_CurrentFrame++;
+                m_NodeData.GetRuntime<int>("CurrentFrame").Value++;
                 return State.Running;
             }
             return m_Child?.UpdateNode() ?? State.Success;

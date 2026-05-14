@@ -49,6 +49,18 @@ namespace TreeDesigner
         public bool IsValid { get; private set; }
         public object User { get; private set; }
 
+        // ── Blackboard 运行时引用 ──
+
+        [NonSerialized]
+        protected BlackboardContext m_CurrentContext;
+        /// <summary>当前绑定的 per-Tree BlackboardContext（BeginContext 时设置）</summary>
+        public BlackboardContext CurrentContext => m_CurrentContext;
+
+        [NonSerialized]
+        protected CommonBlackboard m_CurrentBlackboard;
+        /// <summary>当前绑定的 CommonBlackboard 组件引用</summary>
+        public CommonBlackboard CurrentBlackboard => m_CurrentBlackboard;
+
         public virtual void InitTree(object user)
         {
             ID = GetInstanceID();
@@ -111,15 +123,57 @@ namespace TreeDesigner
 
         public BaseExposedProperty GetExposedProperty(string name)
         {
-            if (m_NameExposedPropertyMap.TryGetValue(name, out BaseExposedProperty exposedProperty))
-                return exposedProperty;
+            // 1. per-tree 运行时 EP（克隆 + 注入）
+            if (m_CurrentContext != null
+                && m_CurrentContext.EPMap.TryGetValue(name, out var ctxEP))
+                return ctxEP;
+            // 2. CommonBlackboard 全局变量
+            if (m_CurrentBlackboard != null)
+            {
+                var gv = m_CurrentBlackboard.GetVariable(name);
+                if (gv != null) return gv;
+            }
+            // 3. SO 模板默认值
+            if (m_NameExposedPropertyMap.TryGetValue(name, out var ep))
+                return ep;
             return null;
         }
         public T GetExposedProperty<T>(string name) where T : BaseExposedProperty
         {
-            if (m_NameExposedPropertyMap.TryGetValue(name, out BaseExposedProperty exposedProperty))
-                return exposedProperty as T;
-            return null;
+            return GetExposedProperty(name) as T;
+        }
+
+        // ── Blackboard 绑定 ──
+
+        /// <summary>
+        /// 将 BlackboardContext 绑定到 Tree 及其所有节点。
+        /// 由 CommonBlackboard.BindTree 调用（BeginContext）。
+        /// </summary>
+        public void BindBlackboardContext(BlackboardContext context, CommonBlackboard blackboard)
+        {
+            m_CurrentContext = context;
+            m_CurrentBlackboard = blackboard;
+
+            // 遍历所有节点，注入对应的 NodeBlackboardData
+            foreach (var node in m_Nodes)
+            {
+                var nodeData = context.GetNodeData(node.GUID);
+                if (nodeData != null)
+                    node.BindBlackboard(nodeData);
+            }
+        }
+
+        /// <summary>
+        /// 解绑 BlackboardContext。
+        /// 由 CommonBlackboard.UnbindTree 调用（EndContext）。
+        /// </summary>
+        public void UnbindBlackboardContext()
+        {
+            foreach (var node in m_Nodes)
+                node.UnbindBlackboard();
+
+            m_CurrentContext = null;
+            m_CurrentBlackboard = null;
         }
     }
 }

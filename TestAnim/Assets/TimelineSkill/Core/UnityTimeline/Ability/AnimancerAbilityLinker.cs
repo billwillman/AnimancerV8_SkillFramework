@@ -77,31 +77,35 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 
     public AnimancerComponent AnimancerComponent { get; private set; }
 
-    /// <summary>
-    /// 缓存的 SkillCharacterController，避免重复 GetComponent
-    /// </summary>
     public SkillCharacterController SkillCharacterController { get; private set; }
+
+    /// <summary>角色上的 CommonBlackboard 组件</summary>
+    public TreeDesigner.CommonBlackboard CommonBlackboard { get; private set; }
 
     public event Action<AnimancerAbility> OnAbilityStart;
     public event Action<AnimancerAbility> OnAbilityStop;
 
-    public event Action OnAbilityReady; // 都准备好了
+    public event Action OnAbilityReady;
 
     private bool m_IsReady = false;
 
-    public bool IsReady => m_IsReady; // 是否准备好
+    public bool IsReady => m_IsReady;
 
-    /// <summary>
-    /// 获取输入绑定列表（只读）
-    /// </summary>
     public IReadOnlyList<InputAbilityBinding> InputBindings => m_InputBindings;
 
     private void Awake()
     {
         AnimancerComponent = GetComponent<AnimancerComponent>();
         SkillCharacterController = GetComponent<SkillCharacterController>();
+
+        // 初始化 CommonBlackboard
+        CommonBlackboard = GetComponent<TreeDesigner.CommonBlackboard>();
+        if (CommonBlackboard == null)
+            CommonBlackboard = gameObject.AddComponent<TreeDesigner.CommonBlackboard>();
+
         AnimancerAbilityAgent = new AnimancerAbilityAgent();
         AnimancerAbilityAgent.Owner = this;
+        AnimancerAbilityAgent.Blackboard = CommonBlackboard;
     }
 
     private void Start()
@@ -118,8 +122,6 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                 if (ability != null)
                 {
                     AnimancerAbilityAgent.AddAbility(ability);
-                    ability.SetContextAnimancerComponent(AnimancerComponent);
-                    ability.SetContextAgent(AnimancerAbilityAgent);
                 }
             }
         }
@@ -340,8 +342,6 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         if (ability != null && AnimancerAbilityAgent != null)
         {
             AnimancerAbilityAgent.AddAbility(ability);
-            ability.SetContextAnimancerComponent(AnimancerComponent);
-            ability.SetContextAgent(AnimancerAbilityAgent);
 
             var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
             if (category == null)

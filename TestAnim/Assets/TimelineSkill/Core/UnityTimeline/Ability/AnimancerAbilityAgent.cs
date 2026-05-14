@@ -8,53 +8,14 @@ using EasyCharacterMovement;
 using UnityTimeline;
 
 /// <summary>
-/// 单个 RunnableNode 的 per-instance 快照：执行状态 + 节点自定义状态字段。
-/// </summary>
-public class NodeSnapshot
-{
-    public State State;
-    /// <summary>
-    /// 节点子类的自定义 [NonSerialized] 字段（懒分配）。
-    /// 无自定义状态的节点此字段为 null，避免不必要的内存分配。
-    /// </summary>
-    public Dictionary<string, object> Custom;
-}
-
-/// <summary>
-/// 单个 Ability 在本角色实例上的运行时数据（per-instance，不存放在 SO 上）
-/// </summary>
-public class AbilityContext
-{
-    /// <summary>该 Ability 在本角色上是否激活</summary>
-    public BoolExposedProperty  IsActive = new BoolExposedProperty()  { Name = "Active"   };
-    /// <summary>该 Ability 在本角色上已运行的时长</summary>
-    public FloatExposedProperty Duration = new FloatExposedProperty() { Name = "Duration" };
-
-    // ── 角色组件直接引用（由 AddAbility 时初始化，BeginContext 时注入到 SO）──
-    public AnimancerComponent        AnimancerComponent;
-    public Character                  Character;
-    public SkillCharacterController   SkillController;
-
-    /// <summary>
-    /// 用户自定义 EP 的 per-instance 副本（含 IsActive / Duration）。
-    /// Key = EP.Name，由 AddAbility 时从 SO 克隆初始化。
-    /// </summary>
-    public Dictionary<string, BaseExposedProperty> EPMap = new Dictionary<string, BaseExposedProperty>();
-
-    /// <summary>
-    /// per-instance 节点快照（GUID → NodeSnapshot）。
-    /// 由 BeginContext/EndContext 做 save-restore，同时覆盖 m_State 和自定义字段。
-    /// </summary>
-    public Dictionary<string, NodeSnapshot> NodeStateMap = new Dictionary<string, NodeSnapshot>();
-}
-
-/// <summary>
-/// Animancer Ability 的运行管理器，复用 AbilityRunner 的全部 Tag 阻塞/取消/缓冲逻辑
+/// Animancer Ability 的运行管理器。
+/// Blackboard 模式：BeginContext 仅绑定 BlackboardContext，EndContext 仅解绑。
+/// 所有运行时数据存在 CommonBlackboard 中，SO 完全只读。
 /// </summary>
 public class AnimancerAbilityAgent
 {
-    /// <summary>Key = Ability SO，Value = 本角色对该 Ability 的运行时上下文</summary>
-    public Dictionary<AnimancerAbility, AbilityContext> Abilities = new Dictionary<AnimancerAbility, AbilityContext>();
+    /// <summary>Key = Ability SO，Value = 对应的 BlackboardContext（由 CommonBlackboard 管理）</summary>
+    public Dictionary<AnimancerAbility, BlackboardContext> Abilities = new Dictionary<AnimancerAbility, BlackboardContext>();
     public Dictionary<string, AnimancerAbility> AbilityMap = new Dictionary<string, AnimancerAbility>();
 
     public event Action<AnimancerAbility> OnAbilityStart;
@@ -94,11 +55,11 @@ public class AnimancerAbilityAgent
 
     public AnimancerAbilityAgent() { }
 
-    /// <summary>默认 Ability 名称，由 AnimancerAbilityLinker 在初始化时设置</summary>
     public string DefaultAbilityName { get; set; }
-
-    /// <summary>Agent 的所有者（Linker），由 Linker 在初始化时设置</summary>
     public IAnimancerAbilityAgentOwner Owner { get; set; }
+
+    /// <summary>CommonBlackboard 组件引用，由 Linker 注入</summary>
+    public CommonBlackboard Blackboard { get; set; }
 
     public virtual void Init()
     {
@@ -110,12 +71,14 @@ public class AnimancerAbilityAgent
     {
         foreach (var kv in Abilities)
         {
-            if (kv.Value.IsActive.Value)
+            var activeEP = kv.Value.EPMap.TryGetValue("Active", out var ep) ? ep as BoolExposedProperty : null;
+            if (activeEP != null && activeEP.Value)
             {
-                BeginContext(kv.Key, kv.Value);
+                BeginContext(kv.Key);
                 kv.Key.StopAbility();
-                EndContext(kv.Key, kv.Value);
+                EndContext(kv.Key);
             }
+            Blackboard?.UnregisterTree(kv.Key);
             kv.Key.DisposeTree();
         }
         Abilities.Clear();
@@ -127,40 +90,44 @@ public class AnimancerAbilityAgent
         if (Abilities.ContainsKey(ability)) return;
 
         ability.InitTree(this);
-        var ctx = new AbilityContext();
 
-        // 克隆所有 SO 上的用户 EP 到 per-instance EPMap
-        foreach (var ep in ability.ExposedProperties)
-            ctx.EPMap[ep.Name] = CloneEP(ep);
+        // 通过 CommonBlackboard 注册 Tree，创建 BlackboardContext + 克隆 SO EP
+        var ctx = Blackboard.RegisterTree(ability);
 
-        // 让 EPMap 里的 Active / Duration 指向 ctx 的专用实例，保持一致
-        ctx.EPMap["Active"]   = ctx.IsActive;
-        ctx.EPMap["Duration"] = ctx.Duration;
+        // 注入上下文 EP（Agent、AnimancerComponent、Character、SkillController）
+        var linker = Owner as AnimancerAbilityLinker;
+        ctx.EPMap["Agent"] = new AnimancerAbilityAgentExposedProperty { Name = "Agent", Value = this };
 
-        // 初始化节点快照（State = None，无自定义状态）
-        foreach (var node in ability.Nodes)
-            if (node is RunnableNode)
-                ctx.NodeStateMap[node.GUID] = new NodeSnapshot { State = State.None };
-
-        // 初始化角色组件引用
-        var linkerForInit = Owner as AnimancerAbilityLinker;
-        if (linkerForInit?.AnimancerComponent != null)
+        if (linker?.AnimancerComponent != null)
         {
-            ctx.AnimancerComponent = linkerForInit.AnimancerComponent;
-            ctx.Character          = linkerForInit.AnimancerComponent.GetComponent<Character>();
-            ctx.SkillController    = linkerForInit.AnimancerComponent.GetComponent<SkillCharacterController>();
+            ctx.EPMap["AnimancerComponent"] = new AnimancerComponentExposedProperty
+                { Name = "AnimancerComponent", Value = linker.AnimancerComponent };
+
+            var character = linker.AnimancerComponent.GetComponent<Character>();
+            if (character != null)
+                ctx.EPMap["Character"] = new CharacterExposedProperty { Name = "Character", Value = character };
+
+            var skillController = linker.AnimancerComponent.GetComponent<SkillCharacterController>();
+            if (skillController != null)
+                ctx.EPMap["SkillController"] = new SkillCharacterControllerExposedProperty
+                    { Name = "SkillController", Value = skillController };
         }
 
-        Abilities[ability] = ctx;
-        AbilityMap.Add(ability.name, ability);
+        // 确保 Active / Duration EP 存在于 EPMap（RegisterTree 已从 SO 克隆）
+        // 无需额外处理
 
-        // 立即绑定，确保初始状态正确
-        BeginContext(ability, ctx);
+        Abilities[ability] = ctx;
+        AbilityMap[ability.name] = ability;
+
+        // 立即绑定确保初始状态正确
+        BeginContext(ability);
     }
 
     public virtual void RemoveAbility(AnimancerAbility ability)
     {
         if (!Abilities.ContainsKey(ability)) return;
+        EndContext(ability);
+        Blackboard?.UnregisterTree(ability);
         ability.DisposeTree();
         Abilities.Remove(ability);
         AbilityMap.Remove(ability.name);
@@ -179,9 +146,18 @@ public class AnimancerAbilityAgent
         }
     }
 
-    /// <summary>获取 Ability 的运行时上下文，若不存在则返回 null</summary>
-    public AbilityContext GetContext(AnimancerAbility ability)
+    public BlackboardContext GetContext(AnimancerAbility ability)
         => Abilities.TryGetValue(ability, out var ctx) ? ctx : null;
+
+    /// <summary>判断指定 Ability 是否激活（从 Blackboard EPMap 读取）</summary>
+    public bool IsAbilityActive(AnimancerAbility ability)
+    {
+        if (Abilities.TryGetValue(ability, out var ctx)
+            && ctx.EPMap.TryGetValue("Active", out var ep)
+            && ep is BoolExposedProperty activeEP)
+            return activeEP.Value;
+        return false;
+    }
 
     public virtual bool TryStartAbility(string name)
     {
@@ -200,7 +176,7 @@ public class AnimancerAbilityAgent
 
         Starting = true;
 
-        // RequiredTags 检查（不涉及树执行，无需 Begin/End）
+        // RequiredTags 检查
         foreach (var requiredTag in abilityToStart.RequiredTags.Tags)
         {
             bool isChild = false;
@@ -229,10 +205,10 @@ public class AnimancerAbilityAgent
             }
         }
 
-        // 检查现有激活 Ability 是否阻止启动（直接读 ctx，无需 Begin/End）
+        // 检查现有激活 Ability 是否阻止启动
         foreach (var kv in Abilities)
         {
-            if (kv.Value.IsActive.Value && abilityToStart.AbilityTags.PartChildOf(kv.Key.BlockAbilitiesWithTag))
+            if (IsAbilityActive(kv.Key) && abilityToStart.AbilityTags.PartChildOf(kv.Key.BlockAbilitiesWithTag))
             {
                 Starting = false;
                 AddToBuffer(abilityToStart);
@@ -241,13 +217,13 @@ public class AnimancerAbilityAgent
             }
         }
 
-        // CanStart 检查（ValueNode 计算，不改变 RunnableNode.m_State，只需 BeginContext）
-        if (!Abilities.TryGetValue(abilityToStart, out var startCtx))
+        // CanStart 检查
+        if (!Abilities.ContainsKey(abilityToStart))
         {
             Starting = false;
             return false;
         }
-        BeginContext(abilityToStart, startCtx);
+        BeginContext(abilityToStart);
         bool canStart = abilityToStart.CanStart();
         if (!canStart)
         {
@@ -257,14 +233,14 @@ public class AnimancerAbilityAgent
             return false;
         }
 
-        // 取消冲突的激活 Ability（CancelAbility 会执行 UpdateNode，需要 Begin/End）
+        // 取消冲突的激活 Ability
         foreach (var kv in Abilities)
         {
-            if (kv.Value.IsActive.Value && kv.Key.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
+            if (IsAbilityActive(kv.Key) && kv.Key.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
             {
-                BeginContext(kv.Key, kv.Value);
+                BeginContext(kv.Key);
                 kv.Key.CancelAbility(abilityToStart);
-                EndContext(kv.Key, kv.Value);
+                EndContext(kv.Key);
                 TryStopAbility(kv.Key);
                 Debug.Log($"{kv.Key} is canceled by {abilityToStart}");
                 break;
@@ -273,9 +249,9 @@ public class AnimancerAbilityAgent
 
         // 启动目标 Ability
         BufferedAbilities.Clear();
-        BeginContext(abilityToStart, startCtx);
+        BeginContext(abilityToStart);
         abilityToStart.StartAbility();
-        EndContext(abilityToStart, startCtx);
+        EndContext(abilityToStart);
         OnAbilityStart?.Invoke(abilityToStart);
 
         Starting = false;
@@ -297,11 +273,11 @@ public class AnimancerAbilityAgent
         }
 
         Stopping = true;
-        if (Abilities.TryGetValue(abilityToStop, out var ctx) && ctx.IsActive.Value)
+        if (IsAbilityActive(abilityToStop))
         {
-            BeginContext(abilityToStop, ctx);
+            BeginContext(abilityToStop);
             abilityToStop.StopAbility();
-            EndContext(abilityToStop, ctx);
+            EndContext(abilityToStop);
             OnAbilityStop?.Invoke(abilityToStop);
         }
         Stopping = false;
@@ -318,8 +294,8 @@ public class AnimancerAbilityAgent
 
         foreach (var kv in Abilities)
         {
-            BeginContext(kv.Key, kv.Value);
-            if (kv.Value.IsActive.Value)
+            BeginContext(kv.Key);
+            if (IsAbilityActive(kv.Key))
             {
                 kv.Key.UpdateAbility(deltaTime);
             }
@@ -327,50 +303,20 @@ public class AnimancerAbilityAgent
             {
                 kv.Key.InactiveUpdate();
             }
-            EndContext(kv.Key, kv.Value);
+            EndContext(kv.Key);
         }
     }
 
-    // ── Context Bind / Save ───────────────────────────────────────────────────
+    // ── Blackboard Context Bind ──
 
-    /// <summary>
-    /// 执行前调用：将 per-instance EP 值写入 SO + 注入角色组件引用 + 恢复节点状态。
-    /// FlushEPsToSO 确保 ExposedPropertyNode 等持有 SO EP 直接引用的节点
-    /// 读到当前角色的正确值，彻底封堵 ExposedProperty 共享污染漏洞。
-    /// Unity 单线程保证各角色调用顺序执行，此模式可安全隔离共享 SO 的运行态。
-    /// </summary>
-    void BeginContext(AnimancerAbility ability, AbilityContext ctx)
+    void BeginContext(AnimancerAbility ability)
     {
-        ability.FlushEPsToSO(ctx.EPMap);
-        ability.SetContextAnimancerComponent(ctx.AnimancerComponent, ctx.Character, ctx.SkillController);
-        ability.SetContextAgent(this);
-        ability.RestoreNodeStates(ctx.NodeStateMap);
+        Blackboard?.BindTree(ability);
     }
 
-    /// <summary>
-    /// 执行后调用：保存节点状态 + 将 SO EP 最新值读回 per-instance EPMap。
-    /// ReadEPsFromSO 使 ctx.IsActive / ctx.Duration 等 per-instance EP 保持同步，
-    /// 供下次 BeginContext flush 及 Update 等直接访问路径使用。
-    /// </summary>
-    void EndContext(AnimancerAbility ability, AbilityContext ctx)
+    void EndContext(AnimancerAbility ability)
     {
-        ability.SaveNodeStates(ctx.NodeStateMap);
-        ability.ReadEPsFromSO(ctx.EPMap);
-    }
-
-    // ── EP Clone Helper ───────────────────────────────────────────────────────
-
-    /// <summary>
-    /// 克隆单个 EP：创建同类型新实例并复制 Name / GUID / Value。
-    /// 对值类型 T（bool, float, int, Vector3 等）等效深拷贝。
-    /// </summary>
-    static BaseExposedProperty CloneEP(BaseExposedProperty source)
-    {
-        var clone = (BaseExposedProperty)Activator.CreateInstance(source.GetType());
-        clone.Name = source.Name;
-        clone.GUID = source.GUID;
-        clone.SetValue(source.GetValue());
-        return clone;
+        Blackboard?.UnbindTree(ability);
     }
 }
 

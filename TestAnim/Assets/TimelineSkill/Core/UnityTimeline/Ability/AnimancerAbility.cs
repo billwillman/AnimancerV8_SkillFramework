@@ -9,7 +9,6 @@ using EasyCharacterMovement;
 using UnityEditor;
 #endif
 
-// SkillCharacterController 定义在 UnityTimeline 命名空间，本文件在全局命名空间需显式引入
 using UnityTimeline;
 
 [AcceptableNodePaths("Character", "AnimancerAbility")]
@@ -35,113 +34,41 @@ public partial class AnimancerAbility : OneRootTree
     protected string m_OnStopGUID;
     public string OnStopGUID { get => m_OnStopGUID; set => m_OnStopGUID = value; }
 
-    [NonSerialized]
-    private AnimancerAbilityAgent m_Agent;
-    /// <summary>
-    /// 运行时 Agent 引用，由 Linker 在运行时直接注入
-    /// </summary>
-    public AnimancerAbilityAgent Runner => m_Agent;
+    // ── 上下文数据通过 GetExposedProperty 从 Blackboard EPMap 读取 ──
 
-    /// <summary>
-    /// 由 Linker / Agent 在运行时调用，直接注入 Agent 引用
-    /// </summary>
-    public void SetContextAgent(AnimancerAbilityAgent agent) => m_Agent = agent;
+    /// <summary>运行时 Agent 引用，从 Blackboard EPMap 获取</summary>
+    public AnimancerAbilityAgent Runner
+        => GetExposedProperty<AnimancerAbilityAgentExposedProperty>("Agent")?.Value;
 
-    [NonSerialized]
-    private AnimancerComponent m_AnimancerComponent;
-    /// <summary>
-    /// 运行时 AnimancerComponent 引用，由 AnimancerAbilityLinker 直接注入
-    /// </summary>
-    public AnimancerComponent AnimancerComponent => m_AnimancerComponent;
+    /// <summary>运行时 AnimancerComponent 引用，从 Blackboard EPMap 获取</summary>
+    public AnimancerComponent AnimancerComponent
+        => GetExposedProperty<AnimancerComponentExposedProperty>("AnimancerComponent")?.Value;
 
-    /// <summary>
-    /// 由 BeginContext 注入 AnimancerComponent 及可选的角色组件引用。
-    /// character / skillController 若不传则默认为 null。
-    /// </summary>
-    public void SetContextAnimancerComponent(AnimancerComponent animancerComponent,
-        Character character = null, SkillCharacterController skillController = null)
+    /// <summary>运行时 Character 组件引用，从 Blackboard EPMap 获取</summary>
+    public Character Character
+        => GetExposedProperty<CharacterExposedProperty>("Character")?.Value;
+
+    /// <summary>运行时 SkillCharacterController 引用，从 Blackboard EPMap 获取</summary>
+    public SkillCharacterController SkillCharacterController
+        => GetExposedProperty<SkillCharacterControllerExposedProperty>("SkillController")?.Value;
+
+    /// <summary>该技能是否激活</summary>
+    public bool Active
     {
-        m_AnimancerComponent = animancerComponent;
-        m_Character          = character;
-        m_SkillController    = skillController;
-    }
-
-    private Character m_Character;
-    public Character Character => m_Character;
-
-    private SkillCharacterController m_SkillController;
-    public SkillCharacterController SkillCharacterController => m_SkillController;
-
-    protected BoolExposedProperty m_Active;
-    public bool Active => m_Active != null && m_Active.Value;
-
-    protected FloatExposedProperty m_Duration;
-    public float Duration => m_Duration?.Value ?? 0f;
-
-    /// <summary>
-    /// BeginContext 调用：将 per-instance EPMap 的值写入 SO 的 m_ExposedProperties，
-    /// 使 ExposedPropertyNode 等持有 SO EP 直接引用的节点读到当前角色的正确值。
-    /// </summary>
-    public void FlushEPsToSO(Dictionary<string, BaseExposedProperty> epMap)
-    {
-        foreach (var ep in m_ExposedProperties)
-            if (epMap.TryGetValue(ep.Name, out var instanceEP))
-                ep.SetValue(instanceEP.GetValue());
-    }
-
-    /// <summary>
-    /// EndContext 调用：将执行后 SO EP 的最新值读回 per-instance EPMap，
-    /// 供下次 BeginContext 再次 flush 使用。
-    /// </summary>
-    public void ReadEPsFromSO(Dictionary<string, BaseExposedProperty> epMap)
-    {
-        foreach (var ep in m_ExposedProperties)
-            if (epMap.TryGetValue(ep.Name, out var instanceEP))
-                instanceEP.SetValue(ep.GetValue());
-    }
-
-    /// <summary>
-    /// 从上下文快照字典恢复所有 RunnableNode 的 m_State 及自定义状态（BeginContext 调用）
-    /// </summary>
-    public void RestoreNodeStates(Dictionary<string, NodeSnapshot> stateMap)
-    {
-        foreach (var kv in stateMap)
-            if (m_GUIDNodeMap.TryGetValue(kv.Key, out var node) && node is RunnableNode rn)
-            {
-                rn.State = kv.Value.State;
-                if (kv.Value.Custom != null)
-                    rn.RestoreContextState(kv.Value.Custom);
-            }
-    }
-
-    /// <summary>
-    /// 将所有 RunnableNode 的 m_State 及自定义状态保存回上下文快照字典（EndContext 调用）。
-    /// 依赖 HasContextState 短路：无自定义状态的节点完全跳过字典分配，消除每帧 GC 压力。
-    /// snap.Custom 字典在有状态节点首次保存时才创建，后续帧复用同一实例。
-    /// </summary>
-    public void SaveNodeStates(Dictionary<string, NodeSnapshot> stateMap)
-    {
-        foreach (var kv in m_GUIDNodeMap)
+        get
         {
-            if (kv.Value is not RunnableNode rn) continue;
+            var ep = GetExposedProperty<BoolExposedProperty>("Active");
+            return ep != null && ep.Value;
+        }
+    }
 
-            if (!stateMap.TryGetValue(kv.Key, out var snap))
-                snap = stateMap[kv.Key] = new NodeSnapshot();
-
-            snap.State = rn.State;
-
-            if (rn.HasContextState)
-            {
-                // snap.Custom 首次为 null，之后复用同一字典实例，仅清空内容
-                if (snap.Custom == null) snap.Custom = new Dictionary<string, object>();
-                else snap.Custom.Clear();
-                rn.SaveContextState(snap.Custom);
-            }
-            else
-            {
-                // 无自定义状态：确保 Custom 为 null（例如节点类型在运行时发生变化）
-                snap.Custom = null;
-            }
+    /// <summary>该技能已运行的时长</summary>
+    public float Duration
+    {
+        get
+        {
+            var ep = GetExposedProperty<FloatExposedProperty>("Duration");
+            return ep?.Value ?? 0f;
         }
     }
 
@@ -160,20 +87,13 @@ public partial class AnimancerAbility : OneRootTree
             m_OnStart = m_GUIDNodeMap[m_OnStartGUID] as EnterNode;
         if (!string.IsNullOrEmpty(m_OnStopGUID))
             m_OnStop = m_GUIDNodeMap[m_OnStopGUID] as EnterNode;
-
-        m_Active   = GetExposedProperty<BoolExposedProperty>("Active");
-        m_Duration = GetExposedProperty<FloatExposedProperty>("Duration");
     }
 
     public override void DisposeTree()
     {
         base.DisposeTree();
-        m_OnStart            = null;
-        m_OnStop             = null;
-        m_Agent              = null;
-        m_AnimancerComponent = null;
-        m_Character          = null;
-        m_SkillController    = null;
+        m_OnStart = null;
+        m_OnStop  = null;
     }
 
     public override void OnReset()
@@ -194,28 +114,31 @@ public partial class AnimancerAbility : OneRootTree
     {
         if (AnimancerAbilityCanStart != null)
             return AnimancerAbilityCanStart.GetValue();
-        else
-            return true;
+        return true;
     }
 
     public virtual void StartAbility()
     {
-        m_Active.Value = true;
-        m_Duration.Value = 0;
+        var activeEP = GetExposedProperty<BoolExposedProperty>("Active");
+        var durationEP = GetExposedProperty<FloatExposedProperty>("Duration");
+        if (activeEP != null) activeEP.Value = true;
+        if (durationEP != null) durationEP.Value = 0;
         ResetTree();
         OnStartAbility();
     }
 
     public virtual void StopAbility()
     {
-        m_Active.Value = false;
+        var activeEP = GetExposedProperty<BoolExposedProperty>("Active");
+        if (activeEP != null) activeEP.Value = false;
         OnStopAbility();
         OnStop();
     }
 
     public virtual void UpdateAbility(float deltaTime)
     {
-        m_Duration.Value += deltaTime;
+        var durationEP = GetExposedProperty<FloatExposedProperty>("Duration");
+        if (durationEP != null) durationEP.Value += deltaTime;
         UpdateTree(deltaTime);
     }
 
@@ -230,7 +153,7 @@ public partial class AnimancerAbility : OneRootTree
     {
         foreach (var tag in ActiveTags.Tags)
         {
-            Runner.ActiveTags.Add(tag);
+            Runner?.ActiveTags.Add(tag);
         }
         m_OnStart?.UpdateNode();
     }
@@ -239,7 +162,7 @@ public partial class AnimancerAbility : OneRootTree
     {
         foreach (var tag in ActiveTags.Tags)
         {
-            Runner.ActiveTags.Remove(tag);
+            Runner?.ActiveTags.Remove(tag);
         }
         m_OnStop?.UpdateNode();
     }

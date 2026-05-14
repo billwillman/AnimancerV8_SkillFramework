@@ -66,12 +66,26 @@ namespace TreeDesigner
             m_TargetPorts.Clear();
         }
 
+        /// <summary>Blackboard EP 引用（非泛型基类层），BindBlackboard 时注入</summary>
+        [NonSerialized]
+        protected BaseExposedProperty m_BlackboardEP;
+
         public virtual object GetValue()
         {
-            return null;
+            return m_BlackboardEP != null ? m_BlackboardEP.GetValue() : null;
         }
-        public virtual void SetValue(object value) { }
+        public virtual void SetValue(object value)
+        {
+            if (m_BlackboardEP != null)
+                m_BlackboardEP.SetValue(value);
+        }
         public virtual void GetSourceValue() { }
+
+        /// <summary>绑定 Blackboard EP 引用</summary>
+        public void BindBlackboardEP(BaseExposedProperty ep) => m_BlackboardEP = ep;
+
+        /// <summary>解绑 Blackboard EP 引用</summary>
+        public void UnbindBlackboardEP() => m_BlackboardEP = null;
 
         public static implicit operator bool(PropertyPort exists) => exists != null;
     }
@@ -81,7 +95,21 @@ namespace TreeDesigner
     {
         [SerializeField]
         protected T m_Value;
-        public virtual T Value { get => m_Value; set => m_Value = value; }
+
+        /// <summary>
+        /// 读写值。有 Blackboard EP 时走 EP 副本（per-instance 隔离），否则走 SO 字段。
+        /// </summary>
+        public virtual T Value
+        {
+            get => m_BlackboardEP is BaseExposedProperty<T> ep ? ep.Value : m_Value;
+            set
+            {
+                if (m_BlackboardEP is BaseExposedProperty<T> ep)
+                    ep.Value = value;
+                else
+                    m_Value = value;
+            }
+        }
 
         [NonSerialized]
         protected PropertyPort<T> m_SameTypeSourcePropertyPort;
@@ -127,19 +155,19 @@ namespace TreeDesigner
         }
         public override object GetValue()
         {
-            return m_Value;
+            return Value;
         }
         public override void SetValue(object value)
         {
-            m_Value = (T)value;
+            Value = (T)value;
         }
         public override void GetSourceValue()
         {
             if (SameTypeSourcePropertyPort)
-                m_Value = m_SameTypeSourcePropertyPort.Value;
+                Value = m_SameTypeSourcePropertyPort.Value;
 
             if (m_DefferentTypeSourcePropertyPort)
-                m_Value = GetDefferentTypeSourceValue(m_DefferentTypeSourcePropertyPort.GetValue());
+                Value = GetDefferentTypeSourceValue(m_DefferentTypeSourcePropertyPort.GetValue());
         }
 
         public virtual T GetDefferentTypeSourceValue(object value)

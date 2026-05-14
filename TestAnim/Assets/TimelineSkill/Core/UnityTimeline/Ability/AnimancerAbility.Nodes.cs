@@ -162,32 +162,32 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
     [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success, OnEnd=等动画播放完才Success")]
     protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnStart;
 
-    [NonSerialized]
-    protected bool m_Completed = false;
-
-    [NonSerialized]
-    protected bool m_IsFailure = false;
-
     [SerializeField, PropertyPort(PortDirection.Output, "AnimancerState"), TreeDesigner.ReadOnly]
     protected AnimancerStatePropertyPort m_AnimancerState = new AnimancerStatePropertyPort();
+
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["Completed"] = new BoolExposedProperty { Name = "Completed" };
+        properties["IsFailure"] = new BoolExposedProperty { Name = "IsFailure" };
+    }
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_Completed = false;
-        m_IsFailure = false;
+        m_NodeData.GetRuntime<bool>("Completed").Value = false;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 
     protected override State OnUpdate()
     {
-        if (!m_Completed) return State.Running;
-        return m_IsFailure ? State.Failure : State.Success;
+        if (!m_NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
+        return m_NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
     {
-        m_IsFailure = false;
-        m_Completed = false;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
+        m_NodeData.GetRuntime<bool>("Completed").Value = false;
 
         if (Animancer != null)
         {
@@ -196,31 +196,26 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
 
             if (state != null)
             {
-                // 播放成功
                 if (m_CompletionMode == NodeCompletionMode.OnStart)
                 {
-                    // 立即完成模式
-                    m_Completed = true;
+                    m_NodeData.GetRuntime<bool>("Completed").Value = true;
                 }
                 else
                 {
-                    // 等待完成模式：注册 OnEnd 回调，动画结束时标记完成
                     state.Events(this).OnEnd -= OnDone;
                     state.Events(this).OnEnd += OnDone;
                 }
             }
             else
             {
-                // 播放失败(state==null)，返回 Failure
-                m_Completed = true;
-                m_IsFailure = true;
+                m_NodeData.GetRuntime<bool>("Completed").Value = true;
+                m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
             }
         }
         else
         {
-            // Animacer 为空，播放失败，返回 Failure
-            m_Completed = true;
-            m_IsFailure = true;
+            m_NodeData.GetRuntime<bool>("Completed").Value = true;
+            m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
         }
     }
 
@@ -230,22 +225,8 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
         {
             m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
         }
-        m_Completed = true;
-        m_IsFailure = false;
-    }
-
-    public override bool HasContextState => true;
-
-    public override void SaveContextState(Dictionary<string, object> s)
-    {
-        s["c"] = m_Completed;
-        s["f"] = m_IsFailure;
-    }
-
-    public override void RestoreContextState(Dictionary<string, object> s)
-    {
-        m_Completed = s.TryGetValue("c", out var c) && (bool)c;
-        m_IsFailure = s.TryGetValue("f", out var f) && (bool)f;
+        m_NodeData.GetRuntime<bool>("Completed").Value = true;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 }
 
@@ -269,32 +250,32 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
     [SerializeField, ShowInPanel, Tooltip("OnStart=播放成功立即Success, OnEnd=等动画播放完才Success")]
     protected NodeCompletionMode m_CompletionMode = NodeCompletionMode.OnStart;
 
-    [NonSerialized]
-    protected bool m_Completed = false;
-
-    [NonSerialized]
-    protected bool m_IsFailure = false;
-
     [SerializeField, PropertyPort(PortDirection.Output, "AnimancerState"), TreeDesigner.ReadOnly]
     protected AnimancerStatePropertyPort m_AnimancerState = new AnimancerStatePropertyPort();
+
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["Completed"] = new BoolExposedProperty { Name = "Completed" };
+        properties["IsFailure"] = new BoolExposedProperty { Name = "IsFailure" };
+    }
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_Completed = false;
-        m_IsFailure = false;
+        m_NodeData.GetRuntime<bool>("Completed").Value = false;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 
     protected override State OnUpdate()
     {
-        if (!m_Completed) return State.Running;
-        return m_IsFailure ? State.Failure : State.Success;
+        if (!m_NodeData.GetRuntime<bool>("Completed").Value) return State.Running;
+        return m_NodeData.GetRuntime<bool>("IsFailure").Value ? State.Failure : State.Success;
     }
 
     protected override void DoAction()
     {
-        m_IsFailure = false;
-        m_Completed = false;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
+        m_NodeData.GetRuntime<bool>("Completed").Value = false;
 
         if (Animancer != null && m_TransitionAsset != null)
         {
@@ -304,31 +285,26 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
             {
                 state.Speed = m_Speed.Value;
 
-                // 播放成功
                 if (m_CompletionMode == NodeCompletionMode.OnStart)
                 {
-                    // 立即完成模式
-                    m_Completed = true;
+                    m_NodeData.GetRuntime<bool>("Completed").Value = true;
                 }
                 else
                 {
-                    // 等待完成模式：注册 OnEnd 回调，动画结束时标记完成
                     state.Events(this).OnEnd -= OnDone;
                     state.Events(this).OnEnd += OnDone;
                 }
             }
             else
             {
-                // 播放失败(state==null)，返回 Failure
-                m_Completed = true;
-                m_IsFailure = true;
+                m_NodeData.GetRuntime<bool>("Completed").Value = true;
+                m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
             }
         }
         else
         {
-            // Animacer 或 TransitionAsset 为空，播放失败，返回 Failure
-            m_Completed = true;
-            m_IsFailure = true;
+            m_NodeData.GetRuntime<bool>("Completed").Value = true;
+            m_NodeData.GetRuntime<bool>("IsFailure").Value = true;
         }
     }
 
@@ -338,22 +314,8 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         {
             m_AnimancerState.Value.Events(this).OnEnd -= OnDone;
         }
-        m_Completed = true;
-        m_IsFailure = false;
-    }
-
-    public override bool HasContextState => true;
-
-    public override void SaveContextState(Dictionary<string, object> s)
-    {
-        s["c"] = m_Completed;
-        s["f"] = m_IsFailure;
-    }
-
-    public override void RestoreContextState(Dictionary<string, object> s)
-    {
-        m_Completed = s.TryGetValue("c", out var c) && (bool)c;
-        m_IsFailure = s.TryGetValue("f", out var f) && (bool)f;
+        m_NodeData.GetRuntime<bool>("Completed").Value = true;
+        m_NodeData.GetRuntime<bool>("IsFailure").Value = false;
     }
 }
 
@@ -436,24 +398,25 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
      Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
     protected bool m_IgnoreFailure = true;
 
-    [NonSerialized]
-    protected bool m_SetSuccess;
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
+    }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
         var epAnimator = Animancer?.Animator;
         var graphAnimator = state.Graph?.Component?.Animator;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -464,7 +427,7 @@ public class SetAnimatorFloatNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetFloat(m_Key.Value, m_Value.Value);
-        m_SetSuccess = true;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -488,24 +451,25 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
      Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
     protected bool m_IgnoreFailure = true;
 
-    [NonSerialized]
-    protected bool m_SetSuccess;
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
+    }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
         var epAnimator = Animancer?.Animator;
         var graphAnimator = state.Graph?.Component?.Animator;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -516,7 +480,7 @@ public class SetAnimatorIntNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetInteger(m_Key.Value, m_Value.Value);
-        m_SetSuccess = true;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -540,24 +504,25 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
      Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
     protected bool m_IgnoreFailure = true;
 
-    [NonSerialized]
-    protected bool m_SetSuccess;
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
+    }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
         var epAnimator = Animancer?.Animator;
         var graphAnimator = state.Graph?.Component?.Animator;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -568,7 +533,7 @@ public class SetAnimatorBoolNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetBool(m_Key.Value, m_Value.Value);
-        m_SetSuccess = true;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -589,24 +554,25 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
      Tooltip("若启用，无论参数设置是否成功均返回 Success；否则根据实际设置结果返回 Success 或 Failure")]
     protected bool m_IgnoreFailure = true;
 
-    [NonSerialized]
-    protected bool m_SetSuccess;
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["SetSuccess"] = new BoolExposedProperty { Name = "SetSuccess" };
+    }
 
-    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_SetSuccess ? State.Success : State.Failure);
+    public override State ReturnState => m_IgnoreFailure ? State.Success : (m_NodeData.GetRuntime<bool>("SetSuccess").Value ? State.Success : State.Failure);
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
     }
 
     protected override void DoAction()
     {
-        m_SetSuccess = false;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = false;
         var state = m_AnimacerState.Value;
         if (state == null) return;
         if (string.IsNullOrEmpty(m_Key.Value)) return;
-        // 优先通过 EP 获取当前实例的 Animator，避免多实例复用时 State 指向错误组件
         var epAnimator = Animancer?.Animator;
         var graphAnimator = state.Graph?.Component?.Animator;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -617,7 +583,7 @@ public class SetAnimatorTriggerNode : AnimancerAbilityActionNode
         if (animator == null) return;
 
         animator.SetTrigger(m_Key.Value);
-        m_SetSuccess = true;
+        m_NodeData.GetRuntime<bool>("SetSuccess").Value = true;
     }
 }
 
@@ -830,8 +796,18 @@ public class BranchNode : ActionNode
     [NonSerialized]
     protected RunnableNode m_FalseChild;
 
-    [NonSerialized]
-    protected RunnableNode m_ActiveChild;
+    // m_ActiveChild 迁移到 RuntimeProperties[0]（存节点引用）
+
+    public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+    {
+        properties["ActiveChild"] = new StringExposedProperty { Name = "ActiveChild" };
+    }
+
+    private RunnableNode ActiveChild
+    {
+        get => m_NodeData?.RuntimeProperties["ActiveChild"].GetValue() as RunnableNode;
+        set => m_NodeData?.RuntimeProperties["ActiveChild"].SetValue(value);
+    }
 
     public override void Init(BaseTree tree)
     {
@@ -849,7 +825,6 @@ public class BranchNode : ActionNode
         base.Dispose();
         m_TrueChild = null;
         m_FalseChild = null;
-        m_ActiveChild = null;
     }
 
     public override void OnAfterDeserialize()
@@ -859,27 +834,26 @@ public class BranchNode : ActionNode
         m_FalseEdgeGUID = string.Empty;
         m_TrueChild = null;
         m_FalseChild = null;
-        m_ActiveChild = null;
     }
 
     public override void ResetNode()
     {
         base.ResetNode();
-        m_ActiveChild?.ResetNode();
-        m_ActiveChild = null;
+        ActiveChild?.ResetNode();
+        ActiveChild = null;
     }
 
     protected override State OnUpdate()
     {
-        if (m_ActiveChild != null)
-            return m_ActiveChild.UpdateNode();
+        var active = ActiveChild;
+        if (active != null)
+            return active.UpdateNode();
         return State.Success;
     }
 
     protected override void DoAction()
     {
-        // 根据条件选择活跃分支
-        m_ActiveChild = m_Condition.Value ? m_TrueChild : m_FalseChild;
+        ActiveChild = m_Condition.Value ? m_TrueChild : m_FalseChild;
     }
 
 #if UNITY_EDITOR
@@ -915,14 +889,6 @@ public class BranchNode : ActionNode
         }
     }
 #endif
-
-    public override bool HasContextState => true;
-
-    public override void SaveContextState(Dictionary<string, object> s)
-        => s["ac"] = m_ActiveChild;
-
-    public override void RestoreContextState(Dictionary<string, object> s)
-        => m_ActiveChild = s.TryGetValue("ac", out var v) ? v as RunnableNode : null;
 }
 
 #endregion

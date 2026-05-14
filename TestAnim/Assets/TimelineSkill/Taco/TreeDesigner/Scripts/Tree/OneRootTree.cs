@@ -26,8 +26,8 @@ namespace TreeDesigner
 
         public override void OnStart()
         {
-            m_Running = true;
-            m_State = State.Running;
+            Running = true;
+            State = State.Running;
         }
         public override State OnUpdate()
         {
@@ -36,7 +36,7 @@ namespace TreeDesigner
         }
         public override void OnStop()
         {
-            m_Running = false;
+            Running = false;
             OnStopCallback?.Invoke();
         }
         public override void OnReset()

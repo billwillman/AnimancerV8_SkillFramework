@@ -18,23 +18,31 @@ namespace TreeDesigner
         [SerializeField, PropertyPort(PortDirection.Output, "Index", 1), ReadOnly]
         IntPropertyPort m_ElementIndex = new IntPropertyPort();
 
-        IList m_ValueList;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["ValueList"] = new StringExposedProperty { Name = "ValueList" };
+        }
+
+        private IList GetValueList()
+            => m_NodeData.RuntimeProperties["ValueList"].GetValue() as IList;
 
         protected override void OnStart()
         {
             base.OnStart();
             m_ElementIndex.Value = 0;
-            m_ValueList = (IList)m_List.GetValue();
+            m_NodeData.RuntimeProperties["ValueList"].SetValue((IList)m_List.GetValue());
         }
+
         protected override State OnUpdate()
         {
             if (m_Parent.State != State.Running)
                 return State.None;
 
-            m_Element.SetValue(m_ValueList[m_ElementIndex.Value]);
+            var valueList = GetValueList();
+            m_Element.SetValue(valueList[m_ElementIndex.Value]);
             m_Child.UpdateNode();
             m_ElementIndex.Value++;
-            if (m_ElementIndex.Value < m_ValueList.Count)
+            if (m_ElementIndex.Value < valueList.Count)
                 return OnUpdate();
             else
                 return State.Success;

@@ -2,16 +2,21 @@ using System;
 
 namespace TreeDesigner
 {
-    //[AcceptableSubTreeType(typeof(SubTree))]
     public abstract partial class RunnableTree : BaseTree
     {
-        [NonSerialized, ShowInInspector("Running")]
-        protected bool m_Running;
-        public bool Running { get => m_Running; set => m_Running = value; }
+        /// <summary>树是否正在运行，强制走 BlackboardContext。</summary>
+        public bool Running
+        {
+            get => m_CurrentContext.TreeRunning;
+            set => m_CurrentContext.TreeRunning = value;
+        }
 
-        [NonSerialized, ShowInInspector("State")]
-        protected State m_State;
-        public State State { get => m_State; set => m_State = value; }
+        /// <summary>树级执行状态，强制走 BlackboardContext。</summary>
+        public State State
+        {
+            get => m_CurrentContext.TreeState;
+            set => m_CurrentContext.TreeState = value;
+        }
 
         public float DeltaTime { get; private set; }
 
@@ -22,27 +27,29 @@ namespace TreeDesigner
             OnStop();
             base.DisposeTree();
         }
+
         public virtual State UpdateTree(float deltaTime)
         {
             DeltaTime = deltaTime;
 
-            if (!m_Running && m_State == State.None)
+            if (!Running && State == State.None)
             {
                 OnStart();
             }
-            if (m_Running && m_State == State.Running)
+            if (Running && State == State.Running)
             {
-                m_State = OnUpdate();
+                State = OnUpdate();
             }
-            if (m_Running && m_State == State.Success || m_State == State.Failure)
+            if (Running && State == State.Success || State == State.Failure)
             {
                 OnStop();
             }
-            return m_State;
+            return State;
         }
+
         public virtual void ResetTree()
         {
-            m_State = State.None;
+            State = State.None;
             OnReset();
         }
 

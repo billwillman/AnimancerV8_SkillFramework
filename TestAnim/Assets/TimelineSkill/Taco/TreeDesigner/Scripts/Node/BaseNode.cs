@@ -112,6 +112,38 @@ namespace TreeDesigner
             return m_PropertyPortMap.TryGetValue(name, out PropertyPort propertyPort) && (!string.IsNullOrEmpty(propertyPort.InputEdgeGUID) || propertyPort.OutputEdgeGUIDs.Count > 0);
         }
 
+        // ── Blackboard 绑定 ──
+
+        /// <summary>
+        /// 绑定 Blackboard：将 NodeBlackboardData 中的 EP 引用注入到对应的 PropertyPort。
+        /// 由 BaseTree.BindBlackboardContext 遍历调用。
+        /// </summary>
+        public virtual void BindBlackboard(NodeBlackboardData nodeData)
+        {
+            foreach (var kv in m_PropertyPortMap)
+            {
+                var port = kv.Value;
+                BaseExposedProperty ep = null;
+
+                if (port.Direction == PortDirection.Input)
+                    nodeData.InputProperties.TryGetValue(port.Name, out ep);
+                else
+                    nodeData.OutputProperties.TryGetValue(port.Name, out ep);
+
+                if (ep != null)
+                    port.BindBlackboardEP(ep);
+            }
+        }
+
+        /// <summary>
+        /// 解绑 Blackboard：清除所有 PropertyPort 的 EP 引用。
+        /// </summary>
+        public virtual void UnbindBlackboard()
+        {
+            foreach (var kv in m_PropertyPortMap)
+                kv.Value.UnbindBlackboardEP();
+        }
+
         public static implicit operator bool(BaseNode exists) => exists != null;
     }
 }
