@@ -219,9 +219,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.022132
+          m_Value: 0.0105292
         m_OutputEdgeGUID: 38908079-0814-40a7-8944-e33e11fc35a4
-        DeltaTime: 0.022132
+        DeltaTime: 0.0105292
     - rid: 3727631703089086467
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -615,7 +615,7 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 3
+          m_Value: 5.2684383
         m_AirSpeed:
           m_Name: m_AirSpeed
           m_Direction: 0
@@ -799,7 +799,7 @@ MonoBehaviour:
         m_OutputEdgeGUIDs: []
         m_Index: 0
         m_Expanded: 0
-        m_Value: 1.5766644
+        m_Value: 5.2684383
     - rid: 3727631703089086501
       type: {class: FloatPropertyPort, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -820,4 +820,4 @@ MonoBehaviour:
         - 3aa8b9c5-2a11-48f1-9526-1783d980894d
         m_Index: 0
         m_Expanded: 0
-        m_Value: 3
+        m_Value: 5.2684383

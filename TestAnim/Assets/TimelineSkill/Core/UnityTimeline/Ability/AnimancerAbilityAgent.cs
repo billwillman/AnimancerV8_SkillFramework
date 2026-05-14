@@ -334,26 +334,28 @@ public class AnimancerAbilityAgent
     // ── Context Bind / Save ───────────────────────────────────────────────────
 
     /// <summary>
-    /// 执行前调用：注入角色上下文（直接字段）+ EP 重定向 + 恢复节点状态。
+    /// 执行前调用：将 per-instance EP 值写入 SO + 注入角色组件引用 + 恢复节点状态。
+    /// FlushEPsToSO 确保 ExposedPropertyNode 等持有 SO EP 直接引用的节点
+    /// 读到当前角色的正确值，彻底封堵 ExposedProperty 共享污染漏洞。
     /// Unity 单线程保证各角色调用顺序执行，此模式可安全隔离共享 SO 的运行态。
     /// </summary>
     void BeginContext(AnimancerAbility ability, AbilityContext ctx)
     {
+        ability.FlushEPsToSO(ctx.EPMap);
         ability.SetContextAnimancerComponent(ctx.AnimancerComponent, ctx.Character, ctx.SkillController);
         ability.SetContextAgent(this);
-        ability.SetContextActiveEP(ctx.IsActive);
-        ability.SetContextDurationEP(ctx.Duration);
-        ability.SetContextEPMap(ctx.EPMap);
         ability.RestoreNodeStates(ctx.NodeStateMap);
     }
 
     /// <summary>
-    /// 执行后调用：将当前节点状态保存回上下文，清除 EP 重定向。
+    /// 执行后调用：保存节点状态 + 将 SO EP 最新值读回 per-instance EPMap。
+    /// ReadEPsFromSO 使 ctx.IsActive / ctx.Duration 等 per-instance EP 保持同步，
+    /// 供下次 BeginContext flush 及 Update 等直接访问路径使用。
     /// </summary>
     void EndContext(AnimancerAbility ability, AbilityContext ctx)
     {
         ability.SaveNodeStates(ctx.NodeStateMap);
-        ability.SetContextEPMap(null);
+        ability.ReadEPsFromSO(ctx.EPMap);
     }
 
     // ── EP Clone Helper ───────────────────────────────────────────────────────

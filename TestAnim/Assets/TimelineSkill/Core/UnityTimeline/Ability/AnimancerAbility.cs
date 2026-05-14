@@ -74,32 +74,31 @@ public partial class AnimancerAbility : OneRootTree
 
     protected BoolExposedProperty m_Active;
     public bool Active => m_Active != null && m_Active.Value;
-    /// <summary>由 AnimancerAbilityAgent.BeginContext 注入 per-instance EP</summary>
-    public void SetContextActiveEP(BoolExposedProperty ep) => m_Active = ep;
 
     protected FloatExposedProperty m_Duration;
     public float Duration => m_Duration?.Value ?? 0f;
-    /// <summary>由 AnimancerAbilityAgent.BeginContext 注入 per-instance EP</summary>
-    public void SetContextDurationEP(FloatExposedProperty ep) => m_Duration = ep;
 
     /// <summary>
-    /// 用户自定义 EP 的 per-instance 重定向表，由 BeginContext 绑定、EndContext 清除。
-    /// GetExposedProperty 优先从此表返回，使节点图中的 EP 访问读写 per-instance 副本。
+    /// BeginContext 调用：将 per-instance EPMap 的值写入 SO 的 m_ExposedProperties，
+    /// 使 ExposedPropertyNode 等持有 SO EP 直接引用的节点读到当前角色的正确值。
     /// </summary>
-    [NonSerialized]
-    private Dictionary<string, BaseExposedProperty> m_CurrentEPMap;
-
-    public void SetContextEPMap(Dictionary<string, BaseExposedProperty> map)
-        => m_CurrentEPMap = map;
-
-    public new BaseExposedProperty GetExposedProperty(string name)
+    public void FlushEPsToSO(Dictionary<string, BaseExposedProperty> epMap)
     {
-        if (m_CurrentEPMap != null && m_CurrentEPMap.TryGetValue(name, out var ep))
-            return ep;
-        return base.GetExposedProperty(name);
+        foreach (var ep in m_ExposedProperties)
+            if (epMap.TryGetValue(ep.Name, out var instanceEP))
+                ep.SetValue(instanceEP.GetValue());
     }
-    public new T GetExposedProperty<T>(string name) where T : BaseExposedProperty
-        => GetExposedProperty(name) as T;
+
+    /// <summary>
+    /// EndContext 调用：将执行后 SO EP 的最新值读回 per-instance EPMap，
+    /// 供下次 BeginContext 再次 flush 使用。
+    /// </summary>
+    public void ReadEPsFromSO(Dictionary<string, BaseExposedProperty> epMap)
+    {
+        foreach (var ep in m_ExposedProperties)
+            if (epMap.TryGetValue(ep.Name, out var instanceEP))
+                instanceEP.SetValue(ep.GetValue());
+    }
 
     /// <summary>
     /// 从上下文快照字典恢复所有 RunnableNode 的 m_State 及自定义状态（BeginContext 调用）
@@ -116,7 +115,9 @@ public partial class AnimancerAbility : OneRootTree
     }
 
     /// <summary>
-    /// 将所有 RunnableNode 的 m_State 及自定义状态保存回上下文快照字典（EndContext 调用）
+    /// 将所有 RunnableNode 的 m_State 及自定义状态保存回上下文快照字典（EndContext 调用）。
+    /// 依赖 HasContextState 短路：无自定义状态的节点完全跳过字典分配，消除每帧 GC 压力。
+    /// snap.Custom 字典在有状态节点首次保存时才创建，后续帧复用同一实例。
     /// </summary>
     public void SaveNodeStates(Dictionary<string, NodeSnapshot> stateMap)
     {
@@ -129,13 +130,18 @@ public partial class AnimancerAbility : OneRootTree
 
             snap.State = rn.State;
 
-            if (snap.Custom == null) snap.Custom = new Dictionary<string, object>();
-            else snap.Custom.Clear();
-
-            rn.SaveContextState(snap.Custom);
-
-            // 无自定义字段则释放字典，避免持续占用内存
-            if (snap.Custom.Count == 0) snap.Custom = null;
+            if (rn.HasContextState)
+            {
+                // snap.Custom 首次为 null，之后复用同一字典实例，仅清空内容
+                if (snap.Custom == null) snap.Custom = new Dictionary<string, object>();
+                else snap.Custom.Clear();
+                rn.SaveContextState(snap.Custom);
+            }
+            else
+            {
+                // 无自定义状态：确保 Custom 为 null（例如节点类型在运行时发生变化）
+                snap.Custom = null;
+            }
         }
     }
 

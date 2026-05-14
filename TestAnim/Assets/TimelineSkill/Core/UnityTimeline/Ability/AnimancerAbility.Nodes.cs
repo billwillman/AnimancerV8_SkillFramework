@@ -234,6 +234,8 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
         m_IsFailure = false;
     }
 
+    public override bool HasContextState => true;
+
     public override void SaveContextState(Dictionary<string, object> s)
     {
         s["c"] = m_Completed;
@@ -339,6 +341,8 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         m_Completed = true;
         m_IsFailure = false;
     }
+
+    public override bool HasContextState => true;
 
     public override void SaveContextState(Dictionary<string, object> s)
     {
@@ -911,6 +915,8 @@ public class BranchNode : ActionNode
         }
     }
 #endif
+
+    public override bool HasContextState => true;
 
     public override void SaveContextState(Dictionary<string, object> s)
         => s["ac"] = m_ActiveChild;
