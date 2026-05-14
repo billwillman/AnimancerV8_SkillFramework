@@ -20,7 +20,7 @@ public class SetAnimatorBoolUnit : VSAbilityUnitBase
         Enter = ControlInput("Enter", OnEnter);
         Exit = ControlOutput("Exit");
 
-        AnimancerStateIn = ValueInput<AnimancerState>("AnimancerState");
+        AnimancerStateIn = ValueInput<AnimancerState>("AnimancerState", null);
         Key = ValueInput<string>("Key", "");
         Value = ValueInput<bool>("Value", false);
 

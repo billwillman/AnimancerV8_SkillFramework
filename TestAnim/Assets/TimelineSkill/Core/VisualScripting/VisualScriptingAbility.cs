@@ -33,6 +33,9 @@ public class VisualScriptingAbility : ScriptableObject
     [Tooltip("启动该 Ability 的前置条件：角色当前 ActiveTags 中必须包含这些标签")]
     public GameplayTagContainer RequiredTags;
 
+    [Tooltip("该 Ability 激活期间，允许拥有这些标签的技能进入缓冲队列（启动失败时缓冲，待条件满足后自动重试）")]
+    public GameplayTagContainer CanBufferAbilitiesTag;
+
     /// <summary>
     /// 初始化 Tag 容器（运行时调用）
     /// </summary>
@@ -43,6 +46,7 @@ public class VisualScriptingAbility : ScriptableObject
         BlockAbilitiesWithTag?.Init();
         ActiveTags?.Init();
         RequiredTags?.Init();
+        CanBufferAbilitiesTag?.Init();
     }
 
 #if UNITY_EDITOR

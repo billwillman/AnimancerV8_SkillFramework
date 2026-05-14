@@ -117,6 +117,16 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     /// </summary>
     private List<string> m_BlockTags = new List<string>();
 
+    /// <summary>
+    /// 允许缓冲的 Ability 标签（激活中的 Ability 的 CanBufferAbilitiesTag 汇总）
+    /// </summary>
+    private List<string> m_CanBufferAbilitiesTags = new List<string>();
+
+    /// <summary>
+    /// 缓冲队列：启动失败但满足缓冲条件的 Ability，每帧 Update 时重试
+    /// </summary>
+    private List<VisualScriptingAbility> m_BufferedAbilities = new List<VisualScriptingAbility>();
+
     #endregion
 
     #region Properties
@@ -199,6 +209,19 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         // 启动时自动播放 DefaultAbility
         if (m_DefaultAbility != null)
             TryStartAbility(m_DefaultAbility.name);
+    }
+
+    private void Update()
+    {
+        // 尝试从缓冲队列中启动 Ability（与 AnimancerAbilityAgent.Update 一致）
+        for (int i = m_BufferedAbilities.Count - 1; i >= 0; i--)
+        {
+            var ability = m_BufferedAbilities[i];
+            if (TryStartAbility(ability.name))
+                break;
+        }
+
+        TriggerOnUpdateAll(Time.deltaTime);
     }
 
     private void OnEnable()
@@ -302,14 +325,35 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
 
         // Tag 前置检查
         if (!CheckTagRequirements(entry.Ability))
+        {
+            AddToBuffer(entry.Ability);
             return false;
+        }
+
+        // 检查是否被正在激活的 Ability 的 BlockAbilitiesWithTag 阻止
+        foreach (var other in m_AllEntries)
+        {
+            if (other.IsActive && entry.Ability.AbilityTags != null
+                && entry.Ability.AbilityTags.PartChildOf(other.Ability.BlockAbilitiesWithTag))
+            {
+                AddToBuffer(entry.Ability);
+                Debug.Log($"[AnimancerVSLinker] {abilityName} is blocked by {other.Ability.name}");
+                return false;
+            }
+        }
 
         // VS Graph 中的 CanStart 条件检查
         if (!CheckCanStartCondition(entry))
+        {
+            AddToBuffer(entry.Ability);
             return false;
+        }
 
         // 处理 Cancel 逻辑
         ProcessCancelTags(entry.Ability);
+
+        // 清空缓冲队列（与 AnimancerAbilityAgent 一致：成功启动后清除所有缓冲）
+        m_BufferedAbilities.Clear();
 
         // 激活
         ActivateEntry(entry);
@@ -319,6 +363,9 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
 
         // 添加 BlockAbilitiesWithTag 到 Agent
         AddBlockTags(entry.Ability);
+
+        // 添加 CanBufferAbilitiesTags
+        AddCanBufferTags(entry.Ability);
 
         // 触发 OnEnter 事件
         CustomEvent.Trigger(entry.ChildObject, "OnEnter");
@@ -352,6 +399,9 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
 
         // 触发 OnExit 事件
         CustomEvent.Trigger(entry.ChildObject, "OnExit");
+
+        // 移除 CanBufferAbilitiesTags
+        RemoveCanBufferTags(entry.Ability);
 
         // 移除 BlockAbilitiesWithTag
         RemoveBlockTags(entry.Ability);
@@ -609,6 +659,42 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         if (ability.BlockAbilitiesWithTag == null || ability.BlockAbilitiesWithTag.Tags == null) return;
         foreach (var tag in ability.BlockAbilitiesWithTag.Tags)
             m_BlockTags.Remove(tag);
+    }
+
+    private void AddCanBufferTags(VisualScriptingAbility ability)
+    {
+        if (ability.CanBufferAbilitiesTag == null || ability.CanBufferAbilitiesTag.Tags == null) return;
+        foreach (var tag in ability.CanBufferAbilitiesTag.Tags)
+        {
+            if (!m_CanBufferAbilitiesTags.Contains(tag))
+                m_CanBufferAbilitiesTags.Add(tag);
+        }
+    }
+
+    private void RemoveCanBufferTags(VisualScriptingAbility ability)
+    {
+        if (ability.CanBufferAbilitiesTag == null || ability.CanBufferAbilitiesTag.Tags == null) return;
+        foreach (var tag in ability.CanBufferAbilitiesTag.Tags)
+            m_CanBufferAbilitiesTags.Remove(tag);
+    }
+
+    /// <summary>
+    /// 尝试将启动失败的 Ability 加入缓冲队列
+    /// 仅当当前 CanBufferAbilitiesTags 中包含该 Ability 的 AbilityTags 时才加入
+    /// </summary>
+    private void AddToBuffer(VisualScriptingAbility ability)
+    {
+        if (ability.AbilityTags == null || ability.AbilityTags.Tags == null) return;
+
+        foreach (var tag in m_CanBufferAbilitiesTags)
+        {
+            if (ability.AbilityTags.IsChildOf(tag))
+            {
+                if (!m_BufferedAbilities.Contains(ability))
+                    m_BufferedAbilities.Add(ability);
+                return;
+            }
+        }
     }
 
     #endregion

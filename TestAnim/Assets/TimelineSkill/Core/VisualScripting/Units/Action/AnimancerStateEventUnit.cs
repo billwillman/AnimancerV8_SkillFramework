@@ -33,7 +33,7 @@ public class AnimancerStateEventUnit : VSAbilityUnitBase
         Exit = ControlOutput("Exit");
         OnEvent = ControlOutput("OnEvent");
 
-        AnimancerStateIn = ValueInput<AnimancerState>("AnimancerState");
+        AnimancerStateIn = ValueInput<AnimancerState>("AnimancerState", null);
         NormalizedTime = ValueInput<float>("NormalizedTime", 0.5f);
 
         Succession(Enter, Exit);

@@ -32,10 +32,12 @@ public class PlayAnimancerTimelineUnit : VSAbilityUnitBase
         FadeDuration = ValueInput<float>("FadeDuration", 0.25f);
         BindSignal = ValueInput<bool>("BindSignal", false);
 
-        AnimancerStateOut = ValueOutput<AnimancerState>("AnimancerState");
+        // getter 仅作为 fallback：当 flow 中尚未通过 SetValue 赋值时返回 null
+        AnimancerStateOut = ValueOutput<AnimancerState>("AnimancerState", (flow) => null);
 
         Succession(Enter, Exit);
         Succession(Enter, Done);
+        Assignment(Enter, AnimancerStateOut);
     }
 
     private ControlOutput OnEnter(Flow flow)
