@@ -247,7 +247,7 @@ MonoBehaviour:
         m_GUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
         m_Expanded: 1
         m_ShowPanel: 1
-        m_Position: {x: 1418, y: -136.66667}
+        m_Position: {x: 1363.3334, y: -136.66667}
         m_InputEdgeGUID: c32c5166-b210-434c-aa63-3ffc48f1109a
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -279,7 +279,7 @@ MonoBehaviour:
         m_GUID: fdd4e0d7-f66d-4b61-b84e-30ea6364f8bc
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 715.3333, y: 175.33334}
+        m_Position: {x: 744.6667, y: 175.33334}
         m_InputValue1:
           rid: 2323071452094660615
         m_InputValue2:
@@ -599,9 +599,9 @@ MonoBehaviour:
           m_OutputEdgeGUIDs: []
           m_Index: 0
           m_Expanded: 0
-          m_Value: 0.0227385
+          m_Value: 0.0084581
         m_OutputEdgeGUID: aa4fa533-ee3f-4637-a093-475dafb2d8c9
-        DeltaTime: 0.0227385
+        DeltaTime: 0.0084581
     - rid: 3727631565548683265
       type: {class: EnterNode, ns: TreeDesigner, asm: Taco.TreeDesigner}
       data:
@@ -617,7 +617,7 @@ MonoBehaviour:
         m_GUID: 2b5dceb5-7026-420c-96f7-07255512ae90
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 0, y: 400}
+        m_Position: {x: -64, y: 422.66666}
         m_OutputEdgeGUID: 
         NodeName: OnStop
     - rid: 3727631565548683267
@@ -641,7 +641,7 @@ MonoBehaviour:
         m_Internal: 1
         m_ShowOutside: 1
         m_CanEdit: 0
-        m_Value: 1066.4081
+        m_Value: 58.553272
     - rid: 3727631565548683269
       type: {class: PlayAnimancerTranslateNode, ns: , asm: Assembly-CSharp}
       data:

@@ -9,18 +9,19 @@ using Unity.VisualScripting;
 [UnitCategory("AnimancerLinkNodes/Value")]
 public class InputKeyConditionUnit : VSAbilityUnitBase
 {
+    [DoNotSerialize] public ValueInput ActionInput;
     [DoNotSerialize] public ValueOutput IsPressed;
-
-    [Serialize, Inspectable] public InputActionReference Action;
 
     protected override void Definition()
     {
+        ActionInput = ValueInput<InputActionReference>("Action", null);
         IsPressed = ValueOutput<bool>("IsPressed", GetIsPressed);
     }
 
     private bool GetIsPressed(Flow flow)
     {
-        var action = Action?.action;
+        var actionRef = flow.GetValue<InputActionReference>(ActionInput);
+        var action = actionRef?.action;
         return action != null && action.IsPressed();
     }
 }
