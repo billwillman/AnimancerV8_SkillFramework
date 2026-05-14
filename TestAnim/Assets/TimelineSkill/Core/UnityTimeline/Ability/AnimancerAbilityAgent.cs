@@ -160,6 +160,7 @@ public class AnimancerAbilityAgent
 
         foreach (var ability in Abilities)
         {
+            ApplyAbilityContext(ability);
             if (ability.Active && abilityToStart.AbilityTags.PartChildOf(ability.BlockAbilitiesWithTag))
             {
                 Starting = false;
@@ -169,6 +170,7 @@ public class AnimancerAbilityAgent
             }
         }
 
+        ApplyAbilityContext(abilityToStart);
         if (!abilityToStart.CanStart())
         {
             Starting = false;
@@ -179,11 +181,11 @@ public class AnimancerAbilityAgent
 
         foreach (var ability in Abilities)
         {
+            ApplyAbilityContext(ability);
             if (ability.Active)
             {
                 if (ability.AbilityTags.PartChildOf(abilityToStart.CancelAbilitiesWithTag))
                 {
-                    ApplyAbilityContext(ability);
                     ability.CancelAbility(abilityToStart);
                     TryStopAbility(ability);
                     Debug.Log($"{ability} is canceled by {abilityToStart}");
@@ -218,9 +220,9 @@ public class AnimancerAbilityAgent
         }
 
         Stopping = true;
+        ApplyAbilityContext(abilityToStop);
         if (abilityToStop.Active)
         {
-            ApplyAbilityContext(abilityToStop);
             abilityToStop.StopAbility();
             OnAbilityStop?.Invoke(abilityToStop);
         }
@@ -238,9 +240,9 @@ public class AnimancerAbilityAgent
 
         foreach (var ability in Abilities)
         {
+            ApplyAbilityContext(ability);
             if (ability.Active)
             {
-                ApplyAbilityContext(ability);
                 ability.UpdateAbility(deltaTime);
             }
             else
