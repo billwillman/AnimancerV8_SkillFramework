@@ -247,7 +247,7 @@ MonoBehaviour:
         m_GUID: 7cdae8e3-c0fe-47ef-a0ca-d8858eb356ff
         m_Expanded: 1
         m_ShowPanel: 1
-        m_Position: {x: 1363.3334, y: -136.66667}
+        m_Position: {x: 1336, y: -136.66667}
         m_InputEdgeGUID: c32c5166-b210-434c-aa63-3ffc48f1109a
         m_AnimacerState:
           m_Name: m_AnimacerState
@@ -324,7 +324,7 @@ MonoBehaviour:
         m_GUID: cc5f4783-1980-4d46-b230-946abfd61ae6
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 930, y: 56.666664}
+        m_Position: {x: 900.6666, y: 40.666664}
         m_InputEdgeGUID: 87114051-ff51-42f4-92c2-40e494d4949e
         m_OutputEdgeGUIDs:
         - c32c5166-b210-434c-aa63-3ffc48f1109a
@@ -335,7 +335,7 @@ MonoBehaviour:
         m_GUID: ee19b877-e9f0-4176-930c-1ecf56c10669
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 950.6666, y: 146}
+        m_Position: {x: 930, y: 158.66667}
         m_InputEdgeGUID: 4930c8c5-4fc7-4abe-a2f3-fa8f7f9094f9
         m_OutputEdgeGUIDs:
         - 1d8267c3-9631-4404-928b-3218518b50fd
@@ -648,7 +648,7 @@ MonoBehaviour:
         m_GUID: d0c25018-f87f-4f27-a324-85a165542ec3
         m_Expanded: 1
         m_ShowPanel: 0
-        m_Position: {x: 310, y: 328}
+        m_Position: {x: 310, y: 314.66666}
         m_InputEdgeGUID: 4e17c5c0-50e7-4011-b5d6-b5dd15a8d95b
         m_TransitionAsset: {fileID: 11400000, guid: c752d203554f1944d9a655892a66db5b, type: 2}
         m_FadeDuration:
