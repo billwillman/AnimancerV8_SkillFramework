@@ -34,38 +34,30 @@ public partial class AnimancerAbility : OneRootTree
     protected string m_OnStopGUID;
     public string OnStopGUID { get => m_OnStopGUID; set => m_OnStopGUID = value; }
 
-    protected AnimancerAbilityAgentExposedProperty m_AgentEP;
+    [NonSerialized]
+    private AnimancerAbilityAgent m_Agent;
     /// <summary>
-    /// 运行时 Agent 引用，通过 ExposedProperty 注入，支持多实例复用时各自独立
+    /// 运行时 Agent 引用，由 Linker 在运行时直接注入
     /// </summary>
-    public AnimancerAbilityAgent Runner => m_AgentEP != null ? m_AgentEP.Value : null;
+    public AnimancerAbilityAgent Runner => m_Agent;
 
     /// <summary>
-    /// 由 Linker / Agent 在运行时调用，将 Agent 引用到 ExposedProperty
+    /// 由 Linker / Agent 在运行时调用，直接注入 Agent 引用
     /// </summary>
-    public void SetContextAgent(AnimancerAbilityAgent agent)
-    {
-        if (m_AgentEP != null)
-            m_AgentEP.Value = agent;
-    }
+    public void SetContextAgent(AnimancerAbilityAgent agent) => m_Agent = agent;
 
-    protected AnimancerComponentExposedProperty m_AnimCompEP;
+    [NonSerialized]
+    private AnimancerComponent m_AnimancerComponent;
     /// <summary>
-    /// 运行时 AnimancerComponent 引用，由 AnimancerAbilityLinker 注入到 ExposedProperty
+    /// 运行时 AnimancerComponent 引用，由 AnimancerAbilityLinker 直接注入
     /// </summary>
-    public AnimancerComponent AnimancerComponent
-    {
-        get => m_AnimCompEP != null ? m_AnimCompEP.Value : null;
-    }
+    public AnimancerComponent AnimancerComponent => m_AnimancerComponent;
 
     /// <summary>
-    /// 由 Linker 在运行时调用，将 AnimancerComponent 注入到 ExposedProperty
+    /// 由 Linker 在运行时调用，直接注入 AnimancerComponent 引用
     /// </summary>
     public void SetContextAnimancerComponent(AnimancerComponent animancerComponent)
-    {
-        if (m_AnimCompEP != null)
-            m_AnimCompEP.Value = animancerComponent;
-    }
+        => m_AnimancerComponent = animancerComponent;
 
     /// <summary>
     /// 缓存的 ECM2 Character 组件，首次访问时从 User 上 GetComponent 并缓存
@@ -125,19 +117,19 @@ public partial class AnimancerAbility : OneRootTree
         if (!string.IsNullOrEmpty(m_OnStopGUID))
             m_OnStop = m_GUIDNodeMap[m_OnStopGUID] as EnterNode;
 
-        m_Active = GetExposedProperty<BoolExposedProperty>("Active");
+        m_Active   = GetExposedProperty<BoolExposedProperty>("Active");
         m_Duration = GetExposedProperty<FloatExposedProperty>("Duration");
-        m_AnimCompEP = GetExposedProperty<AnimancerComponentExposedProperty>("AnimancerComponent");
-        m_AgentEP = GetExposedProperty<AnimancerAbilityAgentExposedProperty>("Agent");
     }
 
     public override void DisposeTree()
     {
         base.DisposeTree();
-        m_OnStart = null;
-        m_OnStop = null;
-        m_Character = null;
-        m_SkillController = null;
+        m_OnStart            = null;
+        m_OnStop             = null;
+        m_Character          = null;
+        m_SkillController    = null;
+        m_Agent              = null;
+        m_AnimancerComponent = null;
     }
 
     public override void OnReset()
@@ -252,10 +244,8 @@ public partial class AnimancerAbility
 
     public virtual void CreateInternalExposedProperties()
     {
-        CreateInternalExposedProperty(typeof(BoolExposedProperty), "Active", false);
+        CreateInternalExposedProperty(typeof(BoolExposedProperty),  "Active",   false);
         CreateInternalExposedProperty(typeof(FloatExposedProperty), "Duration", false);
-        CreateInternalExposedProperty(typeof(AnimancerComponentExposedProperty), "AnimancerComponent", false);
-        CreateInternalExposedProperty(typeof(AnimancerAbilityAgentExposedProperty), "Agent", false);
     }
 }
 #endif
