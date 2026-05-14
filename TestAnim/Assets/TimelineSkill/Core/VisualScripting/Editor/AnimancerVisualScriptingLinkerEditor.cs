@@ -8,13 +8,29 @@ public class AnimancerVisualScriptingLinkerEditor : Editor
 {
     SerializedProperty m_AbilityCategoriesProp;
     SerializedProperty m_DefaultAbilityProp;
+    SerializedProperty m_InputBindingsProp;
+    SerializedProperty m_CinemachineInputProviderProp;
 
     private Dictionary<int, bool> m_FoldoutStates = new Dictionary<int, bool>();
+    private bool m_InputBindingsFoldout = true;
+
+    private static readonly string kHoldInteractionGuide =
+        "如需「持续按住 N 秒后才触发」，请在 Input Action Asset 中为对应 Action 添加 Hold Interaction：\n\n" +
+        "1. 双击打开 .inputactions 文件\n" +
+        "2. 选中要配置的 Action（如 Fire）\n" +
+        "3. 在右侧 Properties 面板点击 Interactions 旁的 +\n" +
+        "4. 选择 Hold\n" +
+        "5. 设置 Hold Time（秒），如 0.5 表示按住 0.5 秒后触发\n" +
+        "6. 保存 Input Action Asset\n\n" +
+        "配合 Trigger Mode 设为 OnPerformed，按住达到 Hold Time 后会触发 performed 回调，从而启动绑定的 Ability。\n\n" +
+        "提示：如果 Hold Time 保持默认值 0，则使用 Input System 全局默认值（Project Settings > Input System > Default Hold Time）。";
 
     void OnEnable()
     {
         m_AbilityCategoriesProp = serializedObject.FindProperty("m_AbilityCategories");
         m_DefaultAbilityProp = serializedObject.FindProperty("m_DefaultAbility");
+        m_InputBindingsProp = serializedObject.FindProperty("m_InputBindings");
+        m_CinemachineInputProviderProp = serializedObject.FindProperty("m_CinemachineInputProvider");
     }
 
     public override void OnInspectorGUI()
@@ -37,6 +53,17 @@ public class AnimancerVisualScriptingLinkerEditor : Editor
         {
             // ── Default Ability 下拉 ──
             DrawDefaultAbilityPopup(validAbilities);
+
+            EditorGUILayout.Space(8);
+
+            // ── Input Bindings ──
+            DrawInputBindings(validAbilities);
+
+            EditorGUILayout.Space(8);
+
+            // ── Cinemachine ──
+            EditorGUILayout.PropertyField(m_CinemachineInputProviderProp,
+                new GUIContent("Cinemachine Input Provider", "拖入场景中的 CinemachineInputProvider，用于 CinemachineCamera 锁定时禁用相机输入"));
         }
 
         // ── 运行时状态 ──
@@ -308,6 +335,113 @@ public class AnimancerVisualScriptingLinkerEditor : Editor
         }
 
         EditorGUILayout.Space(4);
+    }
+
+    #endregion
+
+    #region Input Bindings
+
+    private void DrawInputBindings(List<VisualScriptingAbility> validAbilities)
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+        {
+            EditorGUILayout.BeginHorizontal();
+            m_InputBindingsFoldout = EditorGUILayout.Foldout(m_InputBindingsFoldout, "Input Bindings", true, EditorStyles.foldoutHeader);
+
+            GUILayout.FlexibleSpace();
+            EditorGUI.indentLevel++;
+            using (new EditorGUI.DisabledScope(true))
+                EditorGUILayout.LabelField($"({m_InputBindingsProp.arraySize})", EditorStyles.miniLabel, GUILayout.Width(40));
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
+
+            if (m_InputBindingsFoldout)
+            {
+                EditorGUI.indentLevel++;
+
+                var abilityDisplayNames = new string[] { "None" }.Concat(validAbilities.Select(a => a.name)).ToArray();
+
+                for (int i = 0; i < m_InputBindingsProp.arraySize; i++)
+                {
+                    var element = m_InputBindingsProp.GetArrayElementAtIndex(i);
+                    var inputActionProp = element.FindPropertyRelative("InputAction");
+                    var abilityProp = element.FindPropertyRelative("Ability");
+                    var triggerModeProp = element.FindPropertyRelative("TriggerMode");
+
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"Binding [{i}]", EditorStyles.miniBoldLabel);
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("\u00d7", GUILayout.Width(20)))
+                        {
+                            m_InputBindingsProp.DeleteArrayElementAtIndex(i);
+                            break;
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.PropertyField(inputActionProp, new GUIContent("Input Action"));
+
+                        var currentAbility = abilityProp.objectReferenceValue as VisualScriptingAbility;
+                        if (currentAbility != null && !validAbilities.Contains(currentAbility))
+                        {
+                            abilityProp.objectReferenceValue = null;
+                            currentAbility = null;
+                        }
+
+                        int abilityIndex = currentAbility == null ? 0 : validAbilities.IndexOf(currentAbility) + 1;
+                        using (new EditorGUI.DisabledScope(validAbilities.Count == 0))
+                        {
+                            int newIndex = EditorGUILayout.Popup("Ability", abilityIndex, abilityDisplayNames);
+                            abilityProp.objectReferenceValue = newIndex == 0 ? null : validAbilities[newIndex - 1];
+                        }
+
+                        EditorGUILayout.PropertyField(triggerModeProp, new GUIContent("Trigger Mode"));
+
+                        if (triggerModeProp.enumValueIndex == (int)AnimancerVisualScriptingLinker.InputTriggerMode.OnPerformed)
+                        {
+                            DrawHoldDurationHint();
+                        }
+                    }
+                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.Space(2);
+                }
+
+                if (GUILayout.Button("+ Add Input Binding"))
+                {
+                    m_InputBindingsProp.InsertArrayElementAtIndex(m_InputBindingsProp.arraySize);
+                    var newElement = m_InputBindingsProp.GetArrayElementAtIndex(m_InputBindingsProp.arraySize - 1);
+                    newElement.FindPropertyRelative("InputAction").objectReferenceValue = null;
+                    newElement.FindPropertyRelative("Ability").objectReferenceValue = null;
+                    newElement.FindPropertyRelative("TriggerMode").enumValueIndex = 0;
+                }
+
+                EditorGUI.indentLevel--;
+            }
+        }
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawHoldDurationHint()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField(
+                new GUIContent("持续多久触发", "需要在 Input Action Asset 中配置 Hold Interaction 来设置持续按住时长"),
+                EditorStyles.miniLabel);
+
+            GUILayout.FlexibleSpace();
+
+            if (GUILayout.Button(new GUIContent("?", "点击查看 Hold Interaction 配置流程"),
+                EditorStyles.miniButton, GUILayout.Width(20)))
+            {
+                EditorUtility.DisplayDialog(
+                    "如何设置「持续按住触发」",
+                    kHoldInteractionGuide,
+                    "知道了");
+            }
+        }
+        EditorGUILayout.EndHorizontal();
     }
 
     #endregion

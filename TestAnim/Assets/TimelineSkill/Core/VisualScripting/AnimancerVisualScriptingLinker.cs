@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Unity.VisualScripting;
 using Taco.Gameplay;
+using Cinemachine;
 
 using Animancer;
 using UnityTimeline;
@@ -17,6 +19,35 @@ using UnityTimeline;
 public class AnimancerVisualScriptingLinker : MonoBehaviour
 {
     #region Data Structures
+
+    /// <summary>
+    /// 输入触发模式
+    /// </summary>
+    public enum InputTriggerMode
+    {
+        /// <summary>按下时触发（started）</summary>
+        OnStarted,
+        /// <summary>执行中触发（performed，适合持续按住）</summary>
+        OnPerformed,
+        /// <summary>松开时触发（canceled）</summary>
+        OnCanceled,
+    }
+
+    /// <summary>
+    /// 输入触发绑定：一个 InputActionReference 对应一个要触发的 VisualScriptingAbility
+    /// </summary>
+    [Serializable]
+    public class InputAbilityBinding
+    {
+        [Tooltip("输入 Action 引用，从 Input Action Asset 中拖入")]
+        public InputActionReference InputAction;
+
+        [Tooltip("该输入触发的 VS Ability")]
+        public VisualScriptingAbility Ability;
+
+        [Tooltip("输入触发模式")]
+        public InputTriggerMode TriggerMode = InputTriggerMode.OnStarted;
+    }
 
     /// <summary>
     /// VisualScriptingAbility 分类分组
@@ -51,9 +82,20 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     [SerializeField]
     private VisualScriptingAbility m_DefaultAbility;
 
+    [SerializeField]
+    [Tooltip("输入绑定列表：配置 InputAction 与 VS Ability 的映射关系")]
+    private List<InputAbilityBinding> m_InputBindings = new List<InputAbilityBinding>();
+
+    [SerializeField]
+    [Tooltip("Cinemachine 相机输入提供者（场景中拖入），用于 CinemachineCamera 锁定时禁用相机输入")]
+    private CinemachineInputProvider m_CinemachineInputProvider;
+
     #endregion
 
     #region Runtime State
+
+    private AnimancerComponent m_AnimancerComponent;
+    private SkillCharacterController m_SkillCharacterController;
 
     /// <summary>
     /// 名称 → 运行时条目的映射
@@ -99,6 +141,37 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     /// </summary>
     public VisualScriptingAbility DefaultAbility => m_DefaultAbility;
 
+    /// <summary>
+    /// 获取输入绑定列表（只读）
+    /// </summary>
+    public IReadOnlyList<InputAbilityBinding> InputBindings => m_InputBindings;
+
+    /// <summary>
+    /// 缓存的 AnimancerComponent，为 null 时自动 GetComponent
+    /// </summary>
+    public AnimancerComponent AnimancerComponent
+    {
+        get
+        {
+            if (m_AnimancerComponent == null)
+                m_AnimancerComponent = GetComponent<AnimancerComponent>();
+            return m_AnimancerComponent;
+        }
+    }
+
+    /// <summary>
+    /// 缓存的 SkillCharacterController，为 null 时自动 GetComponent
+    /// </summary>
+    public SkillCharacterController SkillCharacterController
+    {
+        get
+        {
+            if (m_SkillCharacterController == null)
+                m_SkillCharacterController = GetComponent<SkillCharacterController>();
+            return m_SkillCharacterController;
+        }
+    }
+
     #endregion
 
     #region Lifecycle
@@ -116,13 +189,35 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
             }
         }
 
+        // 注册输入绑定
+        RegisterInputBindings();
+
+        // 订阅输入锁变化事件
+        if (m_SkillCharacterController != null)
+            m_SkillCharacterController.OnInputLockChanged += HandleInputLockChanged;
+
         // 启动时自动播放 DefaultAbility
         if (m_DefaultAbility != null)
             TryStartAbility(m_DefaultAbility.name);
     }
 
+    private void OnEnable()
+    {
+        EnableInputActions();
+    }
+
+    private void OnDisable()
+    {
+        DisableInputActions();
+    }
+
     private void OnDestroy()
     {
+        UnregisterInputBindings();
+
+        if (m_SkillCharacterController != null)
+            m_SkillCharacterController.OnInputLockChanged -= HandleInputLockChanged;
+
         // 清理所有运行时 ScriptMachine 子对象
         foreach (var entry in m_AllEntries)
         {
@@ -167,8 +262,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         if (variables == null)
             variables = childObj.AddComponent<Variables>();
         variables.declarations.Set("Owner", gameObject);
-        variables.declarations.Set("Animancer", GetComponent<Animancer.AnimancerComponent>());
-        variables.declarations.Set("SkillController", GetComponent<UnityTimeline.SkillCharacterController>());
+        variables.declarations.Set("Animancer", m_AnimancerComponent);
+        variables.declarations.Set("SkillController", m_SkillCharacterController);
         variables.declarations.Set("Linker", this);
 
         var entry = new RuntimeEntry
@@ -530,6 +625,128 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     {
         entry.ChildObject.SetActive(false);
         entry.IsActive = false;
+    }
+
+    #endregion
+
+    #region Input Lock Response
+
+    private void HandleInputLockChanged(InputLockFlags effectiveLocks)
+    {
+        // CinemachineCamera 锁：禁用/启用相机输入
+        if (m_CinemachineInputProvider != null)
+        {
+            bool cameraLocked = (effectiveLocks & InputLockFlags.CinemachineCamera) != 0;
+            m_CinemachineInputProvider.enabled = !cameraLocked;
+        }
+    }
+
+    #endregion
+
+    #region Input Bindings
+
+    private Dictionary<string, Action<InputAction.CallbackContext>> m_CallbackCache
+        = new Dictionary<string, Action<InputAction.CallbackContext>>();
+
+    private void RegisterInputBindings()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding == null || binding.InputAction == null || binding.Ability == null)
+                continue;
+
+            var action = binding.InputAction.action;
+            if (action == null)
+                continue;
+
+            string abilityName = binding.Ability.name;
+            var callback = CreateInputCallback(abilityName);
+
+            switch (binding.TriggerMode)
+            {
+                case InputTriggerMode.OnStarted:
+                    action.started += callback;
+                    break;
+                case InputTriggerMode.OnPerformed:
+                    action.performed += callback;
+                    break;
+                case InputTriggerMode.OnCanceled:
+                    action.canceled += callback;
+                    break;
+            }
+        }
+    }
+
+    private void UnregisterInputBindings()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding == null || binding.InputAction == null)
+                continue;
+
+            var action = binding.InputAction.action;
+            if (action == null)
+                continue;
+
+            string abilityName = binding.Ability != null ? binding.Ability.name : null;
+            if (string.IsNullOrEmpty(abilityName))
+                continue;
+
+            var callback = CreateInputCallback(abilityName);
+
+            switch (binding.TriggerMode)
+            {
+                case InputTriggerMode.OnStarted:
+                    action.started -= callback;
+                    break;
+                case InputTriggerMode.OnPerformed:
+                    action.performed -= callback;
+                    break;
+                case InputTriggerMode.OnCanceled:
+                    action.canceled -= callback;
+                    break;
+            }
+        }
+
+        m_CallbackCache.Clear();
+    }
+
+    private Action<InputAction.CallbackContext> CreateInputCallback(string abilityName)
+    {
+        if (!m_CallbackCache.TryGetValue(abilityName, out var callback))
+        {
+            callback = (ctx) =>
+            {
+                if (m_SkillCharacterController != null
+                    && m_SkillCharacterController.IsInputLocked(InputLockFlags.AbilityInput))
+                    return;
+                TryStartAbility(abilityName);
+            };
+            m_CallbackCache[abilityName] = callback;
+        }
+        return callback;
+    }
+
+    private void EnableInputActions()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding?.InputAction?.action != null)
+                binding.InputAction.action.Enable();
+        }
+    }
+
+    private void DisableInputActions()
+    {
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding?.InputAction?.action != null)
+                binding.InputAction.action.Disable();
+        }
     }
 
     #endregion
