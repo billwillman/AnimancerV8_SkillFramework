@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TreeDesigner;
 using Animancer;
@@ -232,6 +233,18 @@ public class PlayAnimancerTimelineNode : AnimancerAbilityActionNode
         m_Completed = true;
         m_IsFailure = false;
     }
+
+    public override void SaveContextState(Dictionary<string, object> s)
+    {
+        s["c"] = m_Completed;
+        s["f"] = m_IsFailure;
+    }
+
+    public override void RestoreContextState(Dictionary<string, object> s)
+    {
+        m_Completed = s.TryGetValue("c", out var c) && (bool)c;
+        m_IsFailure = s.TryGetValue("f", out var f) && (bool)f;
+    }
 }
 
 /// <summary>
@@ -325,6 +338,18 @@ public class PlayAnimancerTranslateNode : AnimancerAbilityActionNode
         }
         m_Completed = true;
         m_IsFailure = false;
+    }
+
+    public override void SaveContextState(Dictionary<string, object> s)
+    {
+        s["c"] = m_Completed;
+        s["f"] = m_IsFailure;
+    }
+
+    public override void RestoreContextState(Dictionary<string, object> s)
+    {
+        m_Completed = s.TryGetValue("c", out var c) && (bool)c;
+        m_IsFailure = s.TryGetValue("f", out var f) && (bool)f;
     }
 }
 
@@ -886,6 +911,12 @@ public class BranchNode : ActionNode
         }
     }
 #endif
+
+    public override void SaveContextState(Dictionary<string, object> s)
+        => s["ac"] = m_ActiveChild;
+
+    public override void RestoreContextState(Dictionary<string, object> s)
+        => m_ActiveChild = s.TryGetValue("ac", out var v) ? v as RunnableNode : null;
 }
 
 #endregion

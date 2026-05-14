@@ -8,6 +8,19 @@ using EasyCharacterMovement;
 using UnityTimeline;
 
 /// <summary>
+/// 单个 RunnableNode 的 per-instance 快照：执行状态 + 节点自定义状态字段。
+/// </summary>
+public class NodeSnapshot
+{
+    public State State;
+    /// <summary>
+    /// 节点子类的自定义 [NonSerialized] 字段（懒分配）。
+    /// 无自定义状态的节点此字段为 null，避免不必要的内存分配。
+    /// </summary>
+    public Dictionary<string, object> Custom;
+}
+
+/// <summary>
 /// 单个 Ability 在本角色实例上的运行时数据（per-instance，不存放在 SO 上）
 /// </summary>
 public class AbilityContext
@@ -29,10 +42,10 @@ public class AbilityContext
     public Dictionary<string, BaseExposedProperty> EPMap = new Dictionary<string, BaseExposedProperty>();
 
     /// <summary>
-    /// per-instance 节点执行状态（GUID → State）。
-    /// 由 BeginContext/EndContext 做 save-restore，隔离多角色对同一 SO 的状态污染。
+    /// per-instance 节点快照（GUID → NodeSnapshot）。
+    /// 由 BeginContext/EndContext 做 save-restore，同时覆盖 m_State 和自定义字段。
     /// </summary>
-    public Dictionary<string, State> NodeStateMap = new Dictionary<string, State>();
+    public Dictionary<string, NodeSnapshot> NodeStateMap = new Dictionary<string, NodeSnapshot>();
 }
 
 /// <summary>
@@ -124,10 +137,10 @@ public class AnimancerAbilityAgent
         ctx.EPMap["Active"]   = ctx.IsActive;
         ctx.EPMap["Duration"] = ctx.Duration;
 
-        // 初始化节点状态（全部 None）
+        // 初始化节点快照（State = None，无自定义状态）
         foreach (var node in ability.Nodes)
             if (node is RunnableNode)
-                ctx.NodeStateMap[node.GUID] = State.None;
+                ctx.NodeStateMap[node.GUID] = new NodeSnapshot { State = State.None };
 
         // 初始化角色组件引用
         var linkerForInit = Owner as AnimancerAbilityLinker;

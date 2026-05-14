@@ -63,5 +63,17 @@ namespace TreeDesigner
             base.OnAfterDeserialize();
             m_State = State.None;
         }
+
+        /// <summary>
+        /// EndContext 时调用，子类 override 将自定义 [NonSerialized] 状态字段保存到 store。
+        /// 基类实现为空；无自定义状态的节点无需 override。
+        /// </summary>
+        public virtual void SaveContextState(Dictionary<string, object> store) { }
+
+        /// <summary>
+        /// BeginContext 时调用，子类 override 从 store 恢复自定义 [NonSerialized] 状态字段。
+        /// 基类实现为空；无自定义状态的节点无需 override。
+        /// </summary>
+        public virtual void RestoreContextState(Dictionary<string, object> store) { }
     }
 }

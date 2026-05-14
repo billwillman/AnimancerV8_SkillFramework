@@ -102,23 +102,41 @@ public partial class AnimancerAbility : OneRootTree
         => GetExposedProperty(name) as T;
 
     /// <summary>
-    /// 从上下文的节点状态字典恢复所有 RunnableNode.m_State（BeginContext 调用）
+    /// 从上下文快照字典恢复所有 RunnableNode 的 m_State 及自定义状态（BeginContext 调用）
     /// </summary>
-    public void RestoreNodeStates(Dictionary<string, State> stateMap)
+    public void RestoreNodeStates(Dictionary<string, NodeSnapshot> stateMap)
     {
         foreach (var kv in stateMap)
             if (m_GUIDNodeMap.TryGetValue(kv.Key, out var node) && node is RunnableNode rn)
-                rn.State = kv.Value;
+            {
+                rn.State = kv.Value.State;
+                if (kv.Value.Custom != null)
+                    rn.RestoreContextState(kv.Value.Custom);
+            }
     }
 
     /// <summary>
-    /// 将所有 RunnableNode.m_State 保存回上下文字典（EndContext 调用）
+    /// 将所有 RunnableNode 的 m_State 及自定义状态保存回上下文快照字典（EndContext 调用）
     /// </summary>
-    public void SaveNodeStates(Dictionary<string, State> stateMap)
+    public void SaveNodeStates(Dictionary<string, NodeSnapshot> stateMap)
     {
         foreach (var kv in m_GUIDNodeMap)
-            if (kv.Value is RunnableNode rn)
-                stateMap[kv.Key] = rn.State;
+        {
+            if (kv.Value is not RunnableNode rn) continue;
+
+            if (!stateMap.TryGetValue(kv.Key, out var snap))
+                snap = stateMap[kv.Key] = new NodeSnapshot();
+
+            snap.State = rn.State;
+
+            if (snap.Custom == null) snap.Custom = new Dictionary<string, object>();
+            else snap.Custom.Clear();
+
+            rn.SaveContextState(snap.Custom);
+
+            // 无自定义字段则释放字典，避免持续占用内存
+            if (snap.Custom.Count == 0) snap.Custom = null;
+        }
     }
 
     protected EnterNode m_OnStart;
