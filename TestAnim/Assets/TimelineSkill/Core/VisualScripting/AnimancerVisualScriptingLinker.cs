@@ -4,11 +4,16 @@ using UnityEngine;
 using Unity.VisualScripting;
 using Taco.Gameplay;
 
+using Animancer;
+using UnityTimeline;
+
 /// <summary>
 /// Visual Scripting 版本的 Ability 桥接组件，挂载到角色上
 /// 管理一组 VisualScriptingAbility 资产，通过子 ScriptMachine 执行 Graph
-/// 与 AnimancerAbilityAgent 的 GameplayTag 系统互通
+/// 自身维护 ActiveTags/BlockTags，设计上参考 AnimancerAbilityLinker 但完全独立
 /// </summary>
+[RequireComponent(typeof(AnimancerComponent))]
+[RequireComponent(typeof(SkillCharacterController))]
 public class AnimancerVisualScriptingLinker : MonoBehaviour
 {
     #region Data Structures
@@ -31,6 +36,7 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         public VisualScriptingAbility Ability;
         public GameObject ChildObject;
         public ScriptMachine Machine;
+        public Variables Variables;
         public bool IsActive;
     }
 
@@ -43,8 +49,7 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     private List<VSAbilityCategory> m_AbilityCategories = new List<VSAbilityCategory>();
 
     [SerializeField]
-    [Tooltip("可选：关联同 GameObject 上的 AnimancerAbilityLinker，实现 Tag 系统互通")]
-    private AnimancerAbilityLinker m_AbilityLinker;
+    private VisualScriptingAbility m_DefaultAbility;
 
     #endregion
 
@@ -61,9 +66,14 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     private List<RuntimeEntry> m_AllEntries = new List<RuntimeEntry>();
 
     /// <summary>
-    /// 关联的 AnimancerAbilityAgent（通过 AbilityLinker 获取），用于 Tag 互通
+    /// 当前激活的标签列表（类似 AnimancerAbilityAgent.ActiveTags）
     /// </summary>
-    private AnimancerAbilityAgent m_AbilityAgent;
+    private List<string> m_ActiveTags = new List<string>();
+
+    /// <summary>
+    /// 当前阻止的标签列表（类似 AnimancerAbilityAgent.BlockAbilitiesWithTag）
+    /// </summary>
+    private List<string> m_BlockTags = new List<string>();
 
     #endregion
 
@@ -75,27 +85,26 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     public IReadOnlyList<VSAbilityCategory> AbilityCategories => m_AbilityCategories;
 
     /// <summary>
-    /// 关联的 AbilityLinker
+    /// 当前激活的标签（只读）
     /// </summary>
-    public AnimancerAbilityLinker AbilityLinker => m_AbilityLinker;
+    public IReadOnlyList<string> ActiveTags => m_ActiveTags;
+
+    /// <summary>
+    /// 当前阻止的标签（只读）
+    /// </summary>
+    public IReadOnlyList<string> BlockTags => m_BlockTags;
+
+    /// <summary>
+    /// 配置的默认 Ability
+    /// </summary>
+    public VisualScriptingAbility DefaultAbility => m_DefaultAbility;
 
     #endregion
 
     #region Lifecycle
 
-    private void Awake()
-    {
-        // 尝试自动获取同 GameObject 上的 AbilityLinker
-        if (m_AbilityLinker == null)
-            m_AbilityLinker = GetComponent<AnimancerAbilityLinker>();
-    }
-
     private void Start()
     {
-        // 缓存 Agent 引用
-        if (m_AbilityLinker != null)
-            m_AbilityAgent = m_AbilityLinker.AnimancerAbilityAgent;
-
         // 初始化所有 VisualScriptingAbility
         foreach (var category in m_AbilityCategories)
         {
@@ -106,6 +115,10 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
                 RegisterAbility(ability);
             }
         }
+
+        // 启动时自动播放 DefaultAbility
+        if (m_DefaultAbility != null)
+            TryStartAbility(m_DefaultAbility.name);
     }
 
     private void OnDestroy()
@@ -149,17 +162,21 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
         var machine = childObj.AddComponent<ScriptMachine>();
         machine.nest.macro = ability.ScriptGraph;
 
-        // 设置 Object Variables，将角色 GameObject 传入图中
+        // 设置 Object Variables，将角色组件引用传入图中（避免 Unit 每次 GetComponent）
         var variables = childObj.GetComponent<Variables>();
         if (variables == null)
             variables = childObj.AddComponent<Variables>();
         variables.declarations.Set("Owner", gameObject);
+        variables.declarations.Set("Animancer", GetComponent<Animancer.AnimancerComponent>());
+        variables.declarations.Set("SkillController", GetComponent<UnityTimeline.SkillCharacterController>());
+        variables.declarations.Set("Linker", this);
 
         var entry = new RuntimeEntry
         {
             Ability = ability,
             ChildObject = childObj,
             Machine = machine,
+            Variables = variables,
             IsActive = false
         };
 
@@ -190,6 +207,10 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
 
         // Tag 前置检查
         if (!CheckTagRequirements(entry.Ability))
+            return false;
+
+        // VS Graph 中的 CanStart 条件检查
+        if (!CheckCanStartCondition(entry))
             return false;
 
         // 处理 Cancel 逻辑
@@ -260,6 +281,22 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     }
 
     /// <summary>
+    /// 尝试启动指定名称的 VS Ability（执行 Tag 检查 → Cancel → 激活 → OnEnter）
+    /// </summary>
+    public bool TryStartAbility(string abilityName)
+    {
+        return TriggerOnEnter(abilityName);
+    }
+
+    /// <summary>
+    /// 尝试停止指定名称的 VS Ability（OnExit → 移除 Tags → 停用）
+    /// </summary>
+    public void TryStopAbility(string abilityName)
+    {
+        TriggerOnExit(abilityName);
+    }
+
+    /// <summary>
     /// 强制停止所有激活中的 Ability
     /// </summary>
     public void StopAll()
@@ -299,22 +336,20 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
 
     #endregion
 
-    #region Tag Integration
+    #region Tag Management
 
     /// <summary>
-    /// 检查 RequiredTags 和 BlockAbilitiesWithTag 前置条件
+    /// 检查 RequiredTags 和 Block 前置条件
     /// </summary>
     private bool CheckTagRequirements(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null) return true;
-
-        // 检查 RequiredTags
+        // 检查 RequiredTags：当前 ActiveTags 中必须包含所有 RequiredTags
         if (ability.RequiredTags != null && ability.RequiredTags.Tags != null)
         {
             foreach (var requiredTag in ability.RequiredTags.Tags)
             {
                 bool found = false;
-                foreach (var activeTag in m_AbilityAgent.ActiveTags)
+                foreach (var activeTag in m_ActiveTags)
                 {
                     if (activeTag.StartTagIs(requiredTag))
                     {
@@ -330,10 +365,10 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
             }
         }
 
-        // 检查是否被 Block
+        // 检查是否被当前 BlockTags 阻止
         if (ability.AbilityTags != null && ability.AbilityTags.Tags != null)
         {
-            foreach (var blockTag in m_AbilityAgent.BlockAbilitiesWithTag)
+            foreach (var blockTag in m_BlockTags)
             {
                 if (ability.AbilityTags.IsChildOf(blockTag))
                 {
@@ -347,57 +382,138 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
     }
 
     /// <summary>
-    /// 处理 CancelAbilitiesWithTag：取消匹配标签的正在运行的 AnimancerAbility
+    /// 检查 VS Graph 中的 CanStart 条件
+    /// 
+    /// 参考树系统设计：
+    /// 树系统中 AnimancerAbilityCanStartNode 是一个 ValueNode，Agent 调用 ability.CanStart() 时
+    /// 同步通过 GetValue() → InputValue() 拉取上游条件。
+    /// 
+    /// VS 版本中 Visual Scripting 不支持同步拉取（需要 CustomEvent 触发执行流），
+    /// 因此采用：临时启用子对象 → 触发 "CheckCanStart" 事件 → AbilityCanStartUnit 计算条件 → 
+    /// 写入 Variables["CanStart"] → Linker 读取结果。
+    /// 
+    /// 如果 Graph 中没有 AbilityCanStartUnit 节点，Variables["CanStart"] 保持默认 true，即允许启动。
+    /// </summary>
+    private bool CheckCanStartCondition(RuntimeEntry entry)
+    {
+        var childObj = entry.ChildObject;
+        var variables = entry.Variables;
+        if (variables == null) return true;
+
+        // 设置默认值为 true（如果 Graph 中没有 AbilityCanStartUnit 节点，则允许启动）
+        variables.declarations.Set("CanStart", true);
+
+        // 临时启用子对象以允许 ScriptMachine 接收事件
+        // 注意：VS 的 CustomEvent 需要 GameObject 处于 active 状态才能触发
+        bool wasActive = childObj.activeSelf;
+        if (!wasActive) childObj.SetActive(true);
+
+        // 触发 "CheckCanStart" 事件，Graph 中的 Custom Event 节点会驱动 AbilityCanStartUnit 执行
+        CustomEvent.Trigger(childObj, "CheckCanStart");
+
+        // 读取 AbilityCanStartUnit 写入的条件结果
+        bool canStart = true;
+        if (variables.declarations.IsDefined("CanStart"))
+            canStart = (bool)variables.declarations.Get("CanStart");
+
+        // 如果条件不满足，恢复子对象的禁用状态
+        if (!wasActive) childObj.SetActive(false);
+
+        if (!canStart)
+            Debug.Log($"[AnimancerVSLinker] {entry.Ability.name} CanStart condition returned false");
+
+        return canStart;
+    }
+
+    /// <summary>
+    /// 处理 CancelAbilitiesWithTag：取消匹配标签的正在运行的 VS Ability
     /// </summary>
     private void ProcessCancelTags(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null) return;
         if (ability.CancelAbilitiesWithTag == null || ability.CancelAbilitiesWithTag.Tags == null) return;
 
-        foreach (var abilityInAgent in m_AbilityAgent.Abilities)
+        // 收集需要取消的 entry（避免遍历中修改）
+        var toCancel = new List<string>();
+        foreach (var entry in m_AllEntries)
         {
-            if (abilityInAgent.Active)
+            if (!entry.IsActive) continue;
+            if (entry.Ability.AbilityTags != null &&
+                entry.Ability.AbilityTags.PartChildOf(ability.CancelAbilitiesWithTag))
             {
-                if (abilityInAgent.AbilityTags.PartChildOf(ability.CancelAbilitiesWithTag))
-                {
-                    abilityInAgent.CancelAbility(null);
-                    m_AbilityAgent.TryStopAbility(abilityInAgent);
-                    Debug.Log($"[AnimancerVSLinker] {abilityInAgent.name} canceled by VS ability {ability.name}");
-                    break;
-                }
+                toCancel.Add(entry.Ability.name);
             }
         }
+
+        foreach (var name in toCancel)
+        {
+            Debug.Log($"[AnimancerVSLinker] {name} canceled by VS ability {ability.name}");
+            TriggerOnCancel(name, ability.name);
+        }
+    }
+
+    /// <summary>
+    /// 触发 Ability 的 OnCancel 事件后执行 OnExit 流程
+    /// 
+    /// 参考树系统设计：
+    /// 树系统中 AnimancerAbility.CancelAbility(abilityCancelBy) 调用
+    /// OnAnimancerAbilityCancelNode.Trigger(ability)：
+    /// 1. 设置 m_Ability 输出端口 = 取消者引用
+    /// 2. 调用 UpdateNode() 驱动后续 ActionNode 链执行
+    /// 
+    /// VS 版本中：
+    /// 1. 将 "CancelledBy" 写入 Variables（取消者名称，供 OnAbilityCancelUnit 读取）
+    /// 2. 触发 CustomEvent "OnCancel" → Graph 中的 Custom Event 节点 → OnAbilityCancelUnit → 后续清理逻辑
+    /// 3. 最后执行正常的 TriggerOnExit 流程
+    /// </summary>
+    private void TriggerOnCancel(string abilityName, string cancelledBy)
+    {
+        if (!m_EntryMap.TryGetValue(abilityName, out var entry))
+            return;
+
+        if (!entry.IsActive)
+            return;
+
+        // 设置 CancelledBy 变量供 OnAbilityCancelUnit 读取
+        var variables = entry.Variables;
+        if (variables != null)
+            variables.declarations.Set("CancelledBy", cancelledBy);
+
+        // 触发 OnCancel 事件
+        CustomEvent.Trigger(entry.ChildObject, "OnCancel");
+
+        // 然后执行正常的 Exit 流程
+        TriggerOnExit(abilityName);
     }
 
     private void AddActiveTags(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null || ability.ActiveTags == null) return;
+        if (ability.ActiveTags == null || ability.ActiveTags.Tags == null) return;
         foreach (var tag in ability.ActiveTags.Tags)
-            m_AbilityAgent.ActiveTags.Add(tag);
+            m_ActiveTags.Add(tag);
     }
 
     private void RemoveActiveTags(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null || ability.ActiveTags == null) return;
+        if (ability.ActiveTags == null || ability.ActiveTags.Tags == null) return;
         foreach (var tag in ability.ActiveTags.Tags)
-            m_AbilityAgent.ActiveTags.Remove(tag);
+            m_ActiveTags.Remove(tag);
     }
 
     private void AddBlockTags(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null || ability.BlockAbilitiesWithTag == null) return;
+        if (ability.BlockAbilitiesWithTag == null || ability.BlockAbilitiesWithTag.Tags == null) return;
         foreach (var tag in ability.BlockAbilitiesWithTag.Tags)
         {
-            if (!m_AbilityAgent.BlockAbilitiesWithTag.Contains(tag))
-                m_AbilityAgent.BlockAbilitiesWithTag.Add(tag);
+            if (!m_BlockTags.Contains(tag))
+                m_BlockTags.Add(tag);
         }
     }
 
     private void RemoveBlockTags(VisualScriptingAbility ability)
     {
-        if (m_AbilityAgent == null || ability.BlockAbilitiesWithTag == null) return;
+        if (ability.BlockAbilitiesWithTag == null || ability.BlockAbilitiesWithTag.Tags == null) return;
         foreach (var tag in ability.BlockAbilitiesWithTag.Tags)
-            m_AbilityAgent.BlockAbilitiesWithTag.Remove(tag);
+            m_BlockTags.Remove(tag);
     }
 
     #endregion

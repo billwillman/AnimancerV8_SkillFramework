@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,28 +7,37 @@ using UnityEngine;
 public class AnimancerVisualScriptingLinkerEditor : Editor
 {
     SerializedProperty m_AbilityCategoriesProp;
-    SerializedProperty m_AbilityLinkerProp;
+    SerializedProperty m_DefaultAbilityProp;
 
     private Dictionary<int, bool> m_FoldoutStates = new Dictionary<int, bool>();
 
     void OnEnable()
     {
         m_AbilityCategoriesProp = serializedObject.FindProperty("m_AbilityCategories");
-        m_AbilityLinkerProp = serializedObject.FindProperty("m_AbilityLinker");
+        m_DefaultAbilityProp = serializedObject.FindProperty("m_DefaultAbility");
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
 
-        // ── Ability Linker 引用 ──
-        EditorGUILayout.PropertyField(m_AbilityLinkerProp,
-            new GUIContent("Ability Linker", "关联的 AnimancerAbilityLinker，用于 Tag 系统互通（可选，留空则自动从同 GameObject 获取）"));
-
-        EditorGUILayout.Space(8);
+        // ── VS 节点提示 ──
+        DrawVSNodeHelpBox();
 
         // ── 分组列表 ──
         DrawAbilityCategories();
+
+        EditorGUILayout.Space(4);
+
+        // 收集所有有效 VS Ability
+        var validAbilities = CollectAllValidAbilities();
+
+        // 运行时不显示配置部分
+        if (!Application.isPlaying)
+        {
+            // ── Default Ability 下拉 ──
+            DrawDefaultAbilityPopup(validAbilities);
+        }
 
         // ── 运行时状态 ──
         if (Application.isPlaying)
@@ -187,6 +197,50 @@ public class AnimancerVisualScriptingLinkerEditor : Editor
 
     #endregion
 
+    #region Collect Abilities
+
+    private List<VisualScriptingAbility> CollectAllValidAbilities()
+    {
+        var validAbilities = new List<VisualScriptingAbility>();
+        for (int i = 0; i < m_AbilityCategoriesProp.arraySize; i++)
+        {
+            var categoryProp = m_AbilityCategoriesProp.GetArrayElementAtIndex(i);
+            var abilitiesProp = categoryProp.FindPropertyRelative("Abilities");
+            for (int j = 0; j < abilitiesProp.arraySize; j++)
+            {
+                var elem = abilitiesProp.GetArrayElementAtIndex(j).objectReferenceValue as VisualScriptingAbility;
+                if (elem != null)
+                    validAbilities.Add(elem);
+            }
+        }
+        return validAbilities;
+    }
+
+    #endregion
+
+    #region Default Ability
+
+    private void DrawDefaultAbilityPopup(List<VisualScriptingAbility> validAbilities)
+    {
+        var current = m_DefaultAbilityProp.objectReferenceValue as VisualScriptingAbility;
+        if (current != null && !validAbilities.Contains(current))
+        {
+            m_DefaultAbilityProp.objectReferenceValue = null;
+            current = null;
+        }
+
+        var displayNames = new string[] { "None" }.Concat(validAbilities.Select(a => a.name)).ToArray();
+        int currentIndex = current == null ? 0 : validAbilities.IndexOf(current) + 1;
+
+        using (new EditorGUI.DisabledScope(validAbilities.Count == 0))
+        {
+            int selectedIndex = EditorGUILayout.Popup("Default Ability", currentIndex, displayNames);
+            m_DefaultAbilityProp.objectReferenceValue = selectedIndex == 0 ? null : validAbilities[selectedIndex - 1];
+        }
+    }
+
+    #endregion
+
     #region Runtime Status
 
     private void DrawRuntimeStatus()
@@ -233,6 +287,27 @@ public class AnimancerVisualScriptingLinkerEditor : Editor
         }
 
         Repaint();
+    }
+
+    #endregion
+
+    #region VS Node Help
+
+    private void DrawVSNodeHelpBox()
+    {
+        EditorGUILayout.HelpBox(
+            "若在 Script Graph 右键菜单中找不到 AnimancerLinkNodes 节点，请执行：\n" +
+            "Edit → Project Settings → Visual Scripting → Regenerate Nodes\n" +
+            "或点击下方按钮快速重建节点数据库。",
+            MessageType.Info);
+
+        if (GUILayout.Button("Regenerate VS Nodes"))
+        {
+            Unity.VisualScripting.UnitBase.Rebuild();
+            EditorUtility.DisplayDialog("完成", "节点数据库已重新生成。\n现在可以在 Graph Editor 右键菜单 AnimancerLinkNodes 目录下找到所有节点。", "OK");
+        }
+
+        EditorGUILayout.Space(4);
     }
 
     #endregion
