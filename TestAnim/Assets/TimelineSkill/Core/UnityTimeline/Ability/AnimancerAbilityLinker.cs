@@ -58,7 +58,27 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
     private List<AbilityCategory> m_AbilityCategories = new List<AbilityCategory>();
 
     [SerializeField]
+    [Tooltip("勾选后，运行时会 Clone 每个 AnimancerAbility 的 Tree（Instantiate），避免多实例共享同一 ScriptableObject 状态。\n不勾选则直接使用原始 Asset。")]
+    private bool m_UseRuntimeClone = true;
+
+    /// <summary>
+    /// 运行时 Clone 出来的 Ability 实例（仅 m_UseRuntimeClone 为 true 时有值）
+    /// 用于 OnDestroy 时销毁
+    /// </summary>
+    private List<AnimancerAbility> m_RuntimeClonedAbilities;
+
+    [SerializeField]
     private AnimancerAbility m_DefaultAbility;
+
+    /// <summary>
+    /// 是否在运行时 Clone Ability 的 Tree（避免多实例共享 SO 状态）
+    /// </summary>
+    public bool UseRuntimeClone => m_UseRuntimeClone;
+
+    /// <summary>
+    /// 实际是否执行 Clone：仅在 Application.isPlaying 且 m_UseRuntimeClone 为 true 时生效
+    /// </summary>
+    private bool ShouldClone => m_UseRuntimeClone && Application.isPlaying;
 
     /// <summary>
     /// 配置的默认 Ability
@@ -109,20 +129,36 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
         AnimancerAbilityAgent.OnAbilityStart += HandleAbilityStart;
         AnimancerAbilityAgent.OnAbilityStop += HandleAbilityStop;
 
+        if (ShouldClone)
+            m_RuntimeClonedAbilities = new List<AnimancerAbility>();
+
         foreach (var category in m_AbilityCategories)
         {
             if (category == null) continue;
-            foreach (var ability in category.Abilities)
+            for (int i = 0; i < category.Abilities.Count; i++)
             {
-                if (ability != null)
+                var ability = category.Abilities[i];
+                if (ability == null) continue;
+
+                AnimancerAbility actual = ability;
+                if (ShouldClone)
                 {
-                    ability.AnimancerComponent = AnimancerComponent;
-                    AnimancerAbilityAgent.AddAbility(ability);
+                    // Clone 一份运行时实例，避免多角色共享同一 SO 状态
+                    actual = Instantiate(ability);
+                    actual.name = ability.name; // 保持原名，避免 "(Clone)" 后缀影响 AbilityMap 查找
+                    m_RuntimeClonedAbilities.Add(actual);
+                    category.Abilities[i] = actual; // 替换列表中的引用，使后续逻辑统一使用克隆实例
                 }
+
+                actual.AnimancerComponent = AnimancerComponent;
+                AnimancerAbilityAgent.AddAbility(actual);
             }
         }
 
-        // 注册输入绑定
+        // 注册输入绑定（如果使用了 Clone，需要将 InputBinding 中的引用也指向克隆实例）
+        if (ShouldClone)
+            RemapInputBindingsToClones();
+
         RegisterInputBindings();
 
         // 订阅输入锁变化事件
@@ -143,6 +179,27 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             OnAbilityReady();
     }
 
+    /// <summary>
+    /// Clone 模式下，将 InputBinding 中的 Ability 引用重映射到同名的克隆实例
+    /// </summary>
+    private void RemapInputBindingsToClones()
+    {
+        if (m_RuntimeClonedAbilities == null) return;
+
+        for (int i = 0; i < m_InputBindings.Count; i++)
+        {
+            var binding = m_InputBindings[i];
+            if (binding == null || binding.Ability == null) continue;
+
+            string abilityName = binding.Ability.name;
+            // 从 Agent 的 AbilityMap 中查找已注册的克隆实例
+            if (AnimancerAbilityAgent.AbilityMap.TryGetValue(abilityName, out var clonedAbility))
+            {
+                binding.Ability = clonedAbility;
+            }
+        }
+    }
+
     private void Update()
     {
         AnimancerAbilityAgent?.Update(Time.deltaTime);
@@ -161,6 +218,18 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
             AnimancerAbilityAgent.OnAbilityStop -= HandleAbilityStop;
             AnimancerAbilityAgent.Dispose();
             AnimancerAbilityAgent = null;
+        }
+
+        // 销毁运行时 Clone 出来的 Ability 实例
+        if (m_RuntimeClonedAbilities != null)
+        {
+            foreach (var cloned in m_RuntimeClonedAbilities)
+            {
+                if (cloned != null)
+                    Destroy(cloned);
+            }
+            m_RuntimeClonedAbilities.Clear();
+            m_RuntimeClonedAbilities = null;
         }
     }
 
@@ -347,13 +416,24 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
 
     /// <summary>
     /// 添加一个 Ability 到指定分组（若分组不存在则创建）
+    /// Clone 模式下会自动 Instantiate 传入的 Ability
     /// </summary>
     public void AddAbility(AnimancerAbility ability, string categoryName = "Default")
     {
         if (ability != null && AnimancerAbilityAgent != null)
         {
-            ability.AnimancerComponent = AnimancerComponent;
-            AnimancerAbilityAgent.AddAbility(ability);
+            AnimancerAbility actual = ability;
+            if (ShouldClone)
+            {
+                actual = Instantiate(ability);
+                actual.name = ability.name;
+                if (m_RuntimeClonedAbilities == null)
+                    m_RuntimeClonedAbilities = new List<AnimancerAbility>();
+                m_RuntimeClonedAbilities.Add(actual);
+            }
+
+            actual.AnimancerComponent = AnimancerComponent;
+            AnimancerAbilityAgent.AddAbility(actual);
 
             var category = m_AbilityCategories.Find(c => c.CategoryName == categoryName);
             if (category == null)
@@ -361,23 +441,37 @@ public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
                 category = new AbilityCategory { CategoryName = categoryName };
                 m_AbilityCategories.Add(category);
             }
-            if (!category.Abilities.Contains(ability))
-                category.Abilities.Add(ability);
+            if (!category.Abilities.Contains(actual))
+                category.Abilities.Add(actual);
         }
     }
 
     /// <summary>
     /// 移除一个 Ability（从所有分组中移除）
+    /// Clone 模式下通过名称匹配查找对应的克隆实例
     /// </summary>
     public void RemoveAbility(AnimancerAbility ability)
     {
-        if (ability != null && AnimancerAbilityAgent != null)
+        if (ability == null || AnimancerAbilityAgent == null) return;
+
+        // 找到实际注册在 Agent 中的实例（可能是原始 SO，也可能是 Clone）
+        AnimancerAbility actual = ability;
+        if (ShouldClone && AnimancerAbilityAgent.AbilityMap.TryGetValue(ability.name, out var registered))
         {
-            AnimancerAbilityAgent.RemoveAbility(ability);
-            foreach (var category in m_AbilityCategories)
-            {
-                category.Abilities.Remove(ability);
-            }
+            actual = registered;
+        }
+
+        AnimancerAbilityAgent.RemoveAbility(actual);
+        foreach (var category in m_AbilityCategories)
+        {
+            category.Abilities.Remove(actual);
+        }
+
+        // Clone 模式下销毁克隆实例
+        if (ShouldClone && m_RuntimeClonedAbilities != null)
+        {
+            if (m_RuntimeClonedAbilities.Remove(actual) && actual != null)
+                Destroy(actual);
         }
     }
 }
