@@ -13,7 +13,7 @@ namespace UnityTimeline
 
         protected override void DoAction()
         {
-            var character = AbilityLinker?.GetComponent<Character>();
+            var character = AbilityLinker?.gameObject.GetComponent<Character>();
             if (character != null)
             {
                 character.SetMovementMode(m_Enabled.Value ? MovementMode.Walking : MovementMode.None);

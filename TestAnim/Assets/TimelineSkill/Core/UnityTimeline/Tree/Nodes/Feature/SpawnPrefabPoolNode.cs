@@ -36,7 +36,7 @@ namespace UnityTimeline
             Transform socketTransform = AbilityLinker.transform;
             if (!string.IsNullOrEmpty(m_SocketName.Value))
             {
-                var childTransforms = AbilityLinker.GetComponentsInChildren<Transform>();
+                var childTransforms = AbilityLinker.gameObject.GetComponentsInChildren<Transform>();
                 foreach (var child in childTransforms)
                 {
                     if (child.name == m_SocketName.Value)

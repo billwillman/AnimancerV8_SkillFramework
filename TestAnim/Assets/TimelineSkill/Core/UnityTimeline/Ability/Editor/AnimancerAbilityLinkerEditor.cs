@@ -10,6 +10,7 @@ public class AnimancerAbilityLinkerEditor : Editor
     SerializedProperty m_DefaultAbilityProp;
     SerializedProperty m_InputBindingsProp;
     SerializedProperty m_CinemachineInputProviderProp;
+    SerializedProperty m_UseRuntimeCloneProp;
 
     private Dictionary<int, bool> m_FoldoutStates = new Dictionary<int, bool>();
     private bool m_InputBindingsFoldout = true;
@@ -31,6 +32,7 @@ public class AnimancerAbilityLinkerEditor : Editor
         m_DefaultAbilityProp = serializedObject.FindProperty("m_DefaultAbility");
         m_InputBindingsProp = serializedObject.FindProperty("m_InputBindings");
         m_CinemachineInputProviderProp = serializedObject.FindProperty("m_CinemachineInputProvider");
+        m_UseRuntimeCloneProp = serializedObject.FindProperty("m_UseRuntimeClone");
     }
 
     public override void OnInspectorGUI()
@@ -48,6 +50,13 @@ public class AnimancerAbilityLinkerEditor : Editor
         // 运行时不显示配置部分
         if (!Application.isPlaying)
         {
+            // ── Use Runtime Clone ──
+            EditorGUILayout.PropertyField(m_UseRuntimeCloneProp,
+                new GUIContent("Use Runtime Clone",
+                    "勾选后运行时会 Instantiate 每个 Ability（Clone Tree），避免多角色共享同一 ScriptableObject 状态。\n不勾选则直接使用原始 Asset，适合单角色或确认不会冲突的场景。"));
+
+            EditorGUILayout.Space(4);
+
             // ── Default Ability 下拉 ──
             DrawDefaultAbilityPopup(validAbilities);
 

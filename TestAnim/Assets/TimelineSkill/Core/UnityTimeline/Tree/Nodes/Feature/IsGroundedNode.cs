@@ -14,7 +14,7 @@ namespace UnityTimeline
         protected override void OutputValue()
         {
             base.OutputValue();
-            var character = AbilityLinker?.GetComponent<Character>();
+            var character = AbilityLinker?.gameObject.GetComponent<Character>();
             m_IsGrounded.Value = character != null && character.IsGrounded();
         }
     }
