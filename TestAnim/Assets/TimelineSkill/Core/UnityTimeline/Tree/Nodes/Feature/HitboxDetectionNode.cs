@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TreeDesigner;
 
@@ -28,28 +29,65 @@ namespace UnityTimeline
         [SerializeField, PropertyPort(PortDirection.Output, "HitCount"), ReadOnly]
         IntPropertyPort m_HitCount = new IntPropertyPort();
 
-        [NonSerialized] private Collider[] m_HitBuffer = new Collider[32];
-        public Collider[] HitBuffer => m_HitBuffer;
-        public int LastHitCount { get; private set; }
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["HitBuffer"] = new StringExposedProperty { Name = "HitBuffer" };
+            properties["LastHitCount"] = new IntExposedProperty { Name = "LastHitCount" };
+        }
+
+        public Collider[] HitBuffer
+        {
+            get
+            {
+                if (NodeData != null && NodeData.RuntimeProperties.TryGetValue("HitBuffer", out var ep))
+                {
+                    var buffer = ep.GetValue() as Collider[];
+                    if (buffer == null)
+                    {
+                        buffer = new Collider[32];
+                        ep.SetValue(buffer);
+                    }
+                    return buffer;
+                }
+                return null;
+            }
+        }
+
+        public int LastHitCount
+        {
+            get
+            {
+                if (NodeData != null && NodeData.RuntimeProperties.TryGetValue("LastHitCount", out var ep))
+                    return ep is BaseExposedProperty<int> typed ? typed.Value : 0;
+                return 0;
+            }
+            private set
+            {
+                if (NodeData != null && NodeData.RuntimeProperties.TryGetValue("LastHitCount", out var ep)
+                    && ep is BaseExposedProperty<int> typed)
+                    typed.Value = value;
+            }
+        }
 
         protected override void DoAction()
         {
             if (AbilityLinker == null)
                 return;
 
-            if (m_HitBuffer == null)
-                m_HitBuffer = new Collider[32];
+            var hitBuffer = HitBuffer;
+            if (hitBuffer == null)
+                return;
 
             Vector3 center = AbilityLinker.transform.position + AbilityLinker.transform.TransformDirection(m_Offset.Value);
             int hitCount = 0;
 
             if ((HitboxShape)m_Shape.Value == HitboxShape.Sphere)
             {
-                hitCount = Physics.OverlapSphereNonAlloc(center, m_Radius.Value, m_HitBuffer, m_LayerMask.Value);
+                hitCount = Physics.OverlapSphereNonAlloc(center, m_Radius.Value, hitBuffer, m_LayerMask.Value);
             }
             else
             {
-                hitCount = Physics.OverlapBoxNonAlloc(center, m_HalfExtents.Value, m_HitBuffer, AbilityLinker.transform.rotation, m_LayerMask.Value);
+                hitCount = Physics.OverlapBoxNonAlloc(center, m_HalfExtents.Value, hitBuffer, AbilityLinker.transform.rotation, m_LayerMask.Value);
             }
 
             LastHitCount = hitCount;

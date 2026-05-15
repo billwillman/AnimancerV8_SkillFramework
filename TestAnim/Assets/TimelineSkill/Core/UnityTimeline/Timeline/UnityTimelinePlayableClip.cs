@@ -19,14 +19,11 @@ public class UnityTimelinePlayableClip : PlayableAsset, ITimelineClipAsset
 
     public override Playable CreatePlayable (PlayableGraph graph, GameObject owner)
     {
-       var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create (graph, template);
-      // var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create(graph, 1);
+        var playable = ScriptPlayable<UnityTimelinePlayableBehaviour>.Create (graph, template);
         UnityTimelinePlayableBehaviour clone = playable.GetBehaviour ();
         clone.DestroyRuntimeTree();
         if (timelineTree != null) {
             clone.ApplyLocalRuntimeTreeController(owner);
-           // clone.RuntimeTree = timelineTree;
-          //  clone.IsRunTreeAsset = true;
             clone.SpawnRuntimeTree(timelineTree, owner);
 
             // 注册进去
@@ -36,7 +33,6 @@ public class UnityTimelinePlayableClip : PlayableAsset, ITimelineClipAsset
             if (tempBehaviour != null) {
                 tempBehaviour.RegisterBehaviour(clone);
             }
-            //-----------------------------------------
         } else
             clone.RuntimeTree = null;
         return playable;

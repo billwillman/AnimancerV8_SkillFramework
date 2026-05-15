@@ -114,6 +114,32 @@ namespace TreeDesigner
             return ctx;
         }
 
+        /// <summary>
+        /// 为一棵 Tree 创建独立的 BlackboardContext，但不注册到内部字典。
+        /// 适用于同一个 SO 可能被多个调用方引用的场景（如 UnityTimelineTree），
+        /// 各调用方自行持有和管理 Context 生命周期。
+        /// </summary>
+        public BlackboardContext CreateContextForTree(BaseTree tree)
+        {
+            var ctx = new BlackboardContext { Owner = this };
+
+            // 1. 为每个节点创建 NodeBlackboardData
+            foreach (var node in tree.Nodes)
+            {
+                var nodeData = CreateNodeData(node);
+                ctx.NodeDataMap[node.GUID] = nodeData;
+            }
+
+            // 2. 克隆 SO ExposedProperties 到 EPMap
+            foreach (var ep in tree.ExposedProperties)
+            {
+                if (ep != null && !string.IsNullOrEmpty(ep.Name))
+                    ctx.EPMap[ep.Name] = CloneExposedProperty(ep);
+            }
+
+            return ctx;
+        }
+
         /// <summary>将 Tree 的 Context 绑定到 Tree 上（BeginContext 调用）</summary>
         public void BindTree(BaseTree tree)
         {

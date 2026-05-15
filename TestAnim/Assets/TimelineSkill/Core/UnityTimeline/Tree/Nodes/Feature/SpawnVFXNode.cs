@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TreeDesigner;
 
@@ -23,7 +24,22 @@ namespace UnityTimeline
         [SerializeField, PropertyPort(PortDirection.Output, "Instance"), ReadOnly]
         objectPropertyPort m_InstancePort = new objectPropertyPort();
 
-        [NonSerialized] private GameObject m_Instance;
+        public override void OnRegisterRuntimeProperties(Dictionary<string, BaseExposedProperty> properties)
+        {
+            properties["Instance"] = new StringExposedProperty { Name = "Instance" };
+        }
+
+        private GameObject GetInstance()
+        {
+            return NodeData?.RuntimeProperties.TryGetValue("Instance", out var ep) == true
+                ? ep.GetValue() as GameObject : null;
+        }
+
+        private void SetInstance(GameObject value)
+        {
+            if (NodeData != null && NodeData.RuntimeProperties.TryGetValue("Instance", out var ep))
+                ep.SetValue(value);
+        }
 
         protected override void DoAction()
         {
@@ -44,18 +60,20 @@ namespace UnityTimeline
                 }
             }
 
-            m_Instance = UnityEngine.Object.Instantiate(m_Prefab, socketTransform, false);
-            m_Instance.transform.localPosition = m_PositionOffset.Value;
-            m_Instance.transform.localEulerAngles = m_RotationOffset.Value;
-            m_InstancePort.Value = m_Instance;
+            var instance = UnityEngine.Object.Instantiate(m_Prefab, socketTransform, false);
+            instance.transform.localPosition = m_PositionOffset.Value;
+            instance.transform.localEulerAngles = m_RotationOffset.Value;
+            SetInstance(instance);
+            m_InstancePort.Value = instance;
         }
 
         public override void Dispose()
         {
-            if (m_Instance != null)
+            var instance = GetInstance();
+            if (instance != null)
             {
-                UnityEngine.Object.Destroy(m_Instance);
-                m_Instance = null;
+                UnityEngine.Object.Destroy(instance);
+                SetInstance(null);
             }
             base.Dispose();
         }
