@@ -21,13 +21,13 @@ namespace UnityTimeline
         public IDirectorController DirectorController => m_DirectorController;
 
         [NonSerialized]
-        private AnimancerAbilityLinker m_AbilityLinker;
+        private IAbilityLinker m_AbilityLinker;
 
         /// <summary>
-        /// 获取或设置 AnimancerAbilityLinker 引用。
+        /// 获取或设置 IAbilityLinker 引用。
         /// 由 UnityTimelinePlayableBehaviour 在 SpawnRuntimeTree 时注入。
         /// </summary>
-        public AnimancerAbilityLinker AbilityLinker
+        public IAbilityLinker AbilityLinker
         {
             get => m_AbilityLinker;
             set => m_AbilityLinker = value;

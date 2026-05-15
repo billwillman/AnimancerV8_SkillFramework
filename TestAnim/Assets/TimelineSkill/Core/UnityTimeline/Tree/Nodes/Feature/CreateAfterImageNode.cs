@@ -24,7 +24,7 @@ namespace UnityTimeline
             if (AbilityLinker == null)
                 return;
 
-            var controller = AbilityLinker.GetComponent<AfterImageController>();
+            var controller = AbilityLinker.gameObject.GetComponent<AfterImageController>();
             if (controller != null && m_Material != null)
             {
                 int[] subMeshArray = m_SubMeshIndex.Value != null ? m_SubMeshIndex.Value.ToArray() : new int[0];

@@ -16,7 +16,7 @@ using UnityTimeline;
 /// </summary>
 [RequireComponent(typeof(AnimancerComponent))]
 [RequireComponent(typeof(SkillCharacterController))]
-public class AnimancerVisualScriptingLinker : MonoBehaviour
+public class AnimancerVisualScriptingLinker : MonoBehaviour, IAbilityLinker
 {
     #region Data Structures
 
@@ -181,6 +181,11 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour
             return m_SkillCharacterController;
         }
     }
+
+    /// <summary>
+    /// IAbilityLinker 接口要求。VS 系统不使用 AnimancerAbilityAgent，返回 null。
+    /// </summary>
+    public AnimancerAbilityAgent AnimancerAbilityAgent => null;
 
     #endregion
 

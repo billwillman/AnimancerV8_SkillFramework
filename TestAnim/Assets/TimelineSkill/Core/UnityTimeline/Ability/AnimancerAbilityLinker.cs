@@ -13,7 +13,7 @@ using Cinemachine;
 /// 支持通过 InputActionReference 绑定输入触发 Ability
 /// </summary>
 [RequireComponent(typeof(AnimancerComponent))]
-public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner
+public class AnimancerAbilityLinker : MonoBehaviour, IAnimancerAbilityAgentOwner, IAbilityLinker
 {
     /// <summary>
     /// 输入触发模式

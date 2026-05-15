@@ -19,7 +19,7 @@ namespace UnityTimeline
 
         protected override void DoAction()
         {
-            var character = AbilityLinker?.GetComponent<Character>();
+            var character = AbilityLinker?.gameObject.GetComponent<Character>();
             if (character != null)
             {
                 character.LaunchCharacter(m_LaunchVelocity.Value, m_OverrideVertical.Value, m_OverrideLateral.Value);

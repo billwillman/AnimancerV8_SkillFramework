@@ -16,7 +16,7 @@ namespace UnityTimeline
 
         protected override void DoAction()
         {
-            var character = AbilityLinker?.GetComponent<Character>();
+            var character = AbilityLinker?.gameObject.GetComponent<Character>();
             if (character != null)
             {
                 character.AddForce(m_Force.Value, (ForceMode)m_ForceMode.Value);

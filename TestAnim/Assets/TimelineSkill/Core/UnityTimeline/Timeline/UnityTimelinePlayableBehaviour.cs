@@ -62,7 +62,12 @@ public class UnityTimelinePlayableBehaviour : PlayableBehaviour
         this.RuntimeTree.InitTree(this);
 
         if (owner != null)
-            this.RuntimeTree.AbilityLinker = owner.GetComponentInChildren<AnimancerAbilityLinker>();
+        {
+            IAbilityLinker linker = owner.GetComponentInChildren<AnimancerAbilityLinker>();
+            if (linker == null)
+                linker = owner.GetComponentInChildren<AnimancerVisualScriptingLinker>();
+            this.RuntimeTree.AbilityLinker = linker;
+        }
 
         if (IsRunTreeAsset) {
             DestroyRuntimeTree(ref temp);
