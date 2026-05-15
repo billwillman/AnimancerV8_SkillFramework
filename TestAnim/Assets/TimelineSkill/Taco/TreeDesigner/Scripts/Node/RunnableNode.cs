@@ -63,24 +63,5 @@ namespace TreeDesigner
             base.OnAfterDeserialize();
             m_State = State.None;
         }
-
-        /// <summary>
-        /// 该节点是否拥有需要跨帧保存的自定义状态字段。
-        /// 返回 false（默认）时 SaveNodeStates 完全跳过字典分配，消除每帧 GC 压力。
-        /// override SaveContextState/RestoreContextState 的子类必须同时 override 此属性为 true。
-        /// </summary>
-        public virtual bool HasContextState => false;
-
-        /// <summary>
-        /// EndContext 时调用，子类 override 将自定义 [NonSerialized] 状态字段保存到 store。
-        /// 仅在 HasContextState == true 时才会被调用。
-        /// </summary>
-        public virtual void SaveContextState(Dictionary<string, object> store) { }
-
-        /// <summary>
-        /// BeginContext 时调用，子类 override 从 store 恢复自定义 [NonSerialized] 状态字段。
-        /// 仅在 NodeSnapshot.Custom != null 时才会被调用。
-        /// </summary>
-        public virtual void RestoreContextState(Dictionary<string, object> store) { }
     }
 }

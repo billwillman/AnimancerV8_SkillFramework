@@ -65,16 +65,13 @@ namespace TreeDesigner.Editor
             exposedPropertyView.name = "exposed-property";
 
             SerializedProperty serializedValueProperty = exposedProperty.GetExposedPropertySerializedProperty("m_Value");
-            if (serializedValueProperty != null && serializedValueProperty.serializedObject != null)
-            {
-                PropertyField exposedPropertyValue = new PropertyField(serializedValueProperty, exposedProperty.Name);
-                exposedPropertyValue.name = "exposed-property-field";
-                exposedPropertyValue.Bind(serializedValueProperty.serializedObject);
-                exposedPropertyView.Add(exposedPropertyValue);
-                if (!exposedProperty.CanEdit)
-                    exposedPropertyView.SetEnabled(false);
-            }
-
+            PropertyField exposedPropertyValue = new PropertyField(serializedValueProperty,exposedProperty.Name);
+            exposedPropertyValue.name = "exposed-property-field";
+            exposedPropertyValue.Bind(serializedValueProperty.serializedObject);
+            exposedPropertyView.Add(exposedPropertyValue);
+            if (!exposedProperty.CanEdit)
+                exposedPropertyView.SetEnabled(false);
+            
             m_ExposedPropertyContainer.Add(exposedPropertyView);
         }
 
