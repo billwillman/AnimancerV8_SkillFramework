@@ -124,8 +124,9 @@ MonoBehaviour:
   m_AbilityCategories:
   - CategoryName: "\u79FB\u52A8"
     Abilities:
-    - {fileID: 11400000, guid: 9b3de0cc19e3fd34e945595896c00bdf, type: 2}
-  m_DefaultAbility: {fileID: 11400000, guid: 9b3de0cc19e3fd34e945595896c00bdf, type: 2}
+    - {fileID: 11400000, guid: 54d4f582c2f141a4586bc1e3a88fbdd2, type: 2}
+  m_UseRuntimeClone: 1
+  m_DefaultAbility: {fileID: 0}
   m_InputBindings: []
   m_CinemachineInputProvider: {fileID: 0}
 --- !u!136 &5018805696599778989
