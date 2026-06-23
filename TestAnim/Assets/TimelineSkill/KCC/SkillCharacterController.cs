@@ -90,6 +90,7 @@ namespace UnityTimeline
         [SerializeField] private JumpMode _jumpMode = JumpMode.BuiltIn;
 
         [Tooltip("起跳初始向上速度")]     [SerializeField] private float _jumpUpSpeed = 10f;
+        [Tooltip("最大空中跳跃次数（-1=不限制，0=不可空中跳，1=1次空中跳，2=2次…）")] [SerializeField] private int _maxAirJumps = -1;
         [Tooltip("起跳时前进速度")]         [SerializeField] private float _jumpScalableForwardSpeed = 10f;
         [Tooltip("起跳前离地宽容时间(秒)")] [SerializeField] private float _jumpPreGroundingGraceTime = 0f;
         [Tooltip("起跳后落地宽容时间(秒)")] [SerializeField] private float _jumpPostGroundingGraceTime = 0f;
@@ -306,10 +307,9 @@ namespace UnityTimeline
         private Vector3 _rootMotionPositionDelta;
         private Quaternion _rootMotionRotationDelta;
         private PlayerCharacterInputs _inputs;
-        private bool _jumpRequested;
         private bool _jumpInputBuffered;
-        private bool _jumpedThisFrame;
-        private float _timeSinceLastAbleToJump;
+        private int _runtimeAirJumps;
+        private float _timeSinceLeftGround;
 
         // Compensation state
         private Vector3 _compensationPosition;
@@ -364,7 +364,7 @@ namespace UnityTimeline
                 CharacterAnimator.applyRootMotion = true;
             ResetRootMotionState();
             ClearCompensation();
-            _timeSinceLastAbleToJump = -1f;
+            _timeSinceLeftGround = -1f;
         }
 
         private void Update() => ReadInput();
@@ -421,7 +421,8 @@ namespace UnityTimeline
                 }
             }
 
-            // 跳跃输入（受 Jump 锁控制）— 累积式缓存，防止 Update/FixedUpdate 不同步丢失信号
+            // 跳跃输入（受 Jump 锁控制）— 累积式缓存
+            // triggered 本身是边缘触发（PressOnly），按住不会重复
             if ((locks & InputLockFlags.Jump) == 0)
             {
                 if (_jumpAction != null && _jumpAction.action != null)
@@ -639,19 +640,23 @@ namespace UnityTimeline
 
         private void HandleBuiltInJump(ref Vector3 velocity, float dt)
         {
-            _jumpedThisFrame = false;
-            _timeSinceLastAbleToJump += dt;
+            if (!_jumpInputBuffered)
+                return;
 
-            // 消费缓存的跳跃输入
-            bool wantsJump = _jumpInputBuffered || _jumpRequested;
-            if (!wantsJump) return;
+            bool canGroundJump = Motor.GroundingStatus.IsStableOnGround ||
+                                 (_timeSinceLeftGround >= 0f &&
+                                  _timeSinceLeftGround < _jumpPreGroundingGraceTime);
 
-            bool canJump = Motor.GroundingStatus.IsStableOnGround ||
-                           (_timeSinceLastAbleToJump >= 0f && _timeSinceLastAbleToJump < _jumpPreGroundingGraceTime);
+            bool canAirJump = !canGroundJump;
 
-            if (canJump && _timeSinceLastAbleToJump < 0f) canJump = false;
+            // 空中跳次数限制检查：次数用完则消费输入但不跳（-1=不限制）
+            if (canAirJump && _maxAirJumps >= 0 && _runtimeAirJumps >= _maxAirJumps)
+            {
+                _jumpInputBuffered = false;
+                return;
+            }
 
-            if (canJump)
+            if (canGroundJump)
             {
                 Motor.ForceUnground();
 
@@ -660,17 +665,19 @@ namespace UnityTimeline
                 Vector3 moveDir = (forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight).normalized;
 
                 velocity += Motor.CharacterUp * _jumpUpSpeed + moveDir * _jumpScalableForwardSpeed;
-
-                _jumpRequested = false;
                 _jumpInputBuffered = false;
-                _jumpedThisFrame = true;
-                _timeSinceLastAbleToJump = -1f;
+                _timeSinceLeftGround = _jumpPreGroundingGraceTime;
+                _runtimeAirJumps = 0;
             }
-            else
+            else if (canAirJump)
             {
-                // 缓存跳跃请求，等待下一次 tick（受 Post Grace Time 保护）
-                _jumpRequested = true;
+                Vector3 forward = _inputs.CameraRotation * Vector3.forward;
+                Vector3 right = _inputs.CameraRotation * Vector3.right;
+                Vector3 moveDir = (forward * _inputs.MoveAxisForward + right * _inputs.MoveAxisRight).normalized;
+
+                velocity += Motor.CharacterUp * _jumpUpSpeed + moveDir * _jumpScalableForwardSpeed;
                 _jumpInputBuffered = false;
+                ++_runtimeAirJumps;
             }
         }
 
@@ -680,35 +687,20 @@ namespace UnityTimeline
         {
             if (Motor.GroundingStatus.IsStableOnGround && !Motor.LastGroundingStatus.IsStableOnGround)
             {
-                if (_jumpMode == JumpMode.BuiltIn && !_jumpedThisFrame &&
-                    deltaTime < _jumpPostGroundingGraceTime)
-                {
-                    _timeSinceLastAbleToJump = _jumpPreGroundingGraceTime -
-                                               (_jumpPostGroundingGraceTime - deltaTime);
-                }
-                else
-                {
-                    _timeSinceLastAbleToJump = 0f;
-                }
+                _timeSinceLeftGround = -1f;
+                _runtimeAirJumps = 0; // 落地重置空中跳次数
             }
 
             if (!Motor.GroundingStatus.IsStableOnGround && Motor.LastGroundingStatus.IsStableOnGround)
-                _timeSinceLastAbleToJump = -1f;
+                _timeSinceLeftGround = 0f;
         }
 
         public void AfterCharacterUpdate(float deltaTime)
         {
             ResetRootMotionState();
 
-            if (_jumpRequested && Motor.GroundingStatus.IsStableOnGround)
-            {
-                _jumpRequested = false;
-                _timeSinceLastAbleToJump = 0f;
-            }
-            else if (!_jumpedThisFrame)
-            {
-                _timeSinceLastAbleToJump += deltaTime;
-            }
+            if (!Motor.GroundingStatus.IsStableOnGround && _timeSinceLeftGround >= 0f)
+                _timeSinceLeftGround += deltaTime;
         }
 
         public bool IsColliderValidForCollisions(Collider coll)
