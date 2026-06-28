@@ -338,7 +338,8 @@ public class AnimancerVisualScriptingLinker : MonoBehaviour, IAbilityLinker
         // 检查是否被正在激活的 Ability 的 BlockAbilitiesWithTag 阻止
         foreach (var other in m_AllEntries)
         {
-            if (other.IsActive && entry.Ability.AbilityTags != null
+            if (other.IsActive && other.Ability.BlockAbilitiesWithTag != null
+                && entry.Ability.AbilityTags != null
                 && entry.Ability.AbilityTags.PartChildOf(other.Ability.BlockAbilitiesWithTag))
             {
                 AddToBuffer(entry.Ability);
