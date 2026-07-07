@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.VisualScripting;
 using Animancer;
+using UnityTimeline;
 
 /// <summary>
 /// 通过 Animancer 播放 AnimationClip / TransitionAsset
@@ -17,8 +18,7 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
     [DoNotSerialize] public ValueInput TransitionAssetInput;
     [DoNotSerialize] public ValueInput FadeDuration;
     [DoNotSerialize] public ValueInput Speed;
-
-    [Serialize, Inspectable] public NodeCompletionMode CompletionMode = NodeCompletionMode.OnStart;
+    [DoNotSerialize] public ValueInput CompletionMode;
 
     protected override void Definition()
     {
@@ -29,6 +29,7 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
         TransitionAssetInput = ValueInput<TransitionAssetBase>("TransitionAsset", null);
         FadeDuration = ValueInput<float>("FadeDuration", 0.25f);
         Speed = ValueInput<float>("Speed", 1f);
+        CompletionMode = ValueInput<NodeCompletionMode>("CompletionMode", NodeCompletionMode.OnStart);
 
         Succession(Enter, Exit);
         Succession(Enter, Done);
@@ -43,6 +44,7 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
 
         float fadeDuration = flow.GetValue<float>(FadeDuration);
         float speed = flow.GetValue<float>(Speed);
+        var completionMode = flow.GetValue<NodeCompletionMode>(CompletionMode);
 
         AnimancerState state = animancer.Play(transitionAsset, fadeDuration);
 
@@ -51,20 +53,17 @@ public class PlayAnimancerTranslateUnit : VSAbilityUnitBase
 
         state.Speed = speed;
 
-        if (CompletionMode == NodeCompletionMode.OnStart)
-        {
+        if (completionMode == NodeCompletionMode.OnStart)
             return Exit;
-        }
-        else
+
+        var graphRef = flow.stack.AsReference();
+        state.Events(this).OnEnd += () =>
         {
-            state.Events(this).OnEnd += () =>
-            {
-                state.Events(this).OnEnd = null;
-                Flow doneFlow = Flow.New(flow.stack.AsReference());
-                doneFlow.Invoke(Done);
-                doneFlow.Dispose();
-            };
-            return Exit;
-        }
+            state.Events(this).OnEnd = null;
+            Flow doneFlow = Flow.New(graphRef);
+            doneFlow.Invoke(Done);
+            doneFlow.Dispose();
+        };
+        return Exit;
     }
 }
