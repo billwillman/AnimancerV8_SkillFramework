@@ -149,6 +149,8 @@ namespace Taco.Gameplay
         /// <returns></returns>
         public static bool PartChildOf(this GameplayTagContainer a, GameplayTagContainer b)
         {
+            if (a.Tags == null)
+                return false;
             foreach (var atag in a.Tags)
             {
                 if (b.IsParentOf(atag))
