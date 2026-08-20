@@ -52,7 +52,7 @@ public static class AnimancerUnityTimelineExtend
         if (state == null || !state.IsValid() || state.Graph == null)
             return;
 
-        var signalReceiver = gameObject.GetComponentInChildren<SOC.GamePlay.TimelineEventLuaReceiver>();
+        var signalReceiver = gameObject.GetComponentInChildren<SignalReceiver>();
         if (signalReceiver == null)
             return;
 
